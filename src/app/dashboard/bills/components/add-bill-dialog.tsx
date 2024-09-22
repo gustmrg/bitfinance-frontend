@@ -149,9 +149,12 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
                       className="col-span-3"
                       type="number"
                       min={0}
+                      step="0.01"
                       placeholder="0.00"
                       {...field}
-                      onChange={(e) => field.onChange(e.target.value)}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value))
+                      }
                       inputMode="decimal"
                     />
                   </FormControl>
