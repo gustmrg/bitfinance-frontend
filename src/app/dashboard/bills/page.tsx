@@ -11,7 +11,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -32,10 +31,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AddBillDialog } from "./components/add-bill-dialog";
-import { DeleteBillDialog } from "./components/delete-bill-dialog";
-import { DetailBillDialog } from "./components/detail-bill-dialog";
 import { Bill } from "./types";
+import { AddBillDialog } from "./components/add-bill-dialog";
+import { DetailBillDialog } from "./components/detail-bill-dialog";
+import { DeleteBillDialog } from "./components/delete-bill-dialog";
 
 // Mock data for bills
 const initialBills: Bill[] = [
@@ -227,7 +226,7 @@ export default function Bills() {
 
   return (
     <>
-      <div className="flex items-center space-x-4 my-4 justify-between">
+      <div className="flex items-center space-x-4 justify-between">
         <div className="ml-auto flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
