@@ -40,7 +40,9 @@ import { format } from "date-fns";
 const AddBillSchema = z.object({
   description: z.string().min(1, "Description is required"),
   category: z.string(),
-  amount: z.number().nonnegative("Amount must be a positive number"),
+  amount: z.coerce
+    .number({ required_error: "Amount is required" })
+    .positive("Amount must be a positive number"),
   dueDate: z.date(),
 });
 
@@ -53,16 +55,6 @@ interface AddBillDialogProps {
 export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
   const form = useForm<AddBillForm>({
     resolver: zodResolver(AddBillSchema),
-    defaultValues: {
-      description: "",
-      category: "",
-      amount: 0,
-      dueDate: (() => {
-        const date = new Date();
-        date.setDate(date.getDate() + 1);
-        return date;
-      })(),
-    },
   });
 
   const handleAddBill: SubmitHandler<AddBillForm> = (data: AddBillForm) => {
@@ -156,9 +148,11 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
                     <Input
                       className="col-span-3"
                       type="number"
-                      placeholder="Amount"
+                      min={0}
+                      placeholder="0.00"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      inputMode="decimal"
                     />
                   </FormControl>
                   <FormMessage />

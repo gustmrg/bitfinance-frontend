@@ -11,7 +11,7 @@ export default function BillsLayout({
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden overflow-y-auto">
         <Header />
-        <main className="container mx-auto p-4">{children}</main>
+        <main className="container mx-auto p-4 bg-neutral-100">{children}</main>
       </div>
     </section>
   );

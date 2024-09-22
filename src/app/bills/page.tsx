@@ -8,6 +8,14 @@ import { MoreHorizontal, ListFilter, PencilLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -220,7 +228,6 @@ export default function Bills() {
   return (
     <>
       <div className="flex items-center space-x-4 my-4 justify-between">
-        <h1 className="text-3xl font-semibold">Bills</h1>
         <div className="ml-auto flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -245,58 +252,66 @@ export default function Bills() {
           <AddBillDialog onAddBill={handleAddBill} />
         </div>
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Description</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Due Date</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {bills.map((bill) => (
-              <TableRow key={bill.id}>
-                <TableCell className="font-semibold">
-                  {bill.description}
-                </TableCell>
-                <TableCell>{bill.category}</TableCell>
-                <TableCell>{getStatusBadge(bill.status)}</TableCell>
-                <TableCell>
-                  {dateFormatter.format(new Date(bill.dueDate))}
-                </TableCell>
-                <TableCell className="text-right">
-                  $ {bill.amountDue.toFixed(2)}
-                </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <PencilLine className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DetailBillDialog bill={bill} />
-                      <DeleteBillDialog
-                        id={bill.id}
-                        onDelete={handleDeleteBill}
-                      />
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+      <Card>
+        <CardHeader>
+          <CardTitle>Bills</CardTitle>
+          <CardDescription>
+            Manage your monthly bills and payments.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Description</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Due Date</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {bills.map((bill) => (
+                <TableRow key={bill.id}>
+                  <TableCell className="font-semibold">
+                    {bill.description}
+                  </TableCell>
+                  <TableCell>{bill.category}</TableCell>
+                  <TableCell>{getStatusBadge(bill.status)}</TableCell>
+                  <TableCell>
+                    {dateFormatter.format(new Date(bill.dueDate))}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    $ {bill.amountDue.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          <PencilLine className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DetailBillDialog bill={bill} />
+                        <DeleteBillDialog
+                          id={bill.id}
+                          onDelete={handleDeleteBill}
+                        />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </>
   );
 }
