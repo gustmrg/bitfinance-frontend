@@ -1,14 +1,18 @@
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
-  DialogTitle,
-  DialogHeader,
-  DialogFooter,
   DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { CalendarIcon, PencilLine } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -17,7 +21,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -25,62 +34,71 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarIcon, PlusCircle } from "lucide-react";
-import { z } from "zod";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { Bill } from "../types";
 
-const AddBillSchema = z.object({
-  description: z.string().min(1, "Description is required"),
+const EditBillSchema = z.object({
+  id: z.string(),
+  description: z.string(),
   category: z.string(),
-  amount: z.coerce
-    .number({ required_error: "Amount is required" })
-    .positive("Amount must be a positive number"),
+  status: z.string(),
+  amountDue: z.number(),
+  amountPaid: z.number().optional(),
   dueDate: z.date(),
+  paymentDate: z.date().optional(),
+  notes: z.string().optional(),
 });
 
-type AddBillForm = z.infer<typeof AddBillSchema>;
+type EditBillForm = z.infer<typeof EditBillSchema>;
 
-interface AddBillDialogProps {
-  onAddBill: (data: AddBillForm) => void;
+interface EditBillDialogProps {
+  bill: Bill;
+  onEdit: (data: any) => void;
 }
 
-export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
-  const form = useForm<AddBillForm>({
-    resolver: zodResolver(AddBillSchema),
+export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
+  const form = useForm<EditBillForm>({
+    resolver: zodResolver(EditBillSchema),
+    defaultValues: {
+      id: bill.id,
+      description: bill.description,
+      category: bill.category,
+      status: bill.status,
+      amountDue: bill.amountDue,
+      amountPaid: bill.amountPaid ?? undefined,
+      dueDate: bill.dueDate ? new Date(bill.dueDate) : undefined,
+      paymentDate: bill.paymentDate ? new Date(bill.paymentDate) : undefined,
+      notes: bill.notes ?? "",
+    },
   });
 
-  const handleAddBill: SubmitHandler<AddBillForm> = (data: AddBillForm) => {
-    onAddBill(data);
+  const status = form.watch("status");
+
+  const handleEditBill: SubmitHandler<EditBillForm> = (data: EditBillForm) => {
+    console.log(data);
+    onEdit(data);
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button size="sm" className="h-8 gap-1">
-          <PlusCircle className="h-3.5 w-3.5" />
-          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Add Bill
-          </span>
-        </Button>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <PencilLine className="mr-2 h-4 w-4" />
+          <span>Edit</span>
+        </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Bill</DialogTitle>
+          <DialogTitle>Edit Bill</DialogTitle>
           <DialogDescription>
-            Add a new bill to your transactions. Click to add when you're done.{" "}
+            Edit your bill information. Click to add when you're done.{" "}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleAddBill)}
+            onSubmit={form.handleSubmit(handleEditBill)}
             className="space-y-4"
           >
             <FormField
@@ -140,7 +158,7 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
             />
             <FormField
               control={form.control}
-              name="amount"
+              name="amountDue"
               render={({ field }) => (
                 <FormItem className="grid grid-cols-4 items-center gap-4">
                   <FormLabel className="text-right">Amount</FormLabel>
@@ -202,16 +220,109 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-4 items-center gap-4">
+                  <FormLabel className="text-right">Status</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select a status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="due">Due</SelectItem>
+                      <SelectItem value="paid">Paid</SelectItem>
+                      <SelectItem value="overdue">Overdue</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {status === "paid" ? (
+              <div>
+                <FormField
+                  control={form.control}
+                  name="amountPaid"
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-4 items-center gap-4">
+                      <FormLabel className="text-right">Amount Paid</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="col-span-3"
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          placeholder="0.00"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value))
+                          }
+                          inputMode="decimal"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="paymentDate"
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-4 items-center gap-4">
+                      <FormLabel className="text-right">Payment Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-[240px] pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => date < new Date("1900-01-01")}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            ) : null}
             <DialogFooter className="mt-4">
               <Button
                 variant="secondary"
                 type="button"
                 onClick={() => form.reset()}
               >
-                Reset
+                Cancel
               </Button>
               <Button variant="default" type="submit">
-                Add Bill
+                Confirm
               </Button>
             </DialogFooter>
           </form>

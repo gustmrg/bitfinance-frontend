@@ -95,8 +95,8 @@ export function DetailBillDialog({ bill }: DetailBillDialogProps) {
                   Paid Date
                 </dt>
                 <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                  {bill.paidDate &&
-                    format(bill.paidDate, "Pp", { locale: ptBR })}
+                  {bill.paymentDate &&
+                    format(bill.paymentDate, "Pp", { locale: ptBR })}
                 </dd>
               </div>
             ) : (
