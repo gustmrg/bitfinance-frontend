@@ -57,7 +57,11 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
       description: "",
       category: "",
       amount: 0,
-      dueDate: new Date(),
+      dueDate: (() => {
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        return date;
+      })(),
     },
   });
 
@@ -68,10 +72,10 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="gap-1" size="default">
+        <Button size="sm" className="h-8 gap-1">
           <PlusCircle className="h-3.5 w-3.5" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Add Bill
+            Add Product
           </span>
         </Button>
       </DialogTrigger>
