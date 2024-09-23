@@ -180,10 +180,14 @@ export default function Bills() {
       category: data.category,
       status: "upcoming",
       amountDue: data.amount,
+      amountPaid: null,
       createdDate: new Date().toISOString(),
       dueDate: data.dueDate.toISOString(),
+      paymentDate: null,
+      deletedDate: null,
+      notes: data.notes || "",
     };
-    setBills([...bills, bill]);
+    setBills((prevBills) => [...prevBills, bill]);
   };
 
   function handleDeleteBill(id: string) {

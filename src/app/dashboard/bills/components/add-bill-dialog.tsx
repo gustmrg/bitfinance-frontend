@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useState } from "react";
 
 const AddBillSchema = z.object({
   description: z.string().min(1, "Description is required"),
@@ -53,16 +54,19 @@ interface AddBillDialogProps {
 }
 
 export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
+  const [open, setOpen] = useState<boolean>();
   const form = useForm<AddBillForm>({
     resolver: zodResolver(AddBillSchema),
   });
 
   const handleAddBill: SubmitHandler<AddBillForm> = (data: AddBillForm) => {
+    setOpen(false);
+    console.log(data);
     onAddBill(data);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" className="h-8 gap-1">
           <PlusCircle className="h-3.5 w-3.5" />

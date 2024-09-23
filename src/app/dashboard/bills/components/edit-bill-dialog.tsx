@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,6 +60,7 @@ interface EditBillDialogProps {
 }
 
 export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
+  const [open, setOpen] = useState<boolean>(false);
   const form = useForm<EditBillForm>({
     resolver: zodResolver(EditBillSchema),
     defaultValues: {
@@ -77,12 +79,12 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
   const status = form.watch("status");
 
   const handleEditBill: SubmitHandler<EditBillForm> = (data: EditBillForm) => {
-    console.log(data);
+    setOpen(false);
     onEdit(data);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <PencilLine className="mr-2 h-4 w-4" />
@@ -164,7 +166,6 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
                   <FormLabel className="text-right">Amount</FormLabel>
                   <FormControl>
                     <Input
-                      className="col-span-3"
                       type="number"
                       min={0}
                       step="0.01"
