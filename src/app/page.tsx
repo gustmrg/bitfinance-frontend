@@ -1,8 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertCircle } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
