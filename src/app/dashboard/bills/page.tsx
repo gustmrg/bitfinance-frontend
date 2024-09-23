@@ -4,9 +4,8 @@ import { useState } from "react";
 import { dateFormatter } from "@/utils/formatter";
 import { v4 as uuidv4 } from "uuid";
 
-import { MoreHorizontal, ListFilter, PencilLine } from "lucide-react";
+import { MoreHorizontal, ListFilter } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -18,7 +17,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
