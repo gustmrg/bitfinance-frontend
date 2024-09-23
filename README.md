@@ -1,36 +1,178 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 
+<a name="readme-top"></a>
+
+<!--
+*** Thanks for checking out the Best-README-Template. If you have a suggestion
+*** that would make this better, please fork the repo and create a pull request
+*** or simply open an issue with the tag "enhancement".
+*** Don't forget to give the project a star!
+*** Thanks again! Now go create something AMAZING! :D
+-->
+
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/gustmrg/bitfinance-frontend">
+    <img src="/assets/logo.png" alt="" height="100" >
+  </a>
+
+<h3 align="center">BitFinance</h3>
+  <p align="center">
+    Gerenciador de orçamento financeiro de forma simples
+    <br />
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Conteúdo</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">Sobre o projeto</a>
+      <ul>
+        <li><a href="#built-with">Tecnologias</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Preparando o ambiente</a>
+      <ul>
+        <li><a href="#prerequisites">Pré-requisitos</a></li>
+        <li><a href="#installation">Instalação</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Uso</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
+
+<!-- ABOUT THE PROJECT -->
+
+## Sobre o Projeto
+
+O BitFinance é um aplicativo de finanças projetado para simplificar o acompanhamento e gerenciamento de gastos. Com uma interface simples, permite que usuários registrem e monitorem despesas de forma eficiente, proporcionando controle total sobre o orçamento, facilitando a organização das finanças da família ou da empresa.
+
+Desenvolvi este projeto com o objetivo de solucionar o problema da dificuldade de acompanhar os meus gastos financeiros, ajudando a entender onde estão os maiores custos e de melhorar a educação financeira.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### Tecnologias
+
+- [![React][React.js]][React-url]
+- [![TailwindCSS][TailwindCSS]][Tailwindcss-url]
+- [![.NET][dotnet]][dotnet-url]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- GETTING STARTED
 ## Getting Started
 
-First, run the development server:
+This is an example of how you may give instructions on setting up your project locally.
+To get a local copy up and running follow these simple example steps.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Prerequisites
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This is an example of how to list things you need to use the software and how to install them.
+* npm
+  ```sh
+  npm install npm@latest -g
+  ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Get a free API Key at [https://example.com](https://example.com)
+2. Clone the repo
+   ```sh
+   git clone https://github.com/github_username/repo_name.git
+   ```
+3. Install NPM packages
+   ```sh
+   npm install
+   ```
+4. Enter your API in `config.js`
+   ```js
+   const API_KEY = 'ENTER YOUR API';
+   ```
 
-## Learn More
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-To learn more about Next.js, take a look at the following resources:
+-->
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<!-- USAGE EXAMPLES
+## Usage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 
-## Deploy on Vercel
+_For more examples, please refer to the [Documentation](https://example.com)_
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+-->
+
+<!-- ROADMAP -->
+
+## Roadmap
+
+- [x] Gerenciamento de contas a pagar (adicionar/atualizar/excluir)
+- [ ] Gerenciamento de residências/famílias (adicionar/atualizar/excluir)
+- [x] Autenticação/Autorização
+- [ ] Salvar documentos (boleto/comprovante)
+- [ ] Página de Dashboard
+- [x] Página de Login
+- [x] Página de Contas a Pagar
+- [ ] Salvar arquivos localmente
+- [ ] Salvar arquivos no S3 (AWS)
+- [ ] Enviar link de convite para adicionar usuários em residências/famílias
+- [ ] Notificações de datas de vencimento
+- [ ] Containers Docker
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- LICENSE -->
+
+## Licença
+
+Este projeto está sob a licença MIT. Veja `LICENSE.md` para mais informações.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
+[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
+[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
+[forks-url]: https://github.com/github_username/repo_name/network/members
+[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
+[stars-url]: https://github.com/github_username/repo_name/stargazers
+[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
+[issues-url]: https://github.com/github_username/repo_name/issues
+[license-shield]: https://img.shields.io/github/license/gustmrg/bitfinance.svg?style=for-the-badge
+[license-url]: https://github.com/gustmrg/bitfinance/blob/main/LICENSE.md
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/gustmrg
+[product-screenshot]: images/screenshot.png
+[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Next-url]: https://nextjs.org/
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[TailwindCSS]: https://img.shields.io/badge/TailwindCSS-35495E?style=for-the-badge&logo=tailwindcss&logoColor=06B6D4
+[Tailwindcss-url]: https://tailwindcss.com
+[dotnet]: https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white
+[dotnet-url]: https://dotnet.microsoft.com/
+[Postgresql.org]: https://img.shields.io/badge/postgresql-4169E1?style=for-the-badge&logo=postgresql&logoColor=white
+[Postgresql-url]: https://www.postgresql.org
+[SqlServer]: https://img.shields.io/badge/microsoft_sql_server-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white
+[SqlServer-url]: https://www.microsoft.com/sql-server/
