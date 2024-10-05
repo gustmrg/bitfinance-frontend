@@ -1,103 +1,51 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Input } from "@/components/ui/input";
-import { AlertCircle } from "lucide-react";
-import Link from "next/link";
+"use client";
+
+import { useUser } from "@auth0/nextjs-auth0/client";
+import LoginButton from "@/components/ui/login-button";
+import SignUpButton from "@/components/ui/signup-button";
+import LogoutButton from "@/components/ui/logout-button";
 
 export default function Home() {
+  const { user } = useUser();
+
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          alt="Your Company"
-          src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
-          className="mx-auto h-10 w-auto"
-        />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
-        </h2>
-        <div className="mt-4">
-          <Alert className="bg-yellow-50 text-yellow-800 border-yellow-600/20">
-            <AlertCircle className="h-4 w-4" color="#854d0e" />
-            <AlertTitle>Please note:</AlertTitle>
-            <AlertDescription>
-              The account credentials provided are for demonstration purposes
-              only.
-            </AlertDescription>
-          </Alert>
+    <div className="bg-white">
+      <header className="absolute inset-x-0 top-0 z-50">
+        <nav
+          aria-label="Global"
+          className="flex items-center justify-between p-6 lg:px-8"
+        >
+          <div className="flex lg:flex-1">
+            <a href="#" className="-m-1.5 p-1.5">
+              <span className="sr-only">BitFinance</span>
+              <img alt="" src="/assets/logo.png" className="h-16 w-auto" />
+            </a>
+          </div>
+
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+            {!user && <LoginButton />}
+            {user && <LogoutButton />}
+          </div>
+        </nav>
+      </header>
+      <div className="relative isolate px-6 pt-14 lg:px-8">
+        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+          <div className="text-center">
+            <h1 className="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+              Manage your finances simply and smartly
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-gray-600">
+              Discover an easy way to manage your expenses, track your spending,
+              and plan for your financial future. With our app, you have all the
+              tools to monitor your accounts, set goals, and make confident
+              financial decisions. Simplicity, security, and efficiency for your
+              money, all in one place.
+            </p>
+            <div className="mt-10 flex items-center justify-center gap-x-6">
+              <SignUpButton />
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action="#" method="POST" className="space-y-6">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Email address
-            </label>
-            <div className="mt-2">
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                value="admin@email.com"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Password
-              </label>
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-semibold text-blue-600 hover:text-blue-500"
-                >
-                  Forgot password?
-                </a>
-              </div>
-            </div>
-            <div className="mt-2">
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                required
-                autoComplete="current-password"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                value="password"
-              />
-            </div>
-          </div>
-
-          <div>
-            <Link
-              href="/dashboard"
-              className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-            >
-              Sign in
-            </Link>
-          </div>
-        </form>
-
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Not a member?{" "}
-          <a
-            href="#"
-            className="font-semibold leading-6 text-blue-600 hover:text-blue-500"
-          >
-            Create an account
-          </a>
-        </p>
       </div>
     </div>
   );

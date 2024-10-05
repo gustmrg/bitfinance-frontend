@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
 export default function NotFound() {
   return (
@@ -21,9 +22,12 @@ export default function NotFound() {
           </Link>
           <Button
             variant="outline"
-            className="text-sm font-semibold text-gray-900"
+            className="flex flex-row gap-2 text-sm font-semibold text-gray-900"
           >
-            Contact support <span aria-hidden="true">&rarr;</span>
+            Contact support{" "}
+            <span aria-hidden="true">
+              <ArrowRightIcon className="h-5 w-5" />
+            </span>
           </Button>
         </div>
       </div>

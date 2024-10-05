@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { UserProvider } from "@auth0/nextjs-auth0/client";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,14 +16,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <UserProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </UserProvider>
       </body>
     </html>
   );
