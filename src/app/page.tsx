@@ -5,6 +5,8 @@ import LoginButton from "@/components/ui/login-button";
 import SignUpButton from "@/components/ui/signup-button";
 import LogoutButton from "@/components/ui/logout-button";
 import Footer from "@/components/ui/footer";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
   const { user } = useUser();
@@ -25,7 +27,19 @@ export default function Home() {
 
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             {!user && <LoginButton />}
-            {user && <LogoutButton />}
+            {user && (
+              <div className="flex flex-row space-x-2">
+                <Link href="/dashboard">
+                  <Button
+                    variant="outline"
+                    className="flex flex-row space-x-2 gap-2 font-semibold shadow-sm"
+                  >
+                    Go To Dashboard
+                  </Button>
+                </Link>
+                <LogoutButton />
+              </div>
+            )}
           </div>
         </nav>
       </header>
