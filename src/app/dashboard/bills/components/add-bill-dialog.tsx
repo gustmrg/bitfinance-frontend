@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarIcon, PlusCircle } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +37,7 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState } from "react";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 const AddBillSchema = z.object({
   description: z.string().min(1, "Description is required"),
@@ -68,11 +69,12 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="h-8 gap-1">
-          <PlusCircle className="h-3.5 w-3.5" />
-          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Add Bill
-          </span>
+        <Button
+          size="sm"
+          className="h-8 gap-1 dark:text-sky-300 dark:bg-sky-400/15 dark:hover:text-white dark:hover:bg-sky-400/15 cursor-default"
+        >
+          <PlusIcon className="h-4 w-4" />
+          <span className="font-semibold flex justify-center ">Add Bill</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

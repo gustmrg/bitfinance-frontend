@@ -4,21 +4,11 @@ import { useState } from "react";
 import { dateFormatter } from "@/utils/formatter";
 import { v4 as uuidv4 } from "uuid";
 
-import { MoreHorizontal, ListFilter } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -240,52 +230,31 @@ export default function Bills() {
   };
 
   return (
-    <>
-      <div className="flex items-center space-x-4 justify-between">
-        <div className="ml-auto flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-1">
-                <ListFilter className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Filter
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem checked>All</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Paid</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Due</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Overdue</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Created</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Cancelled</DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <AddBillDialog onAddBill={handleAddBill} />
-        </div>
+    <div className="grow p-6 lg:rounded-lg lg:bg-white lg:p-10 lg:shadow-sm dark:lg:bg-zinc-900">
+      <div className="flex items-end justify-between gap-4">
+        <h1 className="text-2xl/8 font-semibold text-zinc-950 sm:text-xl/8 dark:text-white">
+          Bills
+        </h1>
+        <AddBillDialog onAddBill={handleAddBill} />
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Bills</CardTitle>
-          <CardDescription>
-            Manage your monthly bills and payments.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
+      <div className="flow-root">
+        <div className="mt-8 overflow-x-auto whitespace-nowrap">
+          <Table className="min-w-full text-left text-sm/6 text-zinc-950 dark:text-white">
+            <TableHeader className="font-sans text-zinc-500 dark:text-zinc-400">
               <TableRow>
-                <TableHead>Description</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="font-semibold">Description</TableHead>
+                <TableHead className="font-semibold">Category</TableHead>
+                <TableHead className="font-semibold">Due Date</TableHead>
+                <TableHead className="font-semibold text-right">
+                  Amount
+                </TableHead>
+                <TableHead className="font-semibold text-center">
+                  Status
+                </TableHead>
+                <TableHead className="font-semibold text-right"></TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="font-sans">
               {bills.map(
                 (bill) =>
                   bill.deletedDate === null && (
@@ -293,15 +262,17 @@ export default function Bills() {
                       <TableCell className="font-semibold">
                         {bill.description}
                       </TableCell>
-                      <TableCell className="capitalize">
+                      <TableCell className="capitalize dark:text-zinc-500">
                         {bill.category}
                       </TableCell>
-                      <TableCell>{getStatusBadge(bill.status)}</TableCell>
-                      <TableCell>
+                      <TableCell className="dark:text-zinc-500">
                         {dateFormatter.format(new Date(bill.dueDate))}
                       </TableCell>
                       <TableCell className="text-right">
                         $ {bill.amountDue.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {getStatusBadge(bill.status)}
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
@@ -329,8 +300,8 @@ export default function Bills() {
               )}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-    </>
+        </div>
+      </div>
+    </div>
   );
 }

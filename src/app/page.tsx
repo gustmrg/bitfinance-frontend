@@ -4,7 +4,6 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import LoginButton from "@/components/ui/login-button";
 import SignUpButton from "@/components/ui/signup-button";
 import LogoutButton from "@/components/ui/logout-button";
-import { GithubIcon } from "lucide-react";
 import Footer from "@/components/ui/footer";
 
 export default function Home() {
