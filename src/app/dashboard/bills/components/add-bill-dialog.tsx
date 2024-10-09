@@ -37,7 +37,8 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState } from "react";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const AddBillSchema = z.object({
   description: z.string().min(1, "Description is required"),
@@ -62,7 +63,6 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
 
   const handleAddBill: SubmitHandler<AddBillForm> = (data: AddBillForm) => {
     setOpen(false);
-    console.log(data);
     onAddBill(data);
   };
 
@@ -70,11 +70,11 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          size="sm"
-          className="h-8 gap-1 dark:text-sky-300 dark:bg-sky-400/15 dark:hover:text-white dark:hover:bg-sky-400/15 cursor-default"
+          size="lg"
+          className="h-8 gap-2 cursor-pointer p-4 font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-sm"
         >
-          <PlusIcon className="h-4 w-4" />
-          <span className="font-semibold flex justify-center ">Add Bill</span>
+          <FontAwesomeIcon icon={faPlus} />
+          Add Bill
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -216,7 +216,11 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
               >
                 Reset
               </Button>
-              <Button variant="default" type="submit">
+              <Button
+                variant="default"
+                type="submit"
+                className="font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-smcursor-default"
+              >
                 Add Bill
               </Button>
             </DialogFooter>

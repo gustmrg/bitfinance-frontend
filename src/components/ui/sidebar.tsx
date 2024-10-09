@@ -9,7 +9,6 @@ import {
   faReceipt,
 } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
-import UserNav from "./user-nav";
 
 export default function Sidebar() {
   const pathname = usePathname();

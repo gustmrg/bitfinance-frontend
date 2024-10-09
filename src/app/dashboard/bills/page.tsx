@@ -230,11 +230,16 @@ export default function Bills() {
   };
 
   return (
-    <div className="grow p-6 lg:rounded-lg lg:bg-white lg:p-10 lg:shadow-sm dark:lg:bg-zinc-900">
-      <div className="flex items-end justify-between gap-4">
-        <h1 className="text-2xl/8 font-semibold text-zinc-950 sm:text-xl/8 dark:text-white">
-          Bills
-        </h1>
+    <div className="grow m-6 p-6 lg:rounded-lg lg:bg-white lg:p-10 lg:shadow-sm dark:lg:bg-zinc-900">
+      <div className="flex flex-row items-end justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl/8 font-semibold text-zinc-950 sm:text-xl/8 dark:text-white">
+            Bills
+          </h1>
+          <p className="text-sm font-light text-zinc-500">
+            Manage your bills and keep your finances in control.
+          </p>
+        </div>
         <AddBillDialog onAddBill={handleAddBill} />
       </div>
       <div className="flow-root">
