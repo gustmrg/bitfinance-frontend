@@ -18,154 +18,42 @@ import { useEffect, useState } from "react";
 import { Bill } from "./types";
 import { dateFormatter } from "@/utils/formatter";
 import { AddBillDialog } from "./components/add-bill-dialog";
-import { v4 as uuidv4 } from "uuid";
 import { DeleteBillDialog } from "./components/delete-bill-dialog";
 import { DetailsBillDialog } from "./components/details-bill-dialog";
 import EditBillDialog from "./components/edit-bill-dialog";
 import { getBills } from "@/api/bills/get-bills";
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/auth/auth-provider";
-
-// Mock data for bills
-const initialBills: Bill[] = [
-  {
-    id: "1f3e3a1a-8c68-4537-9e4d-56c1f19a8bc9",
-    description: "Electricity Bill",
-    category: "utilities",
-    status: "upcoming",
-    amountDue: 120.5,
-    amountPaid: null,
-    createdDate: "2024-08-01T09:30:00",
-    dueDate: "2024-09-01T00:00:00",
-    paymentDate: null,
-    deletedDate: null,
-    notes: "This is the monthly electricity bill for the apartment.",
-  },
-  {
-    id: "7b9c8277-f8f0-48f2-bc29-d1e38e7d79e5",
-    description: "Internet Bill",
-    category: "utilities",
-    status: "paid",
-    amountDue: 75.0,
-    amountPaid: 75.0,
-    createdDate: "2024-08-03T12:00:00",
-    dueDate: "2024-09-03T00:00:00",
-    paymentDate: "2024-08-20T11:00:00",
-    deletedDate: null,
-    notes: "This is the monthly internet bill for the apartment.",
-  },
-  {
-    id: "c1b232a4-8275-4fa9-a3df-cb8e18c46c73",
-    description: "Water Bill",
-    category: "utilities",
-    status: "overdue",
-    amountDue: 45.75,
-    amountPaid: null,
-    createdDate: "2024-08-05T10:00:00",
-    dueDate: "2024-09-05T00:00:00",
-    paymentDate: null,
-    deletedDate: null,
-  },
-  {
-    id: "39c2a346-5c85-4238-bc46-b122b916e1d8",
-    description: "Rent",
-    category: "housing",
-    status: "paid",
-    amountDue: 1500.0,
-    amountPaid: 1500.0,
-    createdDate: "2024-07-25T08:00:00",
-    dueDate: "2024-08-01T00:00:00",
-    paymentDate: "2024-07-28T15:00:00",
-    deletedDate: null,
-  },
-  {
-    id: "9984e527-24b6-45b1-9af5-8c053e1b8d26",
-    description: "Car Loan",
-    category: "debt",
-    status: "cancelled",
-    amountDue: 320.0,
-    amountPaid: null,
-    createdDate: "2024-08-10T13:00:00",
-    dueDate: "2024-09-10T00:00:00",
-    paymentDate: null,
-    deletedDate: null,
-    notes: "This is the monthly car loan payment.",
-  },
-  {
-    id: "c68a8932-fb07-4997-bd23-13387d41e132",
-    description: "Gym Membership",
-    category: "healthcare",
-    status: "due",
-    amountDue: 45.0,
-    amountPaid: null,
-    createdDate: "2024-08-01T09:00:00",
-    dueDate: "2024-09-01T00:00:00",
-    paymentDate: null,
-    deletedDate: null,
-    notes: "This is the monthly gym membership fee.",
-  },
-  {
-    id: "df4c2bc2-624f-4b1f-9dd9-8a5e1cf2c264",
-    description: "Credit Card Bill",
-    category: "personal",
-    status: "upcoming",
-    amountDue: 600.0,
-    amountPaid: null,
-    createdDate: "2024-08-08T09:00:00",
-    dueDate: "2024-09-08T00:00:00",
-    paymentDate: null,
-    deletedDate: null,
-    notes: "This is the monthly credit card bill.",
-  },
-  {
-    id: "f84d7cb5-24ad-4a94-9376-4c791b8b9634",
-    description: "Phone Bill",
-    category: "utilities",
-    status: "paid",
-    amountDue: 60.0,
-    amountPaid: 60.0,
-    createdDate: "2024-08-01T11:00:00",
-    dueDate: "2024-09-01T00:00:00",
-    paymentDate: "2024-08-10T08:00:00",
-    deletedDate: null,
-    notes: "This is the monthly phone bill for the apartment.",
-  },
-  {
-    id: "1b9b8b44-cc10-46df-a4d4-56425b5b25ef",
-    description: "Netflix Subscription",
-    category: "entertainment",
-    status: "paid",
-    amountDue: 15.99,
-    amountPaid: 15.99,
-    createdDate: "2024-08-05T12:30:00",
-    dueDate: "2024-09-05T00:00:00",
-    paymentDate: "2024-08-06T14:00:00",
-    deletedDate: null,
-    notes: "This is the monthly Netflix subscription fee.",
-  },
-  {
-    id: "c7ad6e6d-ccbb-4a0d-a4bc-416f25e0fc68",
-    description: "Student Loan",
-    category: "debt",
-    status: "overdue",
-    amountDue: 250.0,
-    amountPaid: null,
-    createdDate: "2024-08-15T14:00:00",
-    dueDate: "2024-09-15T00:00:00",
-    paymentDate: null,
-    deletedDate: null,
-    notes: "This is the monthly student loan payment.",
-  },
-];
+import { AddBill } from "@/api/bills/add-bill";
 
 export function Bills() {
-  const [bills, setBills] = useState<Bill[]>(initialBills);
-  const token = localStorage.getItem("_authToken");
+  const [bills, setBills] = useState<Bill[]>([]);
 
-  const { data: result } = useQuery({
-    queryKey: ["bills"],
-    queryFn: () => getBills(token!),
-  });
+  useEffect(() => {
+    const fetchBills = async () => {
+      const token = localStorage.getItem("_authAccessToken");
+      if (token !== null) {
+        try {
+          const result: Bill[] = await getBills(token);
+
+          const normalizedBills: Bill[] = result.map((bill: Bill) => ({
+            ...bill,
+            status: bill.status.toLowerCase() as
+              | "created"
+              | "due"
+              | "paid"
+              | "overdue"
+              | "cancelled"
+              | "upcoming",
+          }));
+
+          setBills(normalizedBills);
+        } catch (error) {
+          console.error("Failed to fetch bills:", error);
+        }
+      }
+    };
+
+    fetchBills();
+  }, []);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -184,21 +72,64 @@ export function Bills() {
     }
   };
 
-  const handleAddBill = (data: any) => {
-    const bill: Bill = {
-      id: uuidv4(),
-      description: data.description,
-      category: data.category,
-      status: "upcoming",
-      amountDue: data.amount,
-      amountPaid: null,
-      createdDate: new Date().toISOString(),
-      dueDate: data.dueDate.toISOString(),
-      paymentDate: null,
-      deletedDate: null,
-      notes: data.notes || "",
-    };
-    setBills((prevBills) => [...prevBills, bill]);
+  // const handleAddBill = (data: any) => {
+  //   const bill: Bill = {
+  //     id: uuidv4(),
+  //     description: data.description,
+  //     category: data.category,
+  //     status: "upcoming",
+  //     amountDue: data.amount,
+  //     amountPaid: null,
+  //     createdDate: new Date().toISOString(),
+  //     dueDate: data.dueDate.toISOString(),
+  //     paymentDate: null,
+  //     deletedDate: null,
+  //     notes: data.notes || "",
+  //   };
+
+  //   const response = AddBill(data);
+
+  //   setBills((prevBills) => [...prevBills, bill]);
+  // };
+
+  const handleAddBill = async (data: any) => {
+    try {
+      const response = await AddBill({
+        description: data.description,
+        category: data.category,
+        status: "upcoming",
+        dueDate: data.dueDate.toISOString(),
+        amountDue: data.amount,
+        paymentDate: null,
+        amountPaid: null,
+      });
+
+      if (response) {
+        const newBill: Bill = {
+          id: response.id,
+          description: response.description,
+          category: response.category,
+          status: response.status.toLowerCase() as
+            | "created"
+            | "due"
+            | "paid"
+            | "overdue"
+            | "cancelled"
+            | "upcoming",
+          amountDue: response.amountDue,
+          amountPaid: response.amountPaid || null,
+          createdDate: response.createdDate,
+          dueDate: response.dueDate,
+          paymentDate: response.paidDate || null,
+          deletedDate: null,
+          notes: data.notes || "",
+        };
+
+        setBills((prevBills) => [...prevBills, newBill]);
+      }
+    } catch (error) {
+      console.error("Failed to add the bill:", error);
+    }
   };
 
   function handleDeleteBill(id: string) {
@@ -264,50 +195,44 @@ export function Bills() {
               </TableRow>
             </TableHeader>
             <TableBody className="font-sans">
-              {result &&
-                result.bills.map(
-                  (bill: any) =>
-                    bill.deletedDate === null && (
-                      <TableRow key={bill.id}>
-                        <TableCell className="font-semibold">
-                          {bill.description}
-                        </TableCell>
-                        <TableCell className="capitalize dark:text-zinc-500">
-                          {bill.category}
-                        </TableCell>
-                        <TableCell className="dark:text-zinc-500">
-                          {dateFormatter.format(new Date(bill.dueDate))}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          $ {bill.amountDue.toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {getStatusBadge(bill.status)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <EditBillDialog
-                                bill={bill}
-                                onEdit={handleEditBill}
-                              />
-                              <DetailsBillDialog bill={bill} />
-                              <DeleteBillDialog
-                                id={bill.id}
-                                onDelete={handleDeleteBill}
-                              />
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    )
-                )}
+              {bills &&
+                bills.map((bill: Bill) => (
+                  <TableRow key={bill.id}>
+                    <TableCell className="font-semibold">
+                      {bill.description}
+                    </TableCell>
+                    <TableCell className="capitalize dark:text-zinc-500">
+                      {bill.category}
+                    </TableCell>
+                    <TableCell className="dark:text-zinc-500">
+                      {dateFormatter.format(new Date(bill.dueDate))}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      $ {bill.amountDue.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {getStatusBadge(bill.status)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <EditBillDialog bill={bill} onEdit={handleEditBill} />
+                          <DetailsBillDialog bill={bill} />
+                          <DeleteBillDialog
+                            id={bill.id}
+                            onDelete={handleDeleteBill}
+                          />
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </div>
