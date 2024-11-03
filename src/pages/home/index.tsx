@@ -6,7 +6,7 @@ import { GoToDashboardButton } from "./components/dashboard-button";
 import { useAuth } from "@/auth/auth-provider";
 
 export function Home() {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="bg-white">

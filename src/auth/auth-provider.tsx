@@ -2,6 +2,8 @@ import { api } from "@/lib/axios";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 type User = {
+  firstName: string;
+  lastName: string;
   email: string;
 };
 
@@ -11,7 +13,8 @@ interface AuthContextValues {
   setUser: (user: User | null) => void;
   token: string | null;
   setToken: (token: string | null) => void;
-  getAccessToken: () => void;
+  getAccessToken: () => string | null;
+  refreshToken: () => Promise<boolean>;
   login: (credentials: LoginCredentialsBody) => Promise<boolean>;
   logout: () => void;
 }
@@ -22,7 +25,8 @@ const initialContext = {
   setUser: () => {},
   token: null,
   setToken: () => {},
-  getAccessToken: () => {},
+  getAccessToken: () => null,
+  refreshToken: async () => false,
   login: async (credentials: LoginCredentialsBody) => false,
   logout: () => {},
 };
@@ -70,8 +74,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setToken(null);
   };
 
-  const getAccessToken = () => {
+  const getAccessToken = (): string | null => {
     return token;
+  };
+
+  const refreshToken = async () => {
+    const refreshToken = localStorage.getItem("_authRefreshToken");
+
+    try {
+      const response = await api.post("/identity/refresh", { refreshToken });
+
+      if (response.status === 200) {
+        const accessToken = response.data.accessToken;
+        const newRefreshToken = response.data.refreshToken;
+        const expiresIn = response.data.expiresIn;
+        const tokenType = response.data.tokenType;
+        localStorage.setItem("_authAccessToken", accessToken);
+        localStorage.setItem("_authTokenType", tokenType);
+        localStorage.setItem("_authExpiresIn", expiresIn);
+        localStorage.setItem("_authRefreshToken", newRefreshToken);
+        setToken(accessToken);
+        return true;
+      } else {
+        throw new Error(
+          "An unexpected error occurred when trying to refresh token"
+        );
+      }
+    } catch (error) {
+      console.log("Could not refresh token", error);
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -90,6 +122,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     getAccessToken,
+    refreshToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -98,7 +131,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
 export function useAuth() {
   const context = useContext(AuthContext);
 
-  const { user, login, logout, isAuthenticated, token } = context;
+  const {
+    user,
+    login,
+    logout,
+    isAuthenticated,
+    token,
+    getAccessToken,
+    refreshToken,
+  } = context;
 
-  return { user, login, logout, isAuthenticated, token };
+  return {
+    user,
+    login,
+    logout,
+    isAuthenticated,
+    token,
+    getAccessToken,
+    refreshToken,
+  };
 }

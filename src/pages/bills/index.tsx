@@ -25,29 +25,41 @@ import { getBills } from "@/api/bills/get-bills";
 import { AddBill } from "@/api/bills/add-bill";
 import { UpdateBill } from "@/api/bills/update-bill";
 import { DeleteBill } from "@/api/bills/delete-bill";
+import { useAuth } from "@/auth/auth-provider";
+import { useNavigate } from "react-router-dom";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
+  const { token, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/auth/sign-in");
+    }
+
     const fetchBills = async () => {
-      try {
-        const result: Bill[] = await getBills();
+      if (token) {
+        try {
+          const result: Bill[] = await getBills(token);
 
-        const normalizedBills: Bill[] = result.map((bill: Bill) => ({
-          ...bill,
-          status: bill.status.toLowerCase() as
-            | "created"
-            | "due"
-            | "paid"
-            | "overdue"
-            | "cancelled"
-            | "upcoming",
-        }));
+          const normalizedBills: Bill[] = result.map((bill: Bill) => ({
+            ...bill,
+            status: bill.status.toLowerCase() as
+              | "created"
+              | "due"
+              | "paid"
+              | "overdue"
+              | "cancelled"
+              | "upcoming",
+          }));
 
-        setBills(normalizedBills);
-      } catch (error) {
-        console.error("Failed to fetch bills:", error);
+          setBills(normalizedBills);
+        } catch (error) {
+          console.error("Failed to fetch bills:", error);
+        }
+      } else {
+        console.error("Authorization token not found");
       }
     };
 
@@ -117,16 +129,6 @@ export function Bills() {
 
       if (response.status == 204) {
         const updatedBills = bills.filter((item) => item.id !== id);
-
-        // const updatedBills = bills.map((bill) =>
-        //   bill.id === id
-        //     ? {
-        //         ...bill,
-        //         deletedDate: new Date().toISOString(),
-        //       }
-        //     : bill
-        // );
-
         setBills(updatedBills);
       }
     } catch (error) {

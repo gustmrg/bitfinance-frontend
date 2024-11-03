@@ -29,10 +29,8 @@ export interface GetBillsResponse {
   }[];
 }
 
-export async function getBills() {
-  const token = localStorage.getItem("_authAccessToken");
-
-  if (token !== null) {
+export async function getBills(token: string) {
+  if (token) {
     const response = await privateAPI(token).get("/bills");
 
     return response.data;
