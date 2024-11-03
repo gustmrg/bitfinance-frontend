@@ -7,6 +7,7 @@ import { NotFound } from "./pages/404";
 import { Bills } from "./pages/bills";
 import { SignIn } from "./pages/auth/sign-in";
 import { SignUp } from "./pages/auth/sign-up";
+import { Dashboard } from "./pages/dashboard";
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
     path: "/dashboard",
     element: <DashboardLayout />,
     children: [
+      {
+        path: "",
+        element: <Dashboard />,
+      },
       {
         path: "bills",
         element: <Bills />,
