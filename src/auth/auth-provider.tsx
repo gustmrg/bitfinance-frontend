@@ -27,7 +27,7 @@ const initialContext = {
   setToken: () => {},
   getAccessToken: () => null,
   refreshToken: async () => false,
-  login: async (credentials: LoginCredentialsBody) => false,
+  login: async () => false,
   logout: () => {},
 };
 
