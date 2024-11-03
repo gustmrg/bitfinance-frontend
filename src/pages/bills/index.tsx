@@ -23,32 +23,31 @@ import { DetailsBillDialog } from "./components/details-bill-dialog";
 import EditBillDialog from "./components/edit-bill-dialog";
 import { getBills } from "@/api/bills/get-bills";
 import { AddBill } from "@/api/bills/add-bill";
+import { UpdateBill } from "@/api/bills/update-bill";
+import { DeleteBill } from "@/api/bills/delete-bill";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
 
   useEffect(() => {
     const fetchBills = async () => {
-      const token = localStorage.getItem("_authAccessToken");
-      if (token !== null) {
-        try {
-          const result: Bill[] = await getBills(token);
+      try {
+        const result: Bill[] = await getBills();
 
-          const normalizedBills: Bill[] = result.map((bill: Bill) => ({
-            ...bill,
-            status: bill.status.toLowerCase() as
-              | "created"
-              | "due"
-              | "paid"
-              | "overdue"
-              | "cancelled"
-              | "upcoming",
-          }));
+        const normalizedBills: Bill[] = result.map((bill: Bill) => ({
+          ...bill,
+          status: bill.status.toLowerCase() as
+            | "created"
+            | "due"
+            | "paid"
+            | "overdue"
+            | "cancelled"
+            | "upcoming",
+        }));
 
-          setBills(normalizedBills);
-        } catch (error) {
-          console.error("Failed to fetch bills:", error);
-        }
+        setBills(normalizedBills);
+      } catch (error) {
+        console.error("Failed to fetch bills:", error);
       }
     };
 
@@ -71,26 +70,6 @@ export function Bills() {
         return <StatusBadge variant="indigo">Created</StatusBadge>;
     }
   };
-
-  // const handleAddBill = (data: any) => {
-  //   const bill: Bill = {
-  //     id: uuidv4(),
-  //     description: data.description,
-  //     category: data.category,
-  //     status: "upcoming",
-  //     amountDue: data.amount,
-  //     amountPaid: null,
-  //     createdDate: new Date().toISOString(),
-  //     dueDate: data.dueDate.toISOString(),
-  //     paymentDate: null,
-  //     deletedDate: null,
-  //     notes: data.notes || "",
-  //   };
-
-  //   const response = AddBill(data);
-
-  //   setBills((prevBills) => [...prevBills, bill]);
-  // };
 
   const handleAddBill = async (data: any) => {
     try {
@@ -132,37 +111,70 @@ export function Bills() {
     }
   };
 
-  function handleDeleteBill(id: string) {
-    const updatedBills = bills.map((bill) =>
-      bill.id === id
-        ? {
-            ...bill,
-            deletedDate: new Date().toISOString(),
-          }
-        : bill
-    );
+  const handleDeleteBill = async (id: string) => {
+    try {
+      const response = await DeleteBill(id);
 
-    setBills(updatedBills);
-  }
+      if (response.status == 204) {
+        const updatedBills = bills.filter((item) => item.id !== id);
 
-  function handleEditBill(data: any) {
-    const updatedBills = bills.map((bill) =>
-      bill.id === data.id
-        ? {
-            ...bill,
-            description: data.description,
-            category: data.category,
-            status: data.status,
-            dueDate: data.dueDate,
-            paymentDate: data.paymentDate,
-            amountDue: data.amountDue,
-            amountPaid: data.amountPaid,
-          }
-        : bill
-    );
+        // const updatedBills = bills.map((bill) =>
+        //   bill.id === id
+        //     ? {
+        //         ...bill,
+        //         deletedDate: new Date().toISOString(),
+        //       }
+        //     : bill
+        // );
 
-    setBills(updatedBills);
-  }
+        setBills(updatedBills);
+      }
+    } catch (error) {
+      console.error("Failed to delete the bill:", error);
+    }
+  };
+
+  const handleEditBill = async (data: any) => {
+    try {
+      const response = await UpdateBill({
+        id: data.id,
+        description: data.description,
+        category: data.category,
+        status: data.status,
+        dueDate: data.dueDate.toISOString(),
+        amountDue: data.amountDue,
+        paymentDate: data.paymentDate,
+        amountPaid: data.amountPaid,
+      });
+
+      if (response) {
+        const updatedBills = bills.map((bill) =>
+          bill.id === response.id
+            ? {
+                ...bill,
+                description: response.description,
+                category: response.category,
+                status: response.status.toLowerCase() as
+                  | "created"
+                  | "due"
+                  | "paid"
+                  | "overdue"
+                  | "cancelled"
+                  | "upcoming",
+                dueDate: response.dueDate,
+                paymentDate: response.paymentDate || null,
+                amountDue: response.amountDue,
+                amountPaid: response.amountPaid || null,
+              }
+            : bill
+        );
+
+        setBills(updatedBills);
+      }
+    } catch (error) {
+      console.error("Failed to update the bill:", error);
+    }
+  };
 
   return (
     <div className="grow m-6 p-6 lg:rounded-lg lg:bg-white lg:p-10 lg:shadow-sm dark:lg:bg-zinc-900">

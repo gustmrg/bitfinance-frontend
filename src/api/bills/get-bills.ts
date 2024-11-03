@@ -29,8 +29,14 @@ export interface GetBillsResponse {
   }[];
 }
 
-export async function getBills(token: string) {
-  const response = await privateAPI(token).get("/bills");
+export async function getBills() {
+  const token = localStorage.getItem("_authAccessToken");
 
-  return response.data;
+  if (token !== null) {
+    const response = await privateAPI(token).get("/bills");
+
+    return response.data;
+  } else {
+    console.error("Could not find a valid access token");
+  }
 }
