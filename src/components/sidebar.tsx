@@ -13,7 +13,7 @@ export default function Sidebar() {
         <div className="flex h-14 items-center mb-4 lg:h-[60px]">
           <NavLink to="/" className="flex items-center gap-2 font-semibold">
             <img
-              src={`/assets/logo.png`}
+              src="assets/logo.png"
               alt="BitFinance Logo"
               width="72"
               height="64"
