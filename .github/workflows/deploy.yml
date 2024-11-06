@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -27,6 +27,13 @@ jobs:
       - name: Build app
         run: npm run build
 
-      - name: Copy files to NGINX public folder
+      - name: Deploy files
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST_IP: ${{ secrets.SSH_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          sudo cp -r dist/* /var/www/bitfinance/
+          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          scp -i private_key.pem -r dist/* $SSH_USERNAME@$SSH_HOST_IP:/var/www/bitfinance/
+          rm private_key.pem
