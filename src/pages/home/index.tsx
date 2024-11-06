@@ -4,6 +4,7 @@ import { CTAButton } from "./components/cta-button";
 import { LogoutButton } from "./components/logout-button";
 import { GoToDashboardButton } from "./components/dashboard-button";
 import { useAuth } from "@/auth/auth-provider";
+import logoImg from "/assets/logo.png";
 
 export function Home() {
   const { isAuthenticated } = useAuth();
@@ -20,7 +21,7 @@ export function Home() {
               <span className="sr-only">BitFinance</span>
               <img
                 alt="BitFinance logo"
-                src="bitfinance/assets/logo.png"
+                src={logoImg}
                 className="h-16 w-auto"
               />
             </a>

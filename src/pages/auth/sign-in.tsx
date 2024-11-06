@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/auth/auth-provider";
+import logoImg from "/assets/logo.png";
 
 const passwordValidation = new RegExp(
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/
@@ -53,7 +54,7 @@ export function SignIn() {
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           alt="BitFinance logo"
-          src="assets/logo.png"
+          src={logoImg}
           className="mx-auto h-16 w-auto"
         />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
