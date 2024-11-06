@@ -20,7 +20,7 @@ export function Home() {
               <span className="sr-only">BitFinance</span>
               <img
                 alt="BitFinance logo"
-                src="assets/logo.png"
+                src="bitfinance/assets/logo.png"
                 className="h-16 w-auto"
               />
             </a>
