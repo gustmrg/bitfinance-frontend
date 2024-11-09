@@ -30,6 +30,7 @@ import { useNavigate } from "react-router-dom";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
+  const [organization, setOrganization] = useState<string>("");
   const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -40,6 +41,8 @@ export function Bills() {
     }
 
     let organizationId = user?.organizations?.[0].id ?? "";
+
+    setOrganization(organizationId);
 
     const fetchBills = async () => {
       try {
@@ -98,6 +101,7 @@ export function Bills() {
         amountDue: data.amount,
         paymentDate: null,
         amountPaid: null,
+        organizationId: organization,
       });
 
       if (response) {

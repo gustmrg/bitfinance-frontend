@@ -23,6 +23,7 @@ export interface CreateBillRequest {
   paymentDate?: string | null;
   amountDue: number;
   amountPaid?: number | null;
+  organizationId: string;
 }
 
 export interface CreateBillResponse {
@@ -58,6 +59,7 @@ export async function AddBill({
   amountDue,
   paymentDate,
   amountPaid,
+  organizationId,
 }: CreateBillRequest) {
   try {
     const response = await api.post<CreateBillResponse>("/bills", {
@@ -68,6 +70,7 @@ export async function AddBill({
       amountDue,
       paymentDate,
       amountPaid,
+      organizationId,
     });
 
     return response.data;
