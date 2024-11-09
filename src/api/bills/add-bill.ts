@@ -1,5 +1,7 @@
 import { privateAPI } from "@/lib/axios";
 
+const api = privateAPI();
+
 export interface CreateBillRequest {
   description: string;
   category:
@@ -57,24 +59,19 @@ export async function AddBill({
   paymentDate,
   amountPaid,
 }: CreateBillRequest) {
-  const token = localStorage.getItem("_authAccessToken");
-
-  if (token !== null) {
-    const response = await privateAPI(token).post<CreateBillResponse>(
-      "/bills",
-      {
-        description,
-        category,
-        status,
-        dueDate,
-        amountDue,
-        paymentDate,
-        amountPaid,
-      }
-    );
+  try {
+    const response = await api.post<CreateBillResponse>("/bills", {
+      description,
+      category,
+      status,
+      dueDate,
+      amountDue,
+      paymentDate,
+      amountPaid,
+    });
 
     return response.data;
-  } else {
+  } catch (error) {
     console.error("Could not find a valid access token");
   }
 }

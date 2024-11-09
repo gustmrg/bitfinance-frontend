@@ -132,7 +132,7 @@ export function Bills() {
     try {
       const response = await DeleteBill(id);
 
-      if (response.status == 204) {
+      if (response?.status == 204) {
         const updatedBills = bills.filter((item) => item.id !== id);
         setBills(updatedBills);
       }

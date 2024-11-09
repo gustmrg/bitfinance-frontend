@@ -1,5 +1,7 @@
 import { privateAPI } from "@/lib/axios";
 
+const api = privateAPI();
+
 export interface UpdateBillRequest {
   id: string;
   description: string;
@@ -34,10 +36,8 @@ export async function UpdateBill({
   paymentDate,
   amountPaid,
 }: UpdateBillRequest) {
-  const token = localStorage.getItem("_authAccessToken");
-
-  if (token !== null) {
-    const response = await privateAPI(token).patch(`/bills/${id}`, {
+  try {
+    const response = await api.patch(`/bills/${id}`, {
       description,
       category,
       status,
@@ -48,7 +48,7 @@ export async function UpdateBill({
     });
 
     return response.data;
-  } else {
+  } catch (error) {
     console.error("Could not find a valid access token");
   }
 }

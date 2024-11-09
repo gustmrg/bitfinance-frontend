@@ -1,14 +1,13 @@
 import { privateAPI } from "@/lib/axios";
 
+const api = privateAPI();
+
 export async function DeleteBill(id: string) {
-  const token = localStorage.getItem("_authAccessToken");
+  try {
+    const response = await api.delete(`/bills/${id}`);
 
-  if (!token) {
+    return response;
+  } catch (error) {
     console.error("Could not find a valid access token");
-    throw new Error("Authorization token is missing.");
   }
-
-  const response = await privateAPI(token).delete(`/bills/${id}`);
-
-  return response;
 }
