@@ -1,14 +1,21 @@
-import { api } from "@/lib/axios";
+import { api, privateAPI } from "@/lib/axios";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 type User = {
-  firstName: string;
-  lastName: string;
+  id: string;
+  username: string;
   email: string;
+  organizations?: Organization[] | null;
+};
+
+type Organization = {
+  id: string;
+  name: string;
 };
 
 interface AuthContextValues {
   isAuthenticated: boolean;
+  isLoading: boolean;
   user: User | null;
   setUser: (user: User | null) => void;
   token: string | null;
@@ -17,6 +24,7 @@ interface AuthContextValues {
   refreshToken: () => Promise<boolean>;
   login: (credentials: LoginCredentialsBody) => Promise<boolean>;
   logout: () => void;
+  getMe: () => void;
 }
 
 const initialContext = {
@@ -29,6 +37,8 @@ const initialContext = {
   refreshToken: async () => false,
   login: async () => false,
   logout: () => {},
+  getMe: async () => null,
+  isLoading: true,
 };
 
 const AuthContext = createContext<AuthContextValues>(initialContext);
@@ -45,7 +55,23 @@ interface LoginCredentialsBody {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const isAuthenticated = useMemo(() => !!token, [token]);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("_authAccessToken");
+    if (storedToken) {
+      setToken(storedToken);
+    }
+
+    const fetchUserData = async () => {
+      await getMe();
+    };
+
+    fetchUserData();
+
+    setIsLoading(false);
+  }, []);
 
   const login = async ({ email, password }: LoginCredentialsBody) => {
     try {
@@ -72,6 +98,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem("_authExpiresIn");
     localStorage.removeItem("_authRefreshToken");
     setToken(null);
+  };
+
+  const getMe = async () => {
+    try {
+      const response = await privateAPI().get("/identity/me");
+
+      if (response) {
+        let user: User = {
+          id: response.data.id,
+          username: response.data.username,
+          email: response.data.email,
+          organizations: response.data.organizations ?? null,
+        };
+        setUser(user);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getAccessToken = (): string | null => {
@@ -106,13 +150,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("_authAccessToken");
-    if (token) {
-      setToken(token);
-    }
-  }, []);
-
   const value = {
     isAuthenticated,
     user,
@@ -123,6 +160,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
     getAccessToken,
     refreshToken,
+    getMe,
+    isLoading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -131,15 +170,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 export function useAuth() {
   const context = useContext(AuthContext);
 
-  const {
-    user,
-    login,
-    logout,
-    isAuthenticated,
-    token,
-    getAccessToken,
-    refreshToken,
-  } = context;
+  const { user, login, logout, isAuthenticated, token, getMe, isLoading } =
+    context;
 
   return {
     user,
@@ -147,7 +179,43 @@ export function useAuth() {
     logout,
     isAuthenticated,
     token,
-    getAccessToken,
-    refreshToken,
+    getMe,
+    isLoading,
   };
 }
+
+export const getTokenSilently = () => {
+  return localStorage.getItem("_authAccessToken");
+};
+
+export const refreshTokenSilently = async () => {
+  const storedRefreshToken = localStorage.getItem("_authRefreshToken");
+
+  if (!storedRefreshToken) return null;
+
+  try {
+    const response = await api.post("/identity/refresh", {
+      refreshToken: storedRefreshToken,
+    });
+
+    if (response.status === 200) {
+      const newAccessToken = response.data.accessToken;
+      const newRefreshToken = response.data.refreshToken;
+      const expiresIn = response.data.expiresIn;
+      const tokenType = response.data.tokenType;
+
+      localStorage.setItem("_authAccessToken", newAccessToken);
+      localStorage.setItem("_authTokenType", tokenType);
+      localStorage.setItem("_authExpiresIn", expiresIn);
+      localStorage.setItem("_authRefreshToken", newRefreshToken);
+
+      return newAccessToken;
+    } else {
+      console.log("Unexpected error during token refresh");
+      return null;
+    }
+  } catch (error) {
+    console.log("Token refresh failed", error);
+    return null;
+  }
+};

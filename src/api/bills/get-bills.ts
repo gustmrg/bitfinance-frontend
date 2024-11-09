@@ -1,40 +1,40 @@
 import { privateAPI } from "@/lib/axios";
 
-export interface GetBillsResponse {
-  bills: {
-    id: string;
-    description: string;
-    category:
-      | "housing"
-      | "transportation"
-      | "food"
-      | "utilities"
-      | "clothing"
-      | "healthcare"
-      | "insurance"
-      | "personal"
-      | "debt"
-      | "savings"
-      | "education"
-      | "entertainment"
-      | "miscellaneous";
-    status: "created" | "due" | "paid" | "overdue" | "cancelled" | "upcoming";
-    amountDue: number;
-    amountPaid?: number;
-    createdDate: string;
-    dueDate: string;
-    paymentDate?: string;
-    deletedDate?: string;
-    notes?: string;
-  }[];
-}
+const api = privateAPI();
 
-export async function getBills(token: string) {
-  if (token) {
-    const response = await privateAPI(token).get("/bills");
+type Bill = {
+  id: string;
+  description: string;
+  category:
+    | "housing"
+    | "transportation"
+    | "food"
+    | "utilities"
+    | "clothing"
+    | "healthcare"
+    | "insurance"
+    | "personal"
+    | "debt"
+    | "savings"
+    | "education"
+    | "entertainment"
+    | "miscellaneous";
+  status: "created" | "due" | "paid" | "overdue" | "cancelled" | "upcoming";
+  amountDue: number;
+  amountPaid?: number | null;
+  createdDate: string;
+  dueDate: string;
+  paymentDate?: string | null;
+  deletedDate?: string | null;
+  notes?: string;
+};
 
+export async function getBills(organizationId: string): Promise<Bill[] | null> {
+  try {
+    const response = await api.get(`/bills/organizations/${organizationId}`);
     return response.data;
-  } else {
+  } catch (error) {
     console.error("Could not find a valid access token");
+    return null;
   }
 }

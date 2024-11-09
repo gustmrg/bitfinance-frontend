@@ -30,41 +30,46 @@ import { useNavigate } from "react-router-dom";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
-  const { token, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !isLoading) {
       navigate("/auth/sign-in");
+      return;
     }
 
+    let organizationId = user?.organizations?.[0].id ?? "";
+
     const fetchBills = async () => {
-      if (token) {
-        try {
-          const result: Bill[] = await getBills(token);
+      try {
+        const response = await getBills(organizationId);
 
-          const normalizedBills: Bill[] = result.map((bill: Bill) => ({
-            ...bill,
-            status: bill.status.toLowerCase() as
-              | "created"
-              | "due"
-              | "paid"
-              | "overdue"
-              | "cancelled"
-              | "upcoming",
-          }));
-
-          setBills(normalizedBills);
-        } catch (error) {
-          console.error("Failed to fetch bills:", error);
+        if (!response) {
+          console.error("Failed to fetch bills.");
+          setBills([]);
+          return;
         }
-      } else {
-        console.error("Authorization token not found");
+
+        const bills: Bill[] = response?.map((bill: Bill) => ({
+          ...bill,
+          status: bill.status.toLowerCase() as
+            | "created"
+            | "due"
+            | "paid"
+            | "overdue"
+            | "cancelled"
+            | "upcoming",
+        }));
+
+        setBills(bills);
+      } catch (error) {
+        console.error("Failed to fetch bills:", error);
       }
     };
 
     fetchBills();
-  }, []);
+  }, [isAuthenticated, navigate, isLoading, user]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {

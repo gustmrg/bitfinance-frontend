@@ -1,19 +1,24 @@
 import axios from "axios";
 import { env } from "@/env";
+import { getTokenSilently, refreshTokenSilently } from "@/auth/auth-provider";
 
 export const api = axios.create({
   baseURL: env.VITE_API_URL,
   withCredentials: true,
 });
 
-export const privateAPI = (token: string) => {
+export const privateAPI = () => {
   const instance = axios.create({
     baseURL: env.VITE_API_URL,
     withCredentials: true,
+    headers: {
+      "Content-type": "application/json",
+    },
   });
 
   instance.interceptors.request.use(
     (config) => {
+      const token = getTokenSilently();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -23,27 +28,28 @@ export const privateAPI = (token: string) => {
     (error) => Promise.reject(error)
   );
 
-  // instance.interceptors.request.use(
-  //   (response) => response,
-  //   async (error) => {
-  //     const originalRequest = error.config;
+  instance.interceptors.request.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
 
-  //     if (error.response?.status === 401 && !originalRequest._retry) {
-  //       originalRequest._retry = true;
-  //       const refreshSuccessful = await refreshToken();
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        const newToken = await refreshTokenSilently();
 
-  //       if (refreshSuccessful) {
-  //         const newToken = getAccessToken();
-  //         originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        if (newToken) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
 
-  //         return instance;
-  //       } else {
-  //         console.log("Token refresh failed");
-  //         return Promise.reject(error);
-  //       }
-  //     }
-  //   }
-  // );
+          return instance(originalRequest);
+        } else {
+          console.log("Token refresh failed");
+          return Promise.reject(error);
+        }
+      }
+
+      return Promise.reject(error);
+    }
+  );
 
   return instance;
 };

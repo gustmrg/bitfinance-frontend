@@ -34,7 +34,7 @@ export function SignIn() {
     resolver: zodResolver(signInForm),
   });
 
-  const { login } = useAuth();
+  const { login, getMe } = useAuth();
   const navigate = useNavigate();
 
   async function handleSignIn(data: SignInForm) {
@@ -43,6 +43,7 @@ export function SignIn() {
       password: data.password,
     });
     if (isSuccess) {
+      await getMe();
       navigate("/dashboard");
     } else {
       console.log("Login failed");
