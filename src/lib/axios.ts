@@ -28,12 +28,15 @@ export const privateAPI = () => {
     (error) => Promise.reject(error)
   );
 
-  instance.interceptors.request.use(
+  instance.interceptors.response.use(
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
 
       if (error.response?.status === 401 && !originalRequest._retry) {
+        console.log(originalRequest._retry);
+        console.log("Error returned 401 code");
+
         originalRequest._retry = true;
         const newToken = await refreshTokenSilently();
 
