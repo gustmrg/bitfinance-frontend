@@ -30,8 +30,7 @@ import { useNavigate } from "react-router-dom";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
-  const [organization, setOrganization] = useState<string>("");
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,11 +39,11 @@ export function Bills() {
       return;
     }
 
-    let organizationId = user?.organizations?.[0].id ?? "";
-
-    setOrganization(organizationId);
+    let organizationId = selectedOrganization ? selectedOrganization.id : null;
 
     const fetchBills = async () => {
+      if (!organizationId) return;
+
       try {
         const response = await getBills(organizationId);
 
@@ -72,7 +71,7 @@ export function Bills() {
     };
 
     fetchBills();
-  }, [isAuthenticated, navigate, isLoading, user]);
+  }, [isAuthenticated, navigate, isLoading, user, selectedOrganization]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -101,7 +100,7 @@ export function Bills() {
         amountDue: data.amount,
         paymentDate: null,
         amountPaid: null,
-        organizationId: organization,
+        organizationId: selectedOrganization!.id,
       });
 
       if (response) {

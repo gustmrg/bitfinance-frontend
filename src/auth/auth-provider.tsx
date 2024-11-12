@@ -25,6 +25,8 @@ interface AuthContextValues {
   login: (credentials: LoginCredentialsBody) => Promise<boolean>;
   logout: () => void;
   getMe: () => void;
+  selectedOrganization: Organization | null;
+  setSelectedOrganization: (organization: Organization | null) => void;
 }
 
 const initialContext = {
@@ -39,6 +41,8 @@ const initialContext = {
   logout: () => {},
   getMe: async () => null,
   isLoading: true,
+  selectedOrganization: null,
+  setSelectedOrganization: () => {},
 };
 
 const AuthContext = createContext<AuthContextValues>(initialContext);
@@ -53,9 +57,11 @@ interface LoginCredentialsBody {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [selectedOrganization, setSelectedOrganization] =
+    useState<Organization | null>(null);
   const isAuthenticated = useMemo(() => !!token, [token]);
 
   useEffect(() => {
@@ -111,7 +117,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
           email: response.data.email,
           organizations: response.data.organizations ?? null,
         };
+
         setUser(user);
+
+        if (selectedOrganization === null && user.organizations !== null) {
+          let organization: Organization = {
+            id: user.organizations![0].id,
+            name: user.organizations![0].name,
+          };
+          setSelectedOrganization(organization);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -162,6 +177,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshToken,
     getMe,
     isLoading,
+    selectedOrganization,
+    setSelectedOrganization,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -170,8 +187,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
 export function useAuth() {
   const context = useContext(AuthContext);
 
-  const { user, login, logout, isAuthenticated, token, getMe, isLoading } =
-    context;
+  const {
+    user,
+    login,
+    logout,
+    isAuthenticated,
+    token,
+    getMe,
+    isLoading,
+    selectedOrganization,
+    setSelectedOrganization,
+  } = context;
 
   return {
     user,
@@ -181,6 +207,8 @@ export function useAuth() {
     token,
     getMe,
     isLoading,
+    selectedOrganization,
+    setSelectedOrganization,
   };
 }
 
