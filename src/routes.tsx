@@ -8,12 +8,13 @@ import { Bills } from "./pages/bills";
 import { SignIn } from "./pages/auth/sign-in";
 import { SignUp } from "./pages/auth/sign-up";
 import { Dashboard } from "./pages/dashboard";
+import { AppLayout } from "./pages/_layouts/app-layout";
 
 export const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <Home />,
+      element: <AppLayout />,
       errorElement: <Error />,
     },
     {

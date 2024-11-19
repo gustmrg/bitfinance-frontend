@@ -45,14 +45,14 @@ export default function Sidebar() {
             />
           </NavLink>
         </div>
-        <div className="ml-10 mb-6">
+        <div className="px-4 mb-4">
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="w-[200px] justify-between"
+                className="w-full justify-between"
               >
                 {value
                   ? organizations.find(
@@ -62,7 +62,7 @@ export default function Sidebar() {
                 <ChevronsUpDown className="opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent className="lg:w-auto p-0 min-w-[200px]">
               <Command>
                 <CommandList>
                   <CommandEmpty>No organization found.</CommandEmpty>
