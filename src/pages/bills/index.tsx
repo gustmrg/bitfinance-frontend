@@ -26,12 +26,28 @@ import { AddBill } from "@/api/bills/add-bill";
 import { UpdateBill } from "@/api/bills/update-bill";
 import { DeleteBill } from "@/api/bills/delete-bill";
 import { useAuth } from "@/auth/auth-provider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Pagination } from "@/components/ui/pagination";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
+
   const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  function handlePaginate(pageIndex: number) {
+    setSearchParams((state) => {
+      state.set("page", pageIndex.toString());
+      state.set("pageSize", "10");
+
+      return state;
+    });
+    setPage(pageIndex);
+  }
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
@@ -45,7 +61,11 @@ export function Bills() {
       if (!organizationId) return;
 
       try {
-        const response = await getBills(organizationId);
+        const response = await getBills({
+          organizationId: organizationId,
+          page: page,
+          pageSize: pageSize,
+        });
 
         if (!response) {
           console.error("Failed to fetch bills.");
@@ -53,7 +73,7 @@ export function Bills() {
           return;
         }
 
-        const bills: Bill[] = response?.map((bill: Bill) => ({
+        const bills: Bill[] = response?.data.map((bill: Bill) => ({
           ...bill,
           status: bill.status.toLowerCase() as
             | "created"
@@ -65,13 +85,29 @@ export function Bills() {
         }));
 
         setBills(bills);
+        setSearchParams({
+          page: page.toString(),
+          pageSize: pageSize.toString(),
+        });
+        setPage(response.page);
+        setPageSize(response.pageSize);
+        setTotalRecords(response.totalRecords);
       } catch (error) {
         console.error("Failed to fetch bills:", error);
       }
     };
 
     fetchBills();
-  }, [isAuthenticated, navigate, isLoading, user, selectedOrganization]);
+  }, [
+    isAuthenticated,
+    navigate,
+    isLoading,
+    user,
+    selectedOrganization,
+    page,
+    pageSize,
+    setSearchParams,
+  ]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -257,6 +293,14 @@ export function Bills() {
                 ))}
             </TableBody>
           </Table>
+        </div>
+        <div className="mt-2 p-4">
+          <Pagination
+            onPageChange={handlePaginate}
+            page={page}
+            pageSize={pageSize}
+            totalRecords={totalRecords}
+          />
         </div>
       </div>
     </div>
