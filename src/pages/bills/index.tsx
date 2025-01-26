@@ -26,16 +26,12 @@ import { AddBill } from "@/api/bills/add-bill";
 import { UpdateBill } from "@/api/bills/update-bill";
 import { DeleteBill } from "@/api/bills/delete-bill";
 import { useAuth } from "@/auth/auth-provider";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Pagination } from "@/components/ui/pagination";
+import { useNavigate } from "react-router-dom";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
-  const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [totalRecords, setTotalRecords] = useState<number>(0);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(2025, 0, 1),
     to: new Date(2025, 0, 31),
@@ -43,22 +39,9 @@ export function Bills() {
 
   const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  function handlePaginate(pageIndex: number) {
-    setSearchParams((state) => {
-      state.set("page", pageIndex.toString());
-      state.set("pageSize", "10");
-
-      return state;
-    });
-    setPage(pageIndex);
-  }
 
   const handleDateFilterChange = (newDate: DateRange) => {
     setDateRange(newDate);
-    console.log("Start Date:", newDate.from);
-    console.log("End Date:", newDate.to);
   };
 
   useEffect(() => {
@@ -75,10 +58,8 @@ export function Bills() {
       try {
         const response = await getBills({
           organizationId: organizationId,
-          page: page,
-          pageSize: pageSize,
-          startDate: dateRange?.from,
-          endDate: dateRange?.to,
+          from: dateRange?.from,
+          to: dateRange?.to,
         });
 
         if (!response) {
@@ -99,13 +80,6 @@ export function Bills() {
         }));
 
         setBills(bills);
-        setSearchParams({
-          page: page.toString(),
-          pageSize: pageSize.toString(),
-        });
-        setPage(response.page);
-        setPageSize(response.pageSize);
-        setTotalRecords(response.totalRecords);
       } catch (error) {
         console.error("Failed to fetch bills:", error);
       }
@@ -118,9 +92,6 @@ export function Bills() {
     isLoading,
     user,
     selectedOrganization,
-    page,
-    pageSize,
-    setSearchParams,
     dateRange,
   ]);
 
@@ -315,14 +286,6 @@ export function Bills() {
                 ))}
             </TableBody>
           </Table>
-        </div>
-        <div className="mt-2 p-4">
-          <Pagination
-            onPageChange={handlePaginate}
-            page={page}
-            pageSize={pageSize}
-            totalRecords={totalRecords}
-          />
         </div>
       </div>
     </div>

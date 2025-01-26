@@ -4,10 +4,8 @@ const api = privateAPI();
 
 export interface GetBillsQuery {
   organizationId: string;
-  page: number;
-  pageSize: number;
-  startDate?: Date;
-  endDate?: Date;
+  from?: Date;
+  to?: Date;
 }
 
 export interface GetBillsResponse {
@@ -47,20 +45,16 @@ type Bill = {
 
 export async function getBills({
   organizationId,
-  page = 1,
-  pageSize = 10,
-  startDate,
-  endDate,
+  from,
+  to,
 }: GetBillsQuery): Promise<GetBillsResponse | null> {
   try {
     const response = await api.get<GetBillsResponse>(
       `/organizations/${organizationId}/bills`,
       {
         params: {
-          page,
-          pageSize,
-          startDate,
-          endDate,
+          from,
+          to,
         },
       }
     );
