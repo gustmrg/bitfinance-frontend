@@ -6,6 +6,8 @@ export interface GetBillsQuery {
   organizationId: string;
   page: number;
   pageSize: number;
+  startDate?: Date;
+  endDate?: Date;
 }
 
 export interface GetBillsResponse {
@@ -47,6 +49,8 @@ export async function getBills({
   organizationId,
   page = 1,
   pageSize = 10,
+  startDate,
+  endDate,
 }: GetBillsQuery): Promise<GetBillsResponse | null> {
   try {
     const response = await api.get<GetBillsResponse>(
@@ -55,6 +59,8 @@ export async function getBills({
         params: {
           page,
           pageSize,
+          startDate,
+          endDate,
         },
       }
     );

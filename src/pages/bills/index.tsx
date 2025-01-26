@@ -28,12 +28,18 @@ import { DeleteBill } from "@/api/bills/delete-bill";
 import { useAuth } from "@/auth/auth-provider";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Pagination } from "@/components/ui/pagination";
+import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRange } from "react-day-picker";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalRecords, setTotalRecords] = useState<number>(0);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(2025, 0, 1),
+    to: new Date(2025, 0, 31),
+  });
 
   const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
   const navigate = useNavigate();
@@ -48,6 +54,12 @@ export function Bills() {
     });
     setPage(pageIndex);
   }
+
+  const handleDateFilterChange = (newDate: DateRange) => {
+    setDateRange(newDate);
+    console.log("Start Date:", newDate.from);
+    console.log("End Date:", newDate.to);
+  };
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
@@ -65,6 +77,8 @@ export function Bills() {
           organizationId: organizationId,
           page: page,
           pageSize: pageSize,
+          startDate: dateRange?.from,
+          endDate: dateRange?.to,
         });
 
         if (!response) {
@@ -107,6 +121,7 @@ export function Bills() {
     page,
     pageSize,
     setSearchParams,
+    dateRange,
   ]);
 
   const getStatusBadge = (status: string) => {
@@ -232,6 +247,13 @@ export function Bills() {
           <p className="text-sm font-regular text-zinc-500">
             Manage your bills and keep your finances in control.
           </p>
+          <div className="mt-2">
+            <CalendarDateRangePicker
+              startDate={dateRange?.from}
+              endDate={dateRange?.to}
+              onDateChange={handleDateFilterChange}
+            />
+          </div>
         </div>
         <AddBillDialog onAddBill={handleAddBill} />
       </div>

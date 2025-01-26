@@ -62,16 +62,18 @@ export async function AddBill({
   organizationId,
 }: CreateBillRequest) {
   try {
-    const response = await api.post<CreateBillResponse>("/bills", {
-      description,
-      category,
-      status,
-      dueDate,
-      amountDue,
-      paymentDate,
-      amountPaid,
-      organizationId,
-    });
+    const response = await api.post<CreateBillResponse>(
+      `/organizations/${organizationId}/bills`,
+      {
+        description,
+        category,
+        status,
+        dueDate,
+        amountDue,
+        paymentDate,
+        amountPaid,
+      }
+    );
 
     return response.data;
   } catch (error) {
