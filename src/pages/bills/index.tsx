@@ -27,11 +27,22 @@ import { UpdateBill } from "@/api/bills/update-bill";
 import { DeleteBill } from "@/api/bills/delete-bill";
 import { useAuth } from "@/auth/auth-provider";
 import { useNavigate } from "react-router-dom";
+import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRange } from "react-day-picker";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+  });
+
   const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
   const navigate = useNavigate();
+
+  const handleDateFilterChange = (newDate: DateRange) => {
+    setDateRange(newDate);
+  };
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
@@ -45,7 +56,11 @@ export function Bills() {
       if (!organizationId) return;
 
       try {
-        const response = await getBills(organizationId);
+        const response = await getBills({
+          organizationId: organizationId,
+          from: dateRange?.from,
+          to: dateRange?.to,
+        });
 
         if (!response) {
           console.error("Failed to fetch bills.");
@@ -53,7 +68,7 @@ export function Bills() {
           return;
         }
 
-        const bills: Bill[] = response?.map((bill: Bill) => ({
+        const bills: Bill[] = response?.data.map((bill: Bill) => ({
           ...bill,
           status: bill.status.toLowerCase() as
             | "created"
@@ -71,7 +86,14 @@ export function Bills() {
     };
 
     fetchBills();
-  }, [isAuthenticated, navigate, isLoading, user, selectedOrganization]);
+  }, [
+    isAuthenticated,
+    navigate,
+    isLoading,
+    user,
+    selectedOrganization,
+    dateRange,
+  ]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -196,6 +218,13 @@ export function Bills() {
           <p className="text-sm font-regular text-zinc-500">
             Manage your bills and keep your finances in control.
           </p>
+          <div className="mt-2">
+            <CalendarDateRangePicker
+              startDate={dateRange?.from}
+              endDate={dateRange?.to}
+              onDateChange={handleDateFilterChange}
+            />
+          </div>
         </div>
         <AddBillDialog onAddBill={handleAddBill} />
       </div>

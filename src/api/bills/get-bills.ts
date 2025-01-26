@@ -2,6 +2,20 @@ import { privateAPI } from "@/lib/axios";
 
 const api = privateAPI();
 
+export interface GetBillsQuery {
+  organizationId: string;
+  from?: Date;
+  to?: Date;
+}
+
+export interface GetBillsResponse {
+  data: Bill[];
+  page: number;
+  pageSize: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
 type Bill = {
   id: string;
   description: string;
@@ -29,9 +43,22 @@ type Bill = {
   notes?: string;
 };
 
-export async function getBills(organizationId: string): Promise<Bill[] | null> {
+export async function getBills({
+  organizationId,
+  from,
+  to,
+}: GetBillsQuery): Promise<GetBillsResponse | null> {
   try {
-    const response = await api.get(`/bills/organizations/${organizationId}`);
+    const response = await api.get<GetBillsResponse>(
+      `/organizations/${organizationId}/bills`,
+      {
+        params: {
+          from,
+          to,
+        },
+      }
+    );
+
     return response.data;
   } catch (error) {
     console.error("Could not find a valid access token");
