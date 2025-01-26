@@ -33,8 +33,8 @@ import { DateRange } from "react-day-picker";
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: new Date(2025, 0, 1),
-    to: new Date(2025, 0, 31),
+    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
   });
 
   const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
