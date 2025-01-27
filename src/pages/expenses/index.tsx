@@ -8,17 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-} from "@radix-ui/react-dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AddExpenseDialog } from "./components/add-expense-dialog";
-import { DeleteBillDialog } from "./components/delete-bill-dialog";
-import { DetailsBillDialog } from "./components/details-bill-dialog";
-import EditBillDialog from "./components/edit-expense-dialog";
 import { useAuth } from "@/auth/auth-provider";
 import { useNavigate } from "react-router-dom";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
@@ -27,8 +19,6 @@ import { Expense } from "./types";
 import { getExpenses } from "@/api/expenses/get-expenses";
 import { AddExpense } from "@/api/expenses/add-expense";
 import { dateFormatter } from "@/utils/formatter";
-import { UpdateExpense } from "@/api/expenses/update-expense";
-import EditExpenseDialog from "./components/edit-expense-dialog";
 import { DeleteExpense } from "@/api/expenses/delete-expense";
 
 export function Expenses() {
