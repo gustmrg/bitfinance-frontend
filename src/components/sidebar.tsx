@@ -1,8 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBarcode,
+  faBuildingUser,
   faHouse,
   faReceipt,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -132,6 +134,18 @@ export default function Sidebar() {
           >
             <FontAwesomeIcon icon={faReceipt} />
             Expenses
+          </NavLink>
+
+          <NavLink
+            to="/dashboard/organizations"
+            className={({ isActive }) =>
+              `flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-all font-semibold text-base text-zinc-900 hover:bg-zinc-100 ${
+                isActive ? "bg-zinc-100" : ""
+              }`
+            }
+          >
+            <FontAwesomeIcon icon={faBuildingUser} />
+            Organizations
           </NavLink>
         </nav>
       </div>
