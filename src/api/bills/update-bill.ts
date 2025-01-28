@@ -24,6 +24,7 @@ export interface UpdateBillRequest {
   paymentDate?: string | null;
   amountDue: number;
   amountPaid?: number | null;
+  organizationId: string;
 }
 
 export async function UpdateBill({
@@ -35,17 +36,21 @@ export async function UpdateBill({
   amountDue,
   paymentDate,
   amountPaid,
+  organizationId,
 }: UpdateBillRequest) {
   try {
-    const response = await api.patch(`/bills/${id}`, {
-      description,
-      category,
-      status,
-      dueDate,
-      amountDue,
-      paymentDate,
-      amountPaid,
-    });
+    const response = await api.patch(
+      `/organizations/${organizationId}/bills/${id}`,
+      {
+        description,
+        category,
+        status,
+        dueDate,
+        amountDue,
+        paymentDate,
+        amountPaid,
+      }
+    );
 
     return response.data;
   } catch (error) {

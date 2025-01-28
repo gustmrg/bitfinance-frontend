@@ -2,9 +2,11 @@ import { privateAPI } from "@/lib/axios";
 
 const api = privateAPI();
 
-export async function DeleteBill(id: string) {
+export async function DeleteBill(id: string, organizationId: string) {
   try {
-    const response = await api.delete(`/bills/${id}`);
+    const response = await api.delete(
+      `/organizations/${organizationId}/bills/${id}`
+    );
 
     return response;
   } catch (error) {

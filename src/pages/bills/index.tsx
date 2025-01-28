@@ -155,7 +155,7 @@ export function Bills() {
 
   const handleDeleteBill = async (id: string) => {
     try {
-      const response = await DeleteBill(id);
+      const response = await DeleteBill(id, selectedOrganization!.id);
 
       if (response?.status == 204) {
         const updatedBills = bills.filter((item) => item.id !== id);
@@ -177,6 +177,7 @@ export function Bills() {
         amountDue: data.amountDue,
         paymentDate: data.paymentDate,
         amountPaid: data.amountPaid,
+        organizationId: selectedOrganization!.id,
       });
 
       if (response) {
