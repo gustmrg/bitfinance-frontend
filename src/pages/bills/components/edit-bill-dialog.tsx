@@ -66,7 +66,7 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
     defaultValues: {
       id: bill.id,
       description: bill.description,
-      category: bill.category,
+      category: bill.category.toLowerCase(),
       status: bill.status,
       amountDue: bill.amountDue,
       amountPaid: bill.amountPaid ?? undefined,
@@ -235,6 +235,7 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
+                      <SelectItem value="upcoming">Upcoming</SelectItem>
                       <SelectItem value="due">Due</SelectItem>
                       <SelectItem value="paid">Paid</SelectItem>
                       <SelectItem value="overdue">Overdue</SelectItem>
@@ -318,7 +319,7 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
               <Button
                 variant="secondary"
                 type="button"
-                onClick={() => form.reset()}
+                onClick={() => setOpen(false)}
               >
                 Cancel
               </Button>
