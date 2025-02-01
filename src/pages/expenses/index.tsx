@@ -201,9 +201,9 @@ export function Expenses() {
                       <Button
                         variant="link"
                         className="h-8 w-8 p-0"
-                        onClick={() => handleDeleteExpense(expense.id)}
+                        onClick={() => {}}
                       >
-                        <span className="sr-only">Delete item</span>
+                        <span className="sr-only">Edit item</span>
                         <Pencil className="h-4 w-4 text-gray-950" />
                       </Button>
                       <Button
