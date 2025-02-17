@@ -11,9 +11,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/auth/auth-provider";
 import logoImg from "/assets/logo.png";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const passwordValidation = new RegExp(
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/
@@ -63,6 +65,17 @@ export function SignIn() {
         </h2>
       </div>
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <Alert variant="warning" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            For testing purposes, you can use the following credentials to log
+            in:
+            <br />
+            <strong>Username:</strong> demo@bitfinance.com
+            <br />
+            <strong>Password:</strong> Demo@123
+          </AlertDescription>
+        </Alert>
         <Form {...form}>
           <form
             className="space-y-6"
@@ -113,6 +126,17 @@ export function SignIn() {
             </div>
           </form>
         </Form>
+        <div className="mt-6">
+          <p className="text-sm text-center leading-5 text-gray-600">
+            Don't have an account?{" "}
+            <NavLink
+              to={form.formState.isSubmitting ? "#" : "/auth/sign-up"}
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              Create one
+            </NavLink>
+          </p>
+        </div>
       </div>
     </div>
   );

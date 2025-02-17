@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { signUp } from "@/api/auth/sign-up";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import logoImg from "/assets/logo.png";
 
 const passwordValidation = new RegExp(
@@ -109,6 +109,17 @@ export function SignUp() {
             </div>
           </form>
         </Form>
+        <div className="mt-6">
+          <p className="text-sm text-center leading-5 text-gray-600">
+            Already have an account?{" "}
+            <NavLink
+              to={form.formState.isSubmitting ? "#" : "/auth/sign-in"}
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              Sign in
+            </NavLink>
+          </p>
+        </div>
       </div>
     </div>
   );

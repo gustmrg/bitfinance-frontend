@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <footer className="flex flex-row justify-between mx-10 text-gray-400 border-t-[1px] border-gray-200 p-10 bg-white dark:bg-white">
-      <p>&copy; 2024 Gustavo Miranda</p>
+      <p>&copy; 2024-2025 Gustavo Miranda</p>
       <div className="flex flex-row flex-wrap space-x-4">
         <a
           href="https://github.com/gustmrg/bitfinance-frontend"
