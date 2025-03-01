@@ -20,6 +20,7 @@ import { getExpenses } from "@/api/expenses/get-expenses";
 import { AddExpense } from "@/api/expenses/add-expense";
 import { dateFormatter } from "@/utils/formatter";
 import { DeleteExpense } from "@/api/expenses/delete-expense";
+import { useTranslation } from "react-i18next";
 
 export function Expenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -30,6 +31,7 @@ export function Expenses() {
 
   const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleDateFilterChange = (newDate: DateRange) => {
     setDateRange(newDate);
@@ -148,10 +150,10 @@ export function Expenses() {
       <div className="flex flex-row items-end justify-between gap-4">
         <div className="space-y-2">
           <h1 className="text-2xl/8 font-semibold text-zinc-950 sm:text-xl/8 dark:text-white">
-            Expenses
+            {t("expenses.title")}
           </h1>
           <p className="text-sm font-regular text-zinc-500">
-            Manage your expenses and keep your finances in control.
+            {t("expenses.subtitle")}
           </p>
           <div className="mt-2">
             <CalendarDateRangePicker
@@ -168,11 +170,21 @@ export function Expenses() {
           <Table className="min-w-full text-left text-sm/6 text-zinc-950 dark:text-white">
             <TableHeader className="font-sans text-zinc-500 dark:text-zinc-400">
               <TableRow>
-                <TableHead className="font-semibold">Description</TableHead>
-                <TableHead className="font-semibold">Category</TableHead>
-                <TableHead className="font-semibold">Date</TableHead>
-                <TableHead className="font-semibold">Amount</TableHead>
-                <TableHead className="font-semibold">Created By</TableHead>
+                <TableHead className="font-semibold">
+                  {t("labels.description")}
+                </TableHead>
+                <TableHead className="font-semibold">
+                  {t("labels.category")}
+                </TableHead>
+                <TableHead className="font-semibold">
+                  {t("labels.date")}
+                </TableHead>
+                <TableHead className="font-semibold">
+                  {t("labels.amount")}
+                </TableHead>
+                <TableHead className="font-semibold">
+                  {t("labels.createdBy")}
+                </TableHead>
                 <TableHead className="font-semibold text-center">
                   Status
                 </TableHead>

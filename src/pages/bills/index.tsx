@@ -274,7 +274,8 @@ export function Bills() {
                       {dateFormatter.format(new Date(bill.dueDate))}
                     </TableCell>
                     <TableCell className="text-right">
-                      $ {bill.amountDue.toFixed(2)}
+                      ${" "}
+                      {bill.amountPaid?.toFixed(2) ?? bill.amountDue.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-center">
                       {getStatusBadge(bill.status)}

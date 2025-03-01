@@ -27,6 +27,7 @@
     "overdue": "Overdue",
     "cancelled": "Cancelled",
     "created": "Created",
+    "pending": "Pending",
     "housing": "Housing",
     "utilities": "Utilities",
     "food": "Food",
@@ -53,7 +54,9 @@
     "download": "Download",
     "password": "Password",
     "signUp": "Sign Up",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "createdBy": "Created by",
+    "date": "Date"
   },
   "dashboard": {
     "subtitle": "Overview of your finances"
@@ -89,6 +92,17 @@
       "delete": {
         "title": "Delete Bill",
         "description": "Are you sure you want to delete this bill? All of its data will be permanently removed and this action cannot be undone."
+      }
+    }
+  },
+  "expenses": {
+    "title": "Expenses",
+    "subtitle": "Track your expenses and stay within your budget. Keep an eye on your spending habits and make informed decisions about your money.",
+    "cta": "Add Expense",
+    "dialog": {
+      "add": {
+        "title": "Add New Expense",
+        "description": "Add a new expense to your transactions. Click to add when you're done."
       }
     }
   },

@@ -27,6 +27,7 @@
     "overdue": "Em Atraso",
     "cancelled": "Cancelada",
     "created": "Criada",
+    "pending": "Pendente",
     "housing": "Moradia",
     "utilities": "Serviços públicos",
     "food": "Alimentação",
@@ -53,7 +54,9 @@
     "download": "Baixar",
     "password": "Senha",
     "signUp": "Criar conta",
-    "signIn": "Entrar"
+    "signIn": "Entrar",
+    "createdBy": "Criado por",
+    "date": "Data"
   },
   "dashboard": {
     "subtitle": "Visão geral de suas finanças"
@@ -89,6 +92,17 @@
       "delete": {
         "title": "Excluir Conta",
         "description": "Tem certeza de que deseja excluir esta fatura? Todos os seus dados serão removidos permanentemente e esta ação não pode ser desfeita."
+      }
+    }
+  },
+  "expenses": {
+    "title": "Despesas",
+    "subtitle": "Acompanhe suas despesas e fique dentro do seu orçamento. Fique de olho em seus hábitos de gastos e tome decisões informadas sobre seu dinheiro.",
+    "cta": "Adicionar Despesa",
+    "dialog": {
+      "add": {
+        "title": "Adicionar Nova Despesa",
+        "description": "Adicione uma nova despesa às suas transações. Clique para adicionar quando terminar."
       }
     }
   },
