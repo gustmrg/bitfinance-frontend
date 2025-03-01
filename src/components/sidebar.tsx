@@ -18,10 +18,12 @@ import {
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/auth-provider";
+import { useTranslation } from "react-i18next";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+  const { t } = useTranslation();
 
   const { user, selectedOrganization, setSelectedOrganization } = useAuth();
 
@@ -108,7 +110,7 @@ export default function Sidebar() {
             }
           >
             <FontAwesomeIcon icon={faHouse} />
-            Dashboard
+            {t("sidebar.dashboard")}
           </NavLink>
 
           <NavLink
@@ -120,7 +122,7 @@ export default function Sidebar() {
             }
           >
             <FontAwesomeIcon icon={faBarcode} />
-            Bills
+            {t("sidebar.bills")}
           </NavLink>
           <NavLink
             to="/dashboard/expenses"
@@ -131,7 +133,7 @@ export default function Sidebar() {
             }
           >
             <FontAwesomeIcon icon={faReceipt} />
-            Expenses
+            {t("sidebar.expenses")}
           </NavLink>
         </nav>
       </div>

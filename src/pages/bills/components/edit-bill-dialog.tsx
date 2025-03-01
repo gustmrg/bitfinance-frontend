@@ -39,6 +39,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Bill } from "../types";
+import { useTranslation } from "react-i18next";
 
 const EditBillSchema = z.object({
   id: z.string(),
@@ -75,6 +76,7 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
       notes: bill.notes ?? "",
     },
   });
+  const { t } = useTranslation();
 
   const status = form.watch("status");
 
@@ -88,14 +90,14 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
       <DialogTrigger asChild>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <PencilLine className="mr-2 h-4 w-4" />
-          <span>Edit</span>
+          <span>{t("labels.edit")}</span>
         </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Bill</DialogTitle>
+          <DialogTitle>{t("bills.dialog.edit.title")}</DialogTitle>
           <DialogDescription>
-            Edit your bill information. Click to add when you're done.{" "}
+            {t("bills.dialog.edit.description")}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -108,11 +110,13 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
               name="description"
               render={({ field }) => (
                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                  <FormLabel className="text-right">Description</FormLabel>
+                  <FormLabel className="text-right">
+                    {t("labels.description")}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       className="col-span-3"
-                      placeholder="Description"
+                      placeholder={t("labels.description")}
                       {...field}
                     />
                   </FormControl>
@@ -125,32 +129,50 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
               name="category"
               render={({ field }) => (
                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                  <FormLabel className="text-right">Category</FormLabel>
+                  <FormLabel className="text-right">
+                    {t("labels.category")}
+                  </FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="col-span-3">
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder={t("labels.selectCategory")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="housing">Housing</SelectItem>
-                      <SelectItem value="transportation">
-                        Transportation
+                      <SelectItem value="housing">
+                        {t("labels.housing")}
                       </SelectItem>
-                      <SelectItem value="food">Food</SelectItem>
-                      <SelectItem value="utilities">Utilities</SelectItem>
-                      <SelectItem value="clothing">Clothing</SelectItem>
-                      <SelectItem value="healthcare">Healthcare</SelectItem>
-                      <SelectItem value="insurance">Insurance</SelectItem>
-                      <SelectItem value="personal">Personal</SelectItem>
-                      <SelectItem value="debt">Debt</SelectItem>
-                      <SelectItem value="savings">Savings</SelectItem>
-                      <SelectItem value="education">Education</SelectItem>
+                      <SelectItem value="transportation">
+                        {t("labels.transportation")}
+                      </SelectItem>
+                      <SelectItem value="food">{t("labels.food")}</SelectItem>
+                      <SelectItem value="utilities">
+                        {t("labels.utilities")}
+                      </SelectItem>
+                      <SelectItem value="clothing">
+                        {t("labels.clothing")}
+                      </SelectItem>
+                      <SelectItem value="healthcare">
+                        {t("labels.healthcare")}
+                      </SelectItem>
+                      <SelectItem value="insurance">
+                        {t("labels.insurance")}
+                      </SelectItem>
+                      <SelectItem value="personal">
+                        {t("labels.personal")}
+                      </SelectItem>
+                      <SelectItem value="debt">{t("labels.debt")}</SelectItem>
+                      <SelectItem value="savings">
+                        {t("labels.savings")}
+                      </SelectItem>
+                      <SelectItem value="education">
+                        {t("labels.education")}
+                      </SelectItem>
                       <SelectItem value="entertainment">
-                        Entertainment
+                        {t("labels.entertainment")}
                       </SelectItem>
                       <SelectItem value="miscellaneous">
-                        Miscellaneous
+                        {t("labels.miscellaneous")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -163,7 +185,9 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
               name="amountDue"
               render={({ field }) => (
                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                  <FormLabel className="text-right">Amount</FormLabel>
+                  <FormLabel className="text-right">
+                    {t("labels.amount")}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -187,7 +211,9 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
               name="dueDate"
               render={({ field }) => (
                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                  <FormLabel className="text-right">Due Date</FormLabel>
+                  <FormLabel className="text-right">
+                    {t("labels.dueDate")}
+                  </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -201,7 +227,7 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
                           {field.value ? (
                             format(field.value, "PPP")
                           ) : (
-                            <span>Pick a date</span>
+                            <span>{t("labels.pickDate")}</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -231,15 +257,21 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="col-span-3">
-                        <SelectValue placeholder="Select a status" />
+                        <SelectValue placeholder={t("labels.selectStatus")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="upcoming">Upcoming</SelectItem>
-                      <SelectItem value="due">Due</SelectItem>
-                      <SelectItem value="paid">Paid</SelectItem>
-                      <SelectItem value="overdue">Overdue</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                      <SelectItem value="upcoming">
+                        {t("labels.upcoming")}
+                      </SelectItem>
+                      <SelectItem value="due">{t("labels.due")}</SelectItem>
+                      <SelectItem value="paid">{t("labels.paid")}</SelectItem>
+                      <SelectItem value="overdue">
+                        {t("labels.overdue")}
+                      </SelectItem>
+                      <SelectItem value="cancelled">
+                        {t("labels.cancelled")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -254,7 +286,9 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
                   name="amountPaid"
                   render={({ field }) => (
                     <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right">Amount Paid</FormLabel>
+                      <FormLabel className="text-right">
+                        {t("labels.amountPaid")}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           className="col-span-3"
@@ -279,7 +313,9 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
                   name="paymentDate"
                   render={({ field }) => (
                     <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right">Payment Date</FormLabel>
+                      <FormLabel className="text-right">
+                        {t("labels.paymentDate")}
+                      </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -293,7 +329,7 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
                               {field.value ? (
                                 format(field.value, "PPP")
                               ) : (
-                                <span>Pick a date</span>
+                                <span>{t("labels.pickDate")}</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -321,10 +357,10 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
                 type="button"
                 onClick={() => setOpen(false)}
               >
-                Cancel
+                {t("labels.cancel")}
               </Button>
               <Button variant="default" type="submit">
-                Confirm
+                {t("labels.confirm")}
               </Button>
             </DialogFooter>
           </form>

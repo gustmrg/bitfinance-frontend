@@ -29,6 +29,7 @@ import { useAuth } from "@/auth/auth-provider";
 import { useNavigate } from "react-router-dom";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
+import { useTranslation } from "react-i18next";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
@@ -39,6 +40,7 @@ export function Bills() {
 
   const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleDateFilterChange = (newDate: DateRange) => {
     setDateRange(newDate);
@@ -98,17 +100,23 @@ export function Bills() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "paid":
-        return <StatusBadge variant="green">Paid</StatusBadge>;
+        return <StatusBadge variant="green">{t("labels.paid")}</StatusBadge>;
       case "upcoming":
-        return <StatusBadge variant="yellow">Upcoming</StatusBadge>;
+        return (
+          <StatusBadge variant="yellow">{t("labels.upcoming")}</StatusBadge>
+        );
       case "due":
-        return <StatusBadge variant="red">Due</StatusBadge>;
+        return <StatusBadge variant="red">{t("labels.due")}</StatusBadge>;
       case "overdue":
-        return <StatusBadge variant="red">Overdue</StatusBadge>;
+        return <StatusBadge variant="red">{t("labels.overdue")}</StatusBadge>;
       case "cancelled":
-        return <StatusBadge variant="gray">Cancelled</StatusBadge>;
+        return (
+          <StatusBadge variant="gray">{t("labels.cancelled")}</StatusBadge>
+        );
       default:
-        return <StatusBadge variant="indigo">Created</StatusBadge>;
+        return (
+          <StatusBadge variant="indigo">{t("labels.created")}</StatusBadge>
+        );
     }
   };
 
@@ -214,10 +222,10 @@ export function Bills() {
       <div className="flex flex-row items-end justify-between gap-4">
         <div className="space-y-2">
           <h1 className="text-2xl/8 font-semibold text-zinc-950 sm:text-xl/8 dark:text-white">
-            Bills
+            {t("bills.title")}
           </h1>
           <p className="text-sm font-regular text-zinc-500">
-            Manage your bills and keep your finances in control.
+            {t("bills.subtitle")}
           </p>
           <div className="mt-2">
             <CalendarDateRangePicker
@@ -234,14 +242,20 @@ export function Bills() {
           <Table className="min-w-full text-left text-sm/6 text-zinc-950 dark:text-white">
             <TableHeader className="font-sans text-zinc-500 dark:text-zinc-400">
               <TableRow>
-                <TableHead className="font-semibold">Description</TableHead>
-                <TableHead className="font-semibold">Category</TableHead>
-                <TableHead className="font-semibold">Due Date</TableHead>
+                <TableHead className="font-semibold">
+                  {t("labels.description")}
+                </TableHead>
+                <TableHead className="font-semibold">
+                  {t("labels.category")}
+                </TableHead>
+                <TableHead className="font-semibold">
+                  {t("labels.dueDate")}
+                </TableHead>
                 <TableHead className="font-semibold text-right">
-                  Amount
+                  {t("labels.amount")}
                 </TableHead>
                 <TableHead className="font-semibold text-center">
-                  Status
+                  {t("labels.status")}
                 </TableHead>
                 <TableHead className="font-semibold text-right"></TableHead>
               </TableRow>

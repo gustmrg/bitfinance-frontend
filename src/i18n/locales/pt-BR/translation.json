@@ -1,0 +1,81 @@
+{
+  "home": {
+    "title": "Gerencie suas finanças de forma simples e inteligente",
+    "subtitle": "Descubra uma maneira fácil de gerenciar suas despesas, rastrear seus gastos e planejar seu futuro financeiro. Com nosso aplicativo, você tem todas as ferramentas para monitorar suas contas, definir metas e tomar decisões financeiras confiantes. Simplicidade, segurança e eficiência para seu dinheiro, tudo em um só lugar.",
+    "cta": "Comece agora"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "bills": "Contas",
+    "expenses": "Despesas",
+    "settings": "Configurações",
+    "select": "Selecione organização"
+  },
+  "labels": {
+    "description": "Descrição",
+    "amount": "Valor",
+    "amountDue": "Valor Devido",
+    "amountPaid": "Valor Pago",
+    "dueDate": "Data de Vencimento",
+    "paymentDate": "Data do Pagamento",
+    "category": "Categoria",
+    "status": "Status",
+    "reset": "Limpar",
+    "upcoming": "A Vencer",
+    "paid": "Paga",
+    "due": "Vencida",
+    "overdue": "Em Atraso",
+    "cancelled": "Cancelada",
+    "created": "Criada",
+    "housing": "Moradia",
+    "utilities": "Serviços públicos",
+    "food": "Alimentação",
+    "transportation": "Transporte",
+    "healthcare": "Saúde",
+    "insurance": "Seguro",
+    "personal": "Pessoal",
+    "debt": "Dívidas",
+    "savings": "Investimentos",
+    "entertainment": "Entretenimento",
+    "education": "Educação",
+    "clothing": "Vestuário",
+    "miscellaneous": "Outros",
+    "selectCategory": "Selecione categoria",
+    "selectStatus": "Selecione um status",
+    "pickDate": "Escolha a data",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Excluir",
+    "details": "Detalhes",
+    "notes": "Anotações",
+    "attachments": "Anexos",
+    "download": "Baixar"
+  },
+  "dashboard": {
+    "subtitle": "Visão geral de suas finanças"
+  },
+  "bills": {
+    "title": "Contas",
+    "subtitle": "Gerencie suas contas e nunca mais perca um pagamento. Fique por dentro de suas contas e evite taxas por atraso com nosso sistema de gerenciamento de contas fácil de usar.",
+    "cta": "Adicionar Conta",
+    "dialog": {
+      "add": {
+        "title": "Adicionar Nova Conta",
+        "description": "Adicione uma nova fatura às suas transações. Clique para adicionar quando terminar."
+      },
+      "edit": {
+        "title": "Alterar Conta",
+        "description": "Altere as informações da sua conta. Clique para confirmar quando terminar."
+      },
+      "details": {
+        "title": "Detalhes da Conta",
+        "description": "Aqui você pode visualizar informações detalhadas sobre a fatura selecionada, incluindo seu status, data de vencimento e quaisquer recibos associados."
+      },
+      "delete": {
+        "title": "Excluir Conta",
+        "description": "Tem certeza de que deseja excluir esta fatura? Todos os seus dados serão removidos permanentemente e esta ação não pode ser desfeita."
+      }
+    }
+  }
+}

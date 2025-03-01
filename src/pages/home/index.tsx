@@ -4,9 +4,12 @@ import { CTAButton } from "./components/cta-button";
 import { LogoutButton } from "./components/logout-button";
 import { GoToDashboardButton } from "./components/dashboard-button";
 import { useAuth } from "@/auth/auth-provider";
+import { useTranslation } from "react-i18next";
+
 import logoImg from "/assets/logo.png";
 
 export function Home() {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
 
   return (
@@ -38,17 +41,13 @@ export function Home() {
         </nav>
       </header>
       <div className="relative isolate px-6 pt-14 lg:px-8">
-        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-          <div className="text-center">
-            <h1 className="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              Manage your finances simply and smartly
+        <div className="mx-auto max-w-3xl py-32 sm:py-48 lg:py-56">
+          <div>
+            <h1 className="text-balance text-4xl text-center font-bold tracking-tight text-gray-900 sm:text-6xl">
+              {t("home.title")}
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              Discover an easy way to manage your expenses, track your spending,
-              and plan for your financial future. With our app, you have all the
-              tools to monitor your accounts, set goals, and make confident
-              financial decisions. Simplicity, security, and efficiency for your
-              money, all in one place.
+            <p className="mt-6 text-lg text-center leading-8 text-gray-600">
+              {t("home.subtitle")}
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <CTAButton />

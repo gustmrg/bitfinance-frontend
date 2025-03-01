@@ -12,26 +12,35 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Bill } from "../types";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { useTranslation } from "react-i18next";
 
 interface DetailsBillDialogProps {
   bill: Bill;
 }
 
 export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
+  const { t } = useTranslation();
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "paid":
-        return <StatusBadge variant="green">Paid</StatusBadge>;
+        return <StatusBadge variant="green">{t("labels.paid")}</StatusBadge>;
       case "upcoming":
-        return <StatusBadge variant="yellow">Upcoming</StatusBadge>;
+        return (
+          <StatusBadge variant="yellow">{t("labels.upcoming")}</StatusBadge>
+        );
       case "due":
-        return <StatusBadge variant="pink">Due</StatusBadge>;
+        return <StatusBadge variant="red">{t("labels.due")}</StatusBadge>;
       case "overdue":
-        return <StatusBadge variant="red">Overdue</StatusBadge>;
+        return <StatusBadge variant="red">{t("labels.overdue")}</StatusBadge>;
       case "cancelled":
-        return <StatusBadge variant="gray">Cancelled</StatusBadge>;
+        return (
+          <StatusBadge variant="gray">{t("labels.cancelled")}</StatusBadge>
+        );
       default:
-        return <StatusBadge variant="indigo">Created</StatusBadge>;
+        return (
+          <StatusBadge variant="indigo">{t("labels.created")}</StatusBadge>
+        );
     }
   };
 
@@ -40,24 +49,23 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
       <DialogTrigger asChild>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <FileText className="mr-2 h-4 w-4" />
-          <span>Details</span>
+          <span>{t("labels.details")}</span>
         </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader className="px-4 sm:px-0">
           <DialogTitle className="text-base font-semibold leading-7 text-gray-900">
-            Bill Details
+            {t("bills.dialog.details.title")}
           </DialogTitle>
           <DialogDescription className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
-            Here you can view detailed information about the selected bill,
-            including its status, due date, and any associated receipts.
+            {t("bills.dialog.details.description")}
           </DialogDescription>
         </DialogHeader>
         <div className="mt-6 border-t border-gray-100">
           <dl className="divide-y divide-gray-100">
             <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6 text-gray-900">
-                Description
+                {t("labels.description")}
               </dt>
               <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                 {bill.description}
@@ -65,7 +73,7 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
             </div>
             <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6 text-gray-900">
-                Category
+                {t("labels.category")}
               </dt>
               <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                 {bill.category}
@@ -73,7 +81,7 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
             </div>
             <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6 text-gray-900">
-                Status
+                {t("labels.status")}
               </dt>
               <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                 {getStatusBadge(bill.status)}
@@ -82,7 +90,7 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
             {bill.status === "paid" ? (
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                 <dt className="text-sm font-medium leading-6 text-gray-900">
-                  Paid Date
+                  {t("labels.paymentDate")}
                 </dt>
                 <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                   {bill.paymentDate &&
@@ -92,7 +100,7 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
             ) : (
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                 <dt className="text-sm font-medium leading-6 text-gray-900">
-                  Due Date
+                  {t("labels.dueDate")}
                 </dt>
                 <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                   {format(bill.dueDate, "P", { locale: ptBR })}
@@ -103,7 +111,7 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
             {bill.status === "paid" ? (
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                 <dt className="text-sm font-medium leading-6 text-gray-900">
-                  Amount Paid
+                  {t("labels.amountPaid")}
                 </dt>
                 <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                   {`$${bill.amountPaid?.toFixed(2)}`}
@@ -112,7 +120,7 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
             ) : (
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                 <dt className="text-sm font-medium leading-6 text-gray-900">
-                  Amount Due
+                  {t("labels.amountDue")}
                 </dt>
                 <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                   {`$${bill.amountDue.toFixed(2)}`}
@@ -123,7 +131,7 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
             {bill.notes ? (
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                 <dt className="text-sm font-medium leading-6 text-gray-900">
-                  Notes
+                  {t("labels.notes")}
                 </dt>
                 <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                   {bill.notes}
@@ -132,7 +140,7 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
             ) : null}
             <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6 text-gray-900">
-                Attachments
+                {t("labels.attachments")}
               </dt>
               <dd className="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                 <ul
@@ -156,7 +164,7 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
                         href="#"
                         className="font-medium text-indigo-600 hover:text-indigo-500"
                       >
-                        Download
+                        {t("labels.download")}
                       </a>
                     </div>
                   </li>
@@ -177,7 +185,7 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
                         href="#"
                         className="font-medium text-indigo-600 hover:text-indigo-500"
                       >
-                        Download
+                        {t("labels.download")}
                       </a>
                     </div>
                   </li>

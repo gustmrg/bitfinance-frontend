@@ -1,0 +1,81 @@
+{
+  "home": {
+    "title": "Manage your finances simply and smartly",
+    "subtitle": "Discover an easy way to manage your expenses, track your spending, and plan for your financial future. With our app, you have all the tools to monitor your accounts, set goals, and make confident financial decisions. Simplicity, security, and efficiency for your money, all in one place.",
+    "cta": "Get Started Now"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "bills": "Bills",
+    "expenses": "Expenses",
+    "settings": "Settings",
+    "select": "Select organization"
+  },
+  "labels": {
+    "description": "Description",
+    "amount": "Amount",
+    "amountDue": "Amount Due",
+    "amountPaid": "Amount Paid",
+    "dueDate": "Due Date",
+    "paymentDate": "Payment Date",
+    "category": "Category",
+    "status": "Status",
+    "reset": "Reset",
+    "upcoming": "Upcoming",
+    "paid": "Paid",
+    "due": "Due",
+    "overdue": "Overdue",
+    "cancelled": "Cancelled",
+    "created": "Created",
+    "housing": "Housing",
+    "utilities": "Utilities",
+    "food": "Food",
+    "transportation": "Transportation",
+    "healthcare": "Healthcare",
+    "insurance": "Insurance",
+    "personal": "Personal",
+    "debt": "Debt",
+    "savings": "Savings",
+    "entertainment": "Entertainment",
+    "education": "Education",
+    "clothing": "Clothing",
+    "miscellaneous": "Miscellaneous",
+    "edit": "Edit",
+    "selectCategory": "Select category",
+    "selectStatus": "Select a status",
+    "pickDate": "Pick a date",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "details": "Details",
+    "notes": "Notes",
+    "attachments": "Attachments",
+    "download": "Download"
+  },
+  "dashboard": {
+    "subtitle": "Overview of your finances"
+  },
+  "bills": {
+    "title": "Bills",
+    "subtitle": "Manage your bills and never miss a payment again. Stay on top of your bills and avoid late fees with our easy-to-use bill management system.",
+    "cta": "Add Bill",
+    "dialog": {
+      "add": {
+        "title": "Add New Bill",
+        "description": "Add a new bill to your transactions. Click to add when you're done."
+      },
+      "edit": {
+        "title": "Edit Bill",
+        "description": "Edit your bill information. Click to confirm when you're done."
+      },
+      "details": {
+        "title": "Bill Details",
+        "description": "Here you can view detailed information about the selected bill, including its status, due date, and any associated receipts."
+      },
+      "delete": {
+        "title": "Delete Bill",
+        "description": "Are you sure you want to delete this bill? All of its data will be permanently removed and this action cannot be undone."
+      }
+    }
+  }
+}
