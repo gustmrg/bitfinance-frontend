@@ -39,6 +39,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Expense } from "../types";
+import { useTranslation } from "react-i18next";
 
 const EditExpenseSchema = z.object({
   id: z.string(),
@@ -75,6 +76,8 @@ export default function EditExpenseDialog({
     },
   });
 
+  const { t } = useTranslation();
+
   const handleEditExpense: SubmitHandler<EditExpenseForm> = (
     data: EditExpenseForm
   ) => {
@@ -87,7 +90,7 @@ export default function EditExpenseDialog({
       <DialogTrigger asChild>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <PencilLine className="mr-2 h-4 w-4" />
-          <span>Edit</span>
+          <span>{t("labels.edit")}</span>
         </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent>

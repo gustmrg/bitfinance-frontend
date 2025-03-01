@@ -103,6 +103,10 @@
       "add": {
         "title": "Add New Expense",
         "description": "Add a new expense to your transactions. Click to add when you're done."
+      },
+      "details": {
+        "title": "Add New Expense",
+        "description": "Add a new expense to your transactions. Click to add when you're done."
       }
     }
   },

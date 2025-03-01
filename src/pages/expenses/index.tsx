@@ -88,13 +88,17 @@ export function Expenses() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <StatusBadge variant="yellow">Pending</StatusBadge>;
+        return (
+          <StatusBadge variant="yellow">{t("labels.pending")}</StatusBadge>
+        );
       case "paid":
-        return <StatusBadge variant="green">Paid</StatusBadge>;
+        return <StatusBadge variant="green">{t("labels.paid")}</StatusBadge>;
       case "cancelled":
-        return <StatusBadge variant="red">Cancelled</StatusBadge>;
+        return <StatusBadge variant="red">{t("labels.cancelled")}</StatusBadge>;
       default:
-        return <StatusBadge variant="indigo">Created</StatusBadge>;
+        return (
+          <StatusBadge variant="indigo">{t("labels.created")}</StatusBadge>
+        );
     }
   };
 
@@ -215,7 +219,7 @@ export function Expenses() {
                         className="h-8 w-8 p-0"
                         onClick={() => {}}
                       >
-                        <span className="sr-only">Edit item</span>
+                        <span className="sr-only">{t("labels.edit")}</span>
                         <Pencil className="h-4 w-4 text-gray-950" />
                       </Button>
                       <Button
@@ -223,7 +227,7 @@ export function Expenses() {
                         className="h-8 w-8 p-0"
                         onClick={() => handleDeleteExpense(expense.id)}
                       >
-                        <span className="sr-only">Delete item</span>
+                        <span className="sr-only">{t("labels.delete")}</span>
                         <Trash2 className="h-4 w-4 text-red-600" />
                       </Button>
                     </TableCell>
