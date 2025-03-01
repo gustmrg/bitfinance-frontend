@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Trash2 } from "lucide-react";
-// import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 interface DeleteBillDialogProps {
   id: string;
@@ -19,6 +19,8 @@ interface DeleteBillDialogProps {
 }
 
 export function DeleteBillDialog({ id, onDelete }: DeleteBillDialogProps) {
+  const { t } = useTranslation();
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -27,7 +29,7 @@ export function DeleteBillDialog({ id, onDelete }: DeleteBillDialogProps) {
           className="text-red-600 focus:text-red-600"
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          <span>Delete</span>
+          <span>{t("labels.delete")}</span>
         </DropdownMenuItem>
       </AlertDialogTrigger>
       <AlertDialogContent className="p-0 rounded-md">
@@ -40,23 +42,22 @@ export function DeleteBillDialog({ id, onDelete }: DeleteBillDialogProps) {
             </div> */}
           <div>
             <AlertDialogTitle className="text-base font-semibold leading-6 text-gray-900">
-              Delete bill
+              {t("bills.dialog.delete.title")}
             </AlertDialogTitle>
             <AlertDialogDescription className="mt-2">
               <p className="text-sm text-gray-500">
-                Are you sure you want to delete this bill? All of its data will
-                be permanently removed. This action cannot be undone.
+                {t("bills.dialog.delete.description")}
               </p>
             </AlertDialogDescription>
           </div>
         </AlertDialogHeader>
         <AlertDialogFooter className="bg-gray-50 px-4 py-3 rounded-md">
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t("labels.cancel")}</AlertDialogCancel>
           <AlertDialogAction
             className="bg-red-600 hover:bg-red-700"
             onClick={() => onDelete(id)}
           >
-            Delete
+            {t("labels.delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
