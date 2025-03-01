@@ -10,9 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useAuth } from "@/auth/auth-provider";
+import { useTranslation } from "react-i18next";
 
 export default function UserNavBar() {
-  const { user, isAuthenticated } = useAuth();
+  const { logout, user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
 
   return isAuthenticated ? (
     <>
@@ -36,12 +38,13 @@ export default function UserNavBar() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>New Team</DropdownMenuItem>
+            <DropdownMenuItem>{t("labels.profile")}</DropdownMenuItem>
+            <DropdownMenuItem>{t("labels.settings")}</DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem onClick={logout}>
+            {t("labels.logout")}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </>

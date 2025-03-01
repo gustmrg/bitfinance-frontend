@@ -56,7 +56,10 @@
     "signUp": "Criar conta",
     "signIn": "Entrar",
     "createdBy": "Criado por",
-    "date": "Data"
+    "date": "Data",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "logout": "Sair"
   },
   "dashboard": {
     "subtitle": "Visão geral de suas finanças"

@@ -56,7 +56,10 @@
     "signUp": "Sign Up",
     "signIn": "Sign In",
     "createdBy": "Created by",
-    "date": "Date"
+    "date": "Date",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
   },
   "dashboard": {
     "subtitle": "Overview of your finances"
