@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input";
 import { signUp } from "@/api/auth/sign-up";
 import { useMutation } from "@tanstack/react-query";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 import logoImg from "/assets/logo.png";
 
 const passwordValidation = new RegExp(
@@ -36,6 +38,7 @@ export function SignUp() {
   });
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { mutateAsync: register } = useMutation({
     mutationFn: signUp,
@@ -55,7 +58,7 @@ export function SignUp() {
           className="mx-auto h-16 w-auto"
         />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Create your account
+          {t("auth.signUp.title")}
         </h2>
       </div>
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -89,7 +92,7 @@ export function SignUp() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium leading-6 text-gray-900">
-                    Password
+                    {t("labels.password")}
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="********" {...field} type="password" />
@@ -104,19 +107,19 @@ export function SignUp() {
                 className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                 disabled={form.formState.isSubmitting}
               >
-                Sign up
+                {t("labels.signUp")}
               </Button>
             </div>
           </form>
         </Form>
         <div className="mt-6">
           <p className="text-sm text-center leading-5 text-gray-600">
-            Already have an account?{" "}
+            {t("auth.signUp.redirect")}{" "}
             <NavLink
               to={form.formState.isSubmitting ? "#" : "/auth/sign-in"}
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              Sign in
+              {t("labels.signIn")}
             </NavLink>
           </p>
         </div>

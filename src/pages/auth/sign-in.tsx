@@ -16,6 +16,7 @@ import { useAuth } from "@/auth/auth-provider";
 import logoImg from "/assets/logo.png";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const passwordValidation = new RegExp(
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/
@@ -38,6 +39,7 @@ export function SignIn() {
 
   const { login, getMe } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   async function handleSignIn(data: SignInForm) {
     const isSuccess = await login({
@@ -61,19 +63,18 @@ export function SignIn() {
           className="mx-auto h-16 w-auto"
         />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
+          {t("auth.signIn.title")}
         </h2>
       </div>
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <Alert variant="warning" className="mb-6">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            For testing purposes, you can use the following credentials to log
-            in:
+            {t("auth.signIn.demoAccount")}
             <br />
             <strong>Username:</strong> demo@bitfinance.com
             <br />
-            <strong>Password:</strong> Demo@123
+            <strong>{t("labels.password")}:</strong> Demo@123
           </AlertDescription>
         </Alert>
         <Form {...form}>
@@ -106,7 +107,7 @@ export function SignIn() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium leading-6 text-gray-900">
-                    Password
+                    {t("labels.password")}
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="********" {...field} type="password" />
@@ -121,19 +122,19 @@ export function SignIn() {
                 className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                 disabled={form.formState.isSubmitting}
               >
-                Sign in
+                {t("labels.signIn")}
               </Button>
             </div>
           </form>
         </Form>
         <div className="mt-6">
           <p className="text-sm text-center leading-5 text-gray-600">
-            Don't have an account?{" "}
+            {t("auth.signIn.redirect")}{" "}
             <NavLink
               to={form.formState.isSubmitting ? "#" : "/auth/sign-up"}
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              Create one
+              {t("labels.signUp")}
             </NavLink>
           </p>
         </div>

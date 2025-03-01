@@ -50,10 +50,24 @@
     "details": "Detalhes",
     "notes": "Anotações",
     "attachments": "Anexos",
-    "download": "Baixar"
+    "download": "Baixar",
+    "password": "Senha",
+    "signUp": "Criar conta",
+    "signIn": "Entrar"
   },
   "dashboard": {
     "subtitle": "Visão geral de suas finanças"
+  },
+  "auth": {
+    "signUp": {
+      "title": "Crie sua conta",
+      "redirect": "Já possui uma conta?"
+    },
+    "signIn": {
+      "title": "Entrar na sua conta",
+      "redirect": "Não tem uma conta?",
+      "demoAccount": "Para fins de teste, você pode usar as seguintes credenciais para efetuar login:"
+    }
   },
   "bills": {
     "title": "Contas",
@@ -77,5 +91,8 @@
         "description": "Tem certeza de que deseja excluir esta fatura? Todos os seus dados serão removidos permanentemente e esta ação não pode ser desfeita."
       }
     }
+  },
+  "footer": {
+    "developedBy": "Desenvolvido e mantido por"
   }
 }
