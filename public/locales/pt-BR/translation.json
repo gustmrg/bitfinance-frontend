@@ -70,6 +70,13 @@
       "description": "Gerencie suas contas a vencer",
       "emptyHeader": "Nenhuma conta a vencer",
       "empty": "Você está em dia com seus pagamentos!"
+    },
+    "recentExpenses": {
+      "title": "Despesas Recentes",
+      "subtitle": "Categorias de Maiores Gastos",
+      "description": "Acompanhe suas últimas despesas",
+      "emptyHeader": "Nenhuma despesa",
+      "empty": "Você ainda não adicionou nenhuma despesa neste período!"
     }
   },
   "auth": {

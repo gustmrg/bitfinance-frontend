@@ -17,6 +17,7 @@ import {
   ShieldPlus,
 } from "lucide-react";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -96,7 +97,7 @@ interface RecentExpensesProps {
 }
 
 export function RecentExpenses({ expenses }: RecentExpensesProps) {
-  console.log(expenses);
+  const { t } = useTranslation();
 
   // Group expenses by category for summary
   const expensesByCategory = expenses.reduce((acc, expense) => {
@@ -114,19 +115,23 @@ export function RecentExpenses({ expenses }: RecentExpensesProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Recent Expenses</CardTitle>
-            <CardDescription>Your recent expenses</CardDescription>
+            <CardTitle>{t("dashboard.recentExpenses.title")}</CardTitle>
+            <CardDescription>
+              {t("dashboard.recentExpenses.description")}
+            </CardDescription>
           </div>
           <NavLink to="/dashboard/expenses">
             <Button variant="outline" size="sm">
-              View All
+              {t("labels.viewAll")}
             </Button>
           </NavLink>
         </div>
       </CardHeader>
       <CardContent>
         <div className="mb-6">
-          <h3 className="text-sm font-medium mb-2">Top Spending Categories</h3>
+          <h3 className="text-sm font-medium mb-2">
+            {t("dashboard.recentExpenses.subtitle")}
+          </h3>
           <div className="grid grid-cols-3 gap-2">
             {topCategories.map(([category, amount]) => (
               <div
@@ -193,9 +198,11 @@ export function RecentExpenses({ expenses }: RecentExpensesProps) {
           ) : (
             <div className="text-center py-6">
               <PieChart className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <h3 className="mt-2 text-lg font-semibold">No Transactions</h3>
+              <h3 className="mt-2 text-lg font-semibold">
+                {t("dashboard.recentExpenses.emptyHeader")}
+              </h3>
               <p className="text-sm text-muted-foreground">
-                No transactions found for this period
+                {t("dashboard.recentExpenses.empty")}
               </p>
             </div>
           )}

@@ -70,6 +70,13 @@
       "description": "Manage your upcoming payments",
       "emptyHeader": "No Upcoming Bills",
       "empty": "You're all caught up on payments!"
+    },
+    "recentExpenses": {
+      "title": "Recent Expenses",
+      "subtitle": "Top Spending Categories",
+      "description": "View your most recent transactions",
+      "emptyHeader": "No Recent Expenses",
+      "empty": "You haven't added any expenses to this period yet!"
     }
   },
   "auth": {
