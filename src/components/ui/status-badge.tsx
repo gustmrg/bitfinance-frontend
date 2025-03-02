@@ -20,6 +20,8 @@ const badgeVariants = cva(
         purple:
           "bg-purple-50 text-purple-700 ring-purple-700/10 dark:text-purple-400 dark:bg-purple-800/20",
         pink: "bg-pink-50 text-pink-700 ring-pink-700/10 dark:text-pink-400 dark:bg-pink-400/20",
+        orange:
+          "bg-orange-50 text-orange-700 ring-orange-700/10 dark:text-orange-400 dark:bg-orange-800/20",
       },
     },
     defaultVariants: {
