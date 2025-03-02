@@ -34,7 +34,7 @@ export function UpcomingBills({ bills }: UpcomingBillsProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4 max-h-[550px] overflow-auto">
+        <div className="space-y-4 max-h-[500px] overflow-auto">
           {bills.length > 0 ? (
             bills.map((bill) => {
               return (

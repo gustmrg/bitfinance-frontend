@@ -6,26 +6,67 @@ import { RecentExpenses } from "./components/recent-expenses";
 import { UpcomingBills } from "./components/upcoming-bills";
 import { getUpcomingBills } from "@/api/dashboard/get-upcoming-bills";
 import { Bill } from "../bills/types";
+import { useNavigate } from "react-router-dom";
+import {
+  ExpenseResponseModel,
+  getRecentExpenses,
+} from "@/api/dashboard/get-recent-expenses";
 
 export function Dashboard() {
-  const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
   const [bills, setBills] = useState<Bill[]>([]);
+  const [expenses, setExpenses] = useState<ExpenseResponseModel[]>([]);
+  const { isAuthenticated, isLoading, selectedOrganization } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      navigate("/auth/sign-in");
+      return;
+    }
+
     let organizationId = selectedOrganization ? selectedOrganization.id : null;
 
     const fetchUpcomingBills = async () => {
       if (organizationId) {
         const response = await getUpcomingBills(organizationId);
         if (response) {
-          console.log(response.data);
           setBills(response.data);
         }
       }
     };
 
+    const fetchRecentExpenses = async () => {
+      if (organizationId) {
+        const response = await getRecentExpenses(organizationId);
+        if (response) {
+          const expenses: ExpenseResponseModel[] = response?.data.map(
+            (expense: ExpenseResponseModel) => ({
+              ...expense,
+              category: expense.category.toLowerCase() as
+                | "housing"
+                | "transportation"
+                | "food"
+                | "utilities"
+                | "clothing"
+                | "healthcare"
+                | "insurance"
+                | "personal"
+                | "debt"
+                | "savings"
+                | "education"
+                | "entertainment"
+                | "miscellaneous",
+            })
+          );
+
+          setExpenses(expenses);
+        }
+      }
+    };
+
     fetchUpcomingBills();
-  }, [selectedOrganization]);
+    fetchRecentExpenses();
+  }, [selectedOrganization, bills, expenses]);
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -131,7 +172,7 @@ export function Dashboard() {
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <UpcomingBills bills={bills} />
-        <RecentExpenses />
+        <RecentExpenses expenses={expenses} />
       </div>
     </div>
   );

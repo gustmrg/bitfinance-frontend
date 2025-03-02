@@ -1,139 +1,108 @@
-"use client";
-
 import type React from "react";
 
-import { useState } from "react";
 import {
-  Coffee,
   CreditCard,
   Home,
-  MoreHorizontal,
   ShoppingBag,
   Utensils,
   Car,
   Smartphone,
   Briefcase,
   PieChart,
+  GraduationCap,
+  PiggyBank,
+  Ticket,
+  HandCoins,
+  HeartPulse,
+  ShieldPlus,
 } from "lucide-react";
-import { format, subDays } from "date-fns";
+import { format } from "date-fns";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { NavLink } from "react-router-dom";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { ExpenseResponseModel } from "@/api/dashboard/get-recent-expenses";
 
 // Category icons mapping
 const categoryIcons: Record<string, React.ReactNode> = {
-  "Food & Dining": <Utensils className="h-4 w-4" />,
-  Shopping: <ShoppingBag className="h-4 w-4" />,
-  Housing: <Home className="h-4 w-4" />,
-  Transportation: <Car className="h-4 w-4" />,
-  Entertainment: <Coffee className="h-4 w-4" />,
-  Utilities: <Smartphone className="h-4 w-4" />,
-  Income: <Briefcase className="h-4 w-4" />,
-  Other: <CreditCard className="h-4 w-4" />,
+  food: <Utensils className="h-4 w-4" />,
+  clothing: <ShoppingBag className="h-4 w-4" />,
+  housing: <Home className="h-4 w-4" />,
+  transportation: <Car className="h-4 w-4" />,
+  entertainment: <Ticket className="h-4 w-4" />,
+  utilities: <Smartphone className="h-4 w-4" />,
+  income: <Briefcase className="h-4 w-4" />,
+  education: <GraduationCap className="h-4 w-4" />,
+  personal: <CreditCard className="h-4 w-4" />,
+  insurance: <ShieldPlus className="h-4 w-4" />,
+  healthcare: <HeartPulse className="h-4 w-4" />,
+  savings: <PiggyBank className="h-4 w-4" />,
+  debt: <HandCoins className="h-4 w-4" />,
+  miscellaneous: <CreditCard className="h-4 w-4" />,
 };
 
 // Category colors mapping
 const categoryColors: Record<string, string> = {
-  "Food & Dining": "bg-orange-100 text-orange-600",
-  Shopping: "bg-blue-100 text-blue-600",
-  Housing: "bg-green-100 text-green-600",
-  Transportation: "bg-purple-100 text-purple-600",
-  Entertainment: "bg-pink-100 text-pink-600",
-  Utilities: "bg-yellow-100 text-yellow-600",
-  Income: "bg-emerald-100 text-emerald-600",
-  Other: "bg-gray-100 text-gray-600",
+  food: "bg-orange-100 text-orange-600",
+  education: "bg-orange-100 text-orange-600",
+  personal: "bg-blue-100 text-blue-600",
+  clothing: "bg-blue-100 text-blue-600",
+  insurance: "bg-blue-100 text-blue-600",
+  housing: "bg-green-100 text-green-600",
+  healthcare: "bg-green-100 text-green-600",
+  savings: "bg-green-100 text-green-600",
+  transportation: "bg-purple-100 text-purple-600",
+  entertainment: "bg-pink-100 text-pink-600",
+  debt: "bg-pink-100 text-pink-600",
+  utilities: "bg-yellow-100 text-yellow-600",
+  income: "bg-emerald-100 text-emerald-600",
+  miscellaneous: "bg-gray-100 text-gray-600",
 };
 
-// Sample data for recent expenses
-const initialExpenses = [
-  {
-    id: "1",
-    name: "Grocery Store",
-    amount: 78.52,
-    date: subDays(new Date(), 1),
-    category: "Food & Dining",
-    type: "expense",
-  },
-  {
-    id: "2",
-    name: "Monthly Salary",
-    amount: 3200.0,
-    date: subDays(new Date(), 2),
-    category: "Income",
-    type: "income",
-  },
-  {
-    id: "3",
-    name: "Coffee Shop",
-    amount: 4.75,
-    date: subDays(new Date(), 2),
-    category: "Food & Dining",
-    type: "expense",
-  },
-  {
-    id: "4",
-    name: "Gas Station",
-    amount: 45.8,
-    date: subDays(new Date(), 3),
-    category: "Transportation",
-    type: "expense",
-  },
-  {
-    id: "5",
-    name: "Online Shopping",
-    amount: 125.3,
-    date: subDays(new Date(), 4),
-    category: "Shopping",
-    type: "expense",
-  },
-  {
-    id: "6",
-    name: "Movie Tickets",
-    amount: 24.0,
-    date: subDays(new Date(), 5),
-    category: "Entertainment",
-    type: "expense",
-  },
-  {
-    id: "7",
-    name: "Phone Bill",
-    amount: 65.0,
-    date: subDays(new Date(), 6),
-    category: "Utilities",
-    type: "expense",
-  },
-];
+const categoryBadgeVariant: Record<
+  string,
+  | "gray"
+  | "red"
+  | "yellow"
+  | "green"
+  | "blue"
+  | "indigo"
+  | "purple"
+  | "pink"
+  | "orange"
+> = {
+  food: "orange",
+  clothing: "blue",
+  housing: "green",
+  transportation: "purple",
+  entertainment: "pink",
+  utilities: "yellow",
+  income: "green",
+  insurance: "indigo",
+  healthcare: "green",
+  savings: "green",
+  education: "yellow",
+};
 
-export function RecentExpenses() {
-  const [expenses, setExpenses] = useState(initialExpenses);
+interface RecentExpensesProps {
+  expenses: ExpenseResponseModel[];
+}
 
-  // Calculate totals
-  const totalIncome = expenses
-    .filter((expense) => expense.type === "income")
-    .reduce((sum, expense) => sum + expense.amount, 0);
-
-  const totalExpenses = expenses
-    .filter((expense) => expense.type === "expense")
-    .reduce((sum, expense) => sum + expense.amount, 0);
-
-  const balance = totalIncome - totalExpenses;
+export function RecentExpenses({ expenses }: RecentExpensesProps) {
+  console.log(expenses);
 
   // Group expenses by category for summary
-  const expensesByCategory = expenses
-    .filter((expense) => expense.type === "expense")
-    .reduce((acc, expense) => {
-      acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
-      return acc;
-    }, {} as Record<string, number>);
+  const expensesByCategory = expenses.reduce((acc, expense) => {
+    acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
+    return acc;
+  }, {} as Record<string, number>);
 
   // Get top spending categories
   const topCategories = Object.entries(expensesByCategory)
@@ -197,32 +166,26 @@ export function RecentExpenses() {
                     )}
                   </div>
                   <div>
-                    <p className="font-medium">{expense.name}</p>
+                    <p className="font-medium">{expense.description}</p>
                     <div className="flex items-center text-xs text-muted-foreground">
-                      <span>{format(expense.date, "MMM d, yyyy")}</span>
+                      <span>
+                        {format(new Date(expense.date), "MMM d, yyyy")}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <div className="text-right">
-                    <p
-                      className={`font-medium ${
-                        expense.type === "income" ? "text-emerald-600" : ""
-                      }`}
-                    >
-                      {expense.type === "income" ? "+" : "-"}$
+                    <p className="font-medium">
+                      -$
                       {expense.amount.toFixed(2)}
                     </p>
-                    <Badge
-                      variant="outline"
-                      className={`text-xs ${
-                        categoryColors[expense.category]?.split(" ")[1] ||
-                        "text-gray-600"
-                      }`}
+                    <StatusBadge
+                      variant={categoryBadgeVariant[expense.category]}
                     >
                       {expense.category}
-                    </Badge>
+                    </StatusBadge>
                   </div>
                 </div>
               </div>
