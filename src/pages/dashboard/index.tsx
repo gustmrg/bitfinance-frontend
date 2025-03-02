@@ -1,8 +1,32 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "@/auth/auth-provider";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecentExpenses } from "./components/recent-expenses";
 import { UpcomingBills } from "./components/upcoming-bills";
+import { getUpcomingBills } from "@/api/dashboard/get-upcoming-bills";
+import { Bill } from "../bills/types";
 
 export function Dashboard() {
+  const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
+  const [bills, setBills] = useState<Bill[]>([]);
+
+  useEffect(() => {
+    let organizationId = selectedOrganization ? selectedOrganization.id : null;
+
+    const fetchUpcomingBills = async () => {
+      if (organizationId) {
+        const response = await getUpcomingBills(organizationId);
+        if (response) {
+          console.log(response.data);
+          setBills(response.data);
+        }
+      }
+    };
+
+    fetchUpcomingBills();
+  }, [selectedOrganization]);
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -106,7 +130,7 @@ export function Dashboard() {
         </Card>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <UpcomingBills />
+        <UpcomingBills bills={bills} />
         <RecentExpenses />
       </div>
     </div>
