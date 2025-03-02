@@ -59,10 +59,18 @@
     "date": "Data",
     "profile": "Perfil",
     "settings": "Configurações",
-    "logout": "Sair"
+    "logout": "Sair",
+    "viewAll": "Ver tudo",
+    "dueIn": "Vence em"
   },
   "dashboard": {
-    "subtitle": "Visão geral de suas finanças"
+    "subtitle": "Visão geral de suas finanças",
+    "upcomingBills": {
+      "title": "Contas a Vencer",
+      "description": "Gerencie suas contas a vencer",
+      "emptyHeader": "Nenhuma conta a vencer",
+      "empty": "Você está em dia com seus pagamentos!"
+    }
   },
   "auth": {
     "signUp": {
