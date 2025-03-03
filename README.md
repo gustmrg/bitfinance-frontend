@@ -129,7 +129,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [ ] Gerenciamento de residências/famílias (adicionar/atualizar/excluir)
 - [x] Autenticação/Autorização
 - [ ] Salvar documentos (boleto/comprovante)
-- [ ] Página de Dashboard
+- [x] Página de Dashboard
 - [x] Página de Login
 - [x] Página de Contas a Pagar
 - [ ] Salvar arquivos localmente

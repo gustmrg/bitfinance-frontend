@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { CalendarClock, DollarSign, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,17 +19,21 @@ interface UpcomingBillsProps {
 }
 
 export function UpcomingBills({ bills }: UpcomingBillsProps) {
+  const { t } = useTranslation();
+
   return (
     <Card className="w-full col-span-4">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Upcoming Bills</CardTitle>
-            <CardDescription>Manage your upcoming payments</CardDescription>
+            <CardTitle>{t("dashboard.upcomingBills.title")}</CardTitle>
+            <CardDescription>
+              {t("dashboard.upcomingBills.description")}
+            </CardDescription>
           </div>
           <NavLink to="/dashboard/bills">
             <Button variant="outline" size="sm">
-              View All
+              {t("labels.viewAll")}
             </Button>
           </NavLink>
         </div>
@@ -66,7 +71,9 @@ export function UpcomingBills({ bills }: UpcomingBillsProps) {
                       <p className="font-medium">{bill.description}</p>
                       <div className="flex items-center text-xs text-muted-foreground">
                         <CalendarClock className="mr-1 h-3 w-3" />
-                        <span>Due {format(bill.dueDate, "MMM d")}</span>
+                        <span>
+                          {t("labels.dueIn")} {format(bill.dueDate, "MMM d")}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -85,9 +92,11 @@ export function UpcomingBills({ bills }: UpcomingBillsProps) {
           ) : (
             <div className="text-center py-6">
               <DollarSign className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <h3 className="mt-2 text-lg font-semibold">No Upcoming Bills</h3>
+              <h3 className="mt-2 text-lg font-semibold">
+                {t("dashboard.upcomingBills.emptyHeader")}
+              </h3>
               <p className="text-sm text-muted-foreground">
-                You're all caught up on payments!
+                {t("dashboard.upcomingBills.empty")}
               </p>
             </div>
           )}

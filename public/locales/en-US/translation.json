@@ -59,10 +59,25 @@
     "date": "Date",
     "profile": "Profile",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "viewAll": "View All",
+    "dueIn": "Due"
   },
   "dashboard": {
-    "subtitle": "Overview of your finances"
+    "subtitle": "Overview of your finances",
+    "upcomingBills": {
+      "title": "Upcoming Bills",
+      "description": "Manage your upcoming payments",
+      "emptyHeader": "No Upcoming Bills",
+      "empty": "You're all caught up on payments!"
+    },
+    "recentExpenses": {
+      "title": "Recent Expenses",
+      "subtitle": "Top Spending Categories",
+      "description": "View your most recent transactions",
+      "emptyHeader": "No Recent Expenses",
+      "empty": "You haven't added any expenses to this period yet!"
+    }
   },
   "auth": {
     "signUp": {

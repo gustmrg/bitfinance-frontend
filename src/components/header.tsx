@@ -13,6 +13,7 @@ import { Input } from "./ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Link } from "react-router-dom";
 import UserNavBar from "./user-navbar";
+import { LanguageSwitcher } from "./language-switcher";
 
 export default function Header() {
   return (
@@ -76,8 +77,10 @@ export default function Header() {
           </div>
         </form>
       </div>
-      <Button variant="ghost" size="icon">
+      <LanguageSwitcher />
+      <Button variant="ghost" size="icon" className="relative">
         <Bell className="h-5 w-5" />
+        <span className="absolute right-1 top-1 flex h-2 w-2 rounded-full bg-primary"></span>
       </Button>
       <UserNavBar />
     </header>

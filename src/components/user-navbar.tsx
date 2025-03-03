@@ -22,7 +22,10 @@ export default function UserNavBar() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/avatars/02.png" alt="Avatar Image" />
+              <AvatarImage
+                src="/bitfinance/assets/avatars/04.png"
+                alt="Avatar Image"
+              />
               <AvatarFallback>GM</AvatarFallback>
             </Avatar>
           </Button>
