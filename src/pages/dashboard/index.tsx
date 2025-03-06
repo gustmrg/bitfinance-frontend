@@ -30,7 +30,7 @@ export function Dashboard() {
       if (organizationId) {
         const response = await getUpcomingBills(organizationId);
         if (response) {
-          setBills(response.data);
+          setBills(response.data.reverse());
         }
       }
     };
