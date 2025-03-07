@@ -22,7 +22,12 @@ export type ExpenseResponseModel = {
     | "savings"
     | "education"
     | "entertainment"
-    | "miscellaneous";
+    | "miscellaneous"
+    | "travel"
+    | "pets"
+    | "gifts"
+    | "subscriptions"
+    | "taxes";
   amount: number;
   date: string;
 };

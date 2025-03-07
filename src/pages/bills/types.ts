@@ -14,7 +14,10 @@ export type Bill = {
     | "savings"
     | "education"
     | "entertainment"
-    | "miscellaneous";
+    | "miscellaneous"
+    | "subscriptions"
+    | "taxes"
+    | "pets";
   status: "created" | "due" | "paid" | "overdue" | "cancelled" | "upcoming";
   amountDue: number;
   amountPaid?: number | null;

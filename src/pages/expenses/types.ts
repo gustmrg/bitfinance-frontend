@@ -14,7 +14,12 @@ export type Expense = {
     | "savings"
     | "education"
     | "entertainment"
-    | "miscellaneous";
+    | "miscellaneous"
+    | "travel"
+    | "pets"
+    | "gifts"
+    | "subscriptions"
+    | "taxes";
   amount: number;
   status: "pending" | "paid" | "cancelled";
   occurredAt: string;
