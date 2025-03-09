@@ -157,6 +157,11 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
                       <SelectItem value="entertainment">
                         {t("labels.entertainment")}
                       </SelectItem>
+                      <SelectItem value="pets">{t("labels.pets")}</SelectItem>
+                      <SelectItem value="subscriptions">
+                        {t("labels.subscriptions")}
+                      </SelectItem>
+                      <SelectItem value="taxes">{t("labels.taxes")}</SelectItem>
                       <SelectItem value="miscellaneous">
                         {t("labels.miscellaneous")}
                       </SelectItem>

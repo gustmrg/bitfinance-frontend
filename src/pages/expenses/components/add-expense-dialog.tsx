@@ -160,6 +160,15 @@ export function AddExpenseDialog({ onAddExpense }: AddExpenseDialogProps) {
                       <SelectItem value="entertainment">
                         {t("labels.entertainment")}
                       </SelectItem>
+                      <SelectItem value="travel">
+                        {t("labels.travel")}
+                      </SelectItem>
+                      <SelectItem value="pets">{t("labels.pets")}</SelectItem>
+                      <SelectItem value="gifts">{t("labels.gifts")}</SelectItem>
+                      <SelectItem value="subscriptions">
+                        {t("labels.subscriptions")}
+                      </SelectItem>
+                      <SelectItem value="taxes">{t("labels.taxes")}</SelectItem>
                       <SelectItem value="miscellaneous">
                         {t("labels.miscellaneous")}
                       </SelectItem>
