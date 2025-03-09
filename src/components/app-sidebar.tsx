@@ -70,8 +70,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar {...props}>
       <SidebarHeader>
         <OrganizationSwitcher
-          versions={data.organizations}
-          defaultVersion={data.organizations[0]}
+          organizations={data.organizations}
+          defaultOrganization={data.organizations[0]}
         />
       </SidebarHeader>
       <SidebarContent>

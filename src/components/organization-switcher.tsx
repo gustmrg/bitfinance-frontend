@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { Check, ChevronsUpDown, DollarSign } from "lucide-react";
 
 import {
@@ -14,13 +14,14 @@ import {
 } from "@/components/ui/sidebar";
 
 export function OrganizationSwitcher({
-  versions,
-  defaultVersion,
+  organizations,
+  defaultOrganization,
 }: {
-  versions: string[];
-  defaultVersion: string;
+  organizations: string[];
+  defaultOrganization: string;
 }) {
-  const [selectedVersion, setSelectedVersion] = React.useState(defaultVersion);
+  const [selectedOrganization, setSelectedOrganization] =
+    useState(defaultOrganization);
 
   return (
     <SidebarMenu>
@@ -36,7 +37,7 @@ export function OrganizationSwitcher({
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">BitFinance</span>
-                <span className="">{selectedVersion}</span>
+                <span className="">{selectedOrganization}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -45,14 +46,16 @@ export function OrganizationSwitcher({
             className="w-[--radix-dropdown-menu-trigger-width]"
             align="start"
           >
-            {versions.map((version) => (
+            {organizations.map((organization) => (
               <DropdownMenuItem
-                key={version}
-                onSelect={() => setSelectedVersion(version)}
+                key={organization}
+                onSelect={() => setSelectedOrganization(organization)}
               >
-                {version}
+                {organization}
                 {""}
-                {version === selectedVersion && <Check className="ml-auto" />}
+                {organization === selectedOrganization && (
+                  <Check className="ml-auto" />
+                )}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
