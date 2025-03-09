@@ -3,6 +3,7 @@ import * as React from "react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -20,8 +21,14 @@ import {
   ReceiptText,
   Users,
 } from "lucide-react";
+import { NavUser } from "./nav-user";
 
 const data = {
+  user: {
+    name: "John Doe",
+    email: "johndoe@email.com",
+    avatar: "/avatars/04.png",
+  },
   organizations: ["Acme Inc", "Nord University", "Private Apartment"],
   navMain: [
     {
@@ -94,6 +101,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
