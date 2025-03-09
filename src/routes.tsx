@@ -9,7 +9,6 @@ import { SignIn } from "./pages/auth/sign-in";
 import { SignUp } from "./pages/auth/sign-up";
 import { Dashboard } from "./pages/dashboard";
 import { Expenses } from "./pages/expenses";
-import { CreateOrganization } from "./pages/onboarding/create-organization";
 
 export const router = createBrowserRouter(
   [
@@ -17,10 +16,6 @@ export const router = createBrowserRouter(
       path: "/",
       element: <Home />,
       errorElement: <Error />,
-    },
-    {
-      path: "/onboarding",
-      element: <CreateOrganization />,
     },
     {
       path: "/dashboard",
