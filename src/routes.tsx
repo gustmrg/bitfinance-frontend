@@ -30,6 +30,10 @@ export const router = createBrowserRouter(
           path: "bills",
           element: <Bills />,
         },
+        {
+          path: "expenses",
+          element: <Expenses />,
+        },
       ],
     },
     {

@@ -12,16 +12,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Organization } from "@/auth/auth-provider";
 
 export function OrganizationSwitcher({
   organizations,
   defaultOrganization,
 }: {
-  organizations: string[];
-  defaultOrganization: string;
+  organizations: Organization[];
+  defaultOrganization: Organization;
 }) {
   const [selectedOrganization, setSelectedOrganization] =
-    useState(defaultOrganization);
+    useState<Organization>(defaultOrganization);
 
   return (
     <SidebarMenu>
@@ -37,7 +38,7 @@ export function OrganizationSwitcher({
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">BitFinance</span>
-                <span className="">{selectedOrganization}</span>
+                <span className="">{selectedOrganization.name}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -48,10 +49,10 @@ export function OrganizationSwitcher({
           >
             {organizations.map((organization) => (
               <DropdownMenuItem
-                key={organization}
+                key={organization.id}
                 onSelect={() => setSelectedOrganization(organization)}
               >
-                {organization}
+                {organization.name}
                 {""}
                 {organization === selectedOrganization && (
                   <Check className="ml-auto" />
