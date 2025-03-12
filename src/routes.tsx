@@ -10,6 +10,7 @@ import { SignUp } from "./pages/auth/sign-up";
 import { Dashboard } from "./pages/dashboard";
 import { Expenses } from "./pages/expenses";
 import { NewDashboardLayout } from "./layouts/DashboardLayout";
+import { AddBill } from "./pages/bills/add";
 
 export const router = createBrowserRouter(
   [
@@ -28,7 +29,16 @@ export const router = createBrowserRouter(
         },
         {
           path: "bills",
-          element: <Bills />,
+          children: [
+            {
+              path: "",
+              element: <Bills />,
+            },
+            {
+              path: "add",
+              element: <AddBill />,
+            },
+          ],
         },
         {
           path: "expenses",

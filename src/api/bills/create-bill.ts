@@ -42,6 +42,9 @@ export interface CreateBillResponse {
     | "savings"
     | "education"
     | "entertainment"
+    | "pets"
+    | "subscriptions"
+    | "taxes"
     | "miscellaneous";
   status: "created" | "due" | "paid" | "overdue" | "cancelled" | "upcoming";
   amountDue: number;
@@ -51,7 +54,7 @@ export interface CreateBillResponse {
   paidDate?: string | null;
 }
 
-export async function AddBill({
+export async function CreateBill({
   description,
   category,
   status,

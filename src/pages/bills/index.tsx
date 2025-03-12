@@ -11,18 +11,17 @@ import {
 import { useEffect, useState } from "react";
 import { Bill } from "./types";
 import { getBills } from "@/api/bills/get-bills";
-import { AddBill } from "@/api/bills/add-bill";
 import { UpdateBill } from "@/api/bills/update-bill";
 import { DeleteBill } from "@/api/bills/delete-bill";
 import { useAuth } from "@/auth/auth-provider";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
-import { AddBillDialog } from "./components/add-bill-dialog";
+import { Eye, Pencil, Plus, ReceiptText, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { dateFormatter } from "@/utils/formatter";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
@@ -113,45 +112,8 @@ export function Bills() {
     }
   };
 
-  const handleAddBill = async (data: any) => {
-    try {
-      const response = await AddBill({
-        description: data.description,
-        category: data.category,
-        status: "upcoming",
-        dueDate: data.dueDate.toISOString(),
-        amountDue: data.amount,
-        paymentDate: null,
-        amountPaid: null,
-        organizationId: selectedOrganization!.id,
-      });
-
-      if (response) {
-        const newBill: Bill = {
-          id: response.id,
-          description: response.description,
-          category: response.category,
-          status: response.status.toLowerCase() as
-            | "created"
-            | "due"
-            | "paid"
-            | "overdue"
-            | "cancelled"
-            | "upcoming",
-          amountDue: response.amountDue,
-          amountPaid: response.amountPaid || null,
-          createdDate: response.createdDate,
-          dueDate: response.dueDate,
-          paymentDate: response.paidDate || null,
-          deletedDate: null,
-          notes: data.notes || "",
-        };
-
-        setBills((prevBills) => [...prevBills, newBill]);
-      }
-    } catch (error) {
-      console.error("Failed to add the bill:", error);
-    }
+  const getTotalAmount = () => {
+    return bills.reduce((total, bill) => total + bill.amountDue, 0).toFixed(2);
   };
 
   const handleDeleteBill = async (id: string) => {
@@ -214,8 +176,16 @@ export function Bills() {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex flex-col md:flex-row justify-between space-y-2 md:space-y-0">
         <h2 className="text-3xl font-bold tracking-tight">Bills</h2>
-        <div className="flex flex-row items-center gap-4">
-          <AddBillDialog onAddBill={handleAddBill} />
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <Link to="add">
+            <Button
+              size="lg"
+              className="h-8 gap-2 cursor-pointer p-4 font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-sm"
+            >
+              <Plus />
+              {t("bills.cta")}
+            </Button>
+          </Link>
           <CalendarDateRangePicker
             startDate={dateRange?.from}
             endDate={dateRange?.to}
@@ -228,127 +198,75 @@ export function Bills() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Invoice</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead className="hidden md:table-cell">Category</TableHead>
                 <TableHead>Due Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="">Amount</TableHead>
-                <TableHead></TableHead>
+                <TableHead className="hidden md:table-cell">Status</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {bills.map((bill) => (
                 <TableRow key={bill.id}>
-                  <TableCell className="font-medium">{bill.id}</TableCell>
                   <TableCell>{bill.description}</TableCell>
-                  <TableCell>{bill.category}</TableCell>
-                  <TableCell>{bill.dueDate}</TableCell>
-                  <TableCell>{bill.status}</TableCell>
-                  <TableCell className="">{bill.amountDue}</TableCell>
-                  <TableCell>{bill.status}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {bill.category}
+                  </TableCell>
+                  <TableCell>
+                    {dateFormatter.format(new Date(bill.dueDate))}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {getStatusBadge(bill.status)}
+                  </TableCell>
+                  <TableCell>${bill.amountDue.toFixed(2)}</TableCell>
+                  <TableCell className="flex flex-row space-x-2 items-center">
+                    <Button size="icon" variant="outline">
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button size="icon" variant="outline">
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button size="icon" variant="outline">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={5}>Total</TableCell>
-                <TableCell className="font-medium">$2,500.00</TableCell>
-              </TableRow>
-            </TableFooter>
+            {bills.length > 0 && (
+              <>
+                {/* Desktop Footer */}
+                <TableFooter className="hidden md:table-footer-group">
+                  <TableRow className="font-semibold">
+                    <TableCell colSpan={4}>Total</TableCell>
+                    <TableCell>${getTotalAmount()}</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableFooter>
+                {/* Mobile Footer */}
+                <TableFooter className="table-footer-group md:hidden">
+                  <TableRow className="font-semibold">
+                    <TableCell colSpan={2}>Total</TableCell>
+                    <TableCell>${getTotalAmount()}</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableFooter>
+              </>
+            )}
           </Table>
+          {bills.length === 0 ? (
+            <div className="text-center py-6">
+              <ReceiptText className="mx-auto h-12 w-12 text-muted-foreground/50" />
+              <h3 className="mt-2 text-lg font-semibold">No Bills</h3>
+              <p className="text-sm text-muted-foreground">
+                You haven&apos;t added any bills. Start tracking your expenses
+                by adding one now!
+              </p>
+            </div>
+          ) : null}
         </CardContent>
       </Card>
     </div>
   );
-
-  // return (
-  //   <div className="grow m-6 p-6 lg:rounded-lg lg:bg-white lg:p-10 lg:shadow-sm dark:lg:bg-zinc-900">
-  //     <div className="flex flex-row items-end justify-between gap-4">
-  //       <div className="space-y-2">
-  //         <h1 className="text-2xl/8 font-semibold text-zinc-950 sm:text-xl/8 dark:text-white">
-  //           {t("bills.title")}
-  //         </h1>
-  //         <p className="text-sm font-regular text-zinc-500">
-  //           {t("bills.subtitle")}
-  //         </p>
-  //         <div className="mt-2">
-  //           <CalendarDateRangePicker
-  //             startDate={dateRange?.from}
-  //             endDate={dateRange?.to}
-  //             onDateChange={handleDateFilterChange}
-  //           />
-  //         </div>
-  //       </div>
-  //       <AddBillDialog onAddBill={handleAddBill} />
-  //     </div>
-  //     <div className="flow-root">
-  //       <div className="mt-8 overflow-x-auto whitespace-nowrap">
-  //         <Table className="min-w-full text-left text-sm/6 text-zinc-950 dark:text-white">
-  //           <TableHeader className="font-sans text-zinc-500 dark:text-zinc-400">
-  //             <TableRow>
-  //               <TableHead className="font-semibold">
-  //                 {t("labels.description")}
-  //               </TableHead>
-  //               <TableHead className="font-semibold">
-  //                 {t("labels.category")}
-  //               </TableHead>
-  //               <TableHead className="font-semibold">
-  //                 {t("labels.dueDate")}
-  //               </TableHead>
-  //               <TableHead className="font-semibold text-right">
-  //                 {t("labels.amount")}
-  //               </TableHead>
-  //               <TableHead className="font-semibold text-center">
-  //                 {t("labels.status")}
-  //               </TableHead>
-  //               <TableHead className="font-semibold text-right"></TableHead>
-  //             </TableRow>
-  //           </TableHeader>
-  //           <TableBody className="font-sans">
-  //             {bills &&
-  //               bills.map((bill: Bill) => (
-  //                 <TableRow key={bill.id}>
-  //                   <TableCell className="font-semibold">
-  //                     {bill.description}
-  //                   </TableCell>
-  //                   <TableCell className="capitalize dark:text-zinc-500">
-  //                     {bill.category}
-  //                   </TableCell>
-  //                   <TableCell className="dark:text-zinc-500">
-  //                     {dateFormatter.format(new Date(bill.dueDate))}
-  //                   </TableCell>
-  //                   <TableCell className="text-right">
-  //                     ${" "}
-  //                     {bill.amountPaid?.toFixed(2) ?? bill.amountDue.toFixed(2)}
-  //                   </TableCell>
-  //                   <TableCell className="text-center">
-  //                     {getStatusBadge(bill.status)}
-  //                   </TableCell>
-  //                   <TableCell className="text-right">
-  //                     <DropdownMenu>
-  //                       <DropdownMenuTrigger asChild>
-  //                         <Button variant="ghost" className="h-8 w-8 p-0">
-  //                           <span className="sr-only">Open menu</span>
-  //                           <MoreHorizontal className="h-4 w-4" />
-  //                         </Button>
-  //                       </DropdownMenuTrigger>
-  //                       <DropdownMenuContent align="end">
-  //                         <EditBillDialog bill={bill} onEdit={handleEditBill} />
-  //                         <DetailsBillDialog bill={bill} />
-  //                         <DeleteBillDialog
-  //                           id={bill.id}
-  //                           onDelete={handleDeleteBill}
-  //                         />
-  //                       </DropdownMenuContent>
-  //                     </DropdownMenu>
-  //                   </TableCell>
-  //                 </TableRow>
-  //               ))}
-  //           </TableBody>
-  //         </Table>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
 }
