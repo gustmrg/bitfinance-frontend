@@ -1,3 +1,21 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { getBills } from "@/api/bills/get-bills";
+import { UpdateBill } from "@/api/bills/update-bill";
+import { DeleteBill } from "@/api/bills/delete-bill";
+import { useAuth } from "@/auth/auth-provider";
+import { dateFormatter } from "@/utils/formatter";
+import { Bill } from "./types";
+
+import { DetailsBillDialog } from "./components/details-bill-dialog";
+import { DeleteBillDialog } from "./components/delete-bill-dialog";
+import { EditBillDialog } from "./components/edit-bill-dialog";
+import { Plus, ReceiptText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRange } from "react-day-picker";
 import { StatusBadge } from "@/components/ui/status-badge";
 import {
   Table,
@@ -8,20 +26,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
-import { Bill } from "./types";
-import { getBills } from "@/api/bills/get-bills";
-import { UpdateBill } from "@/api/bills/update-bill";
-import { DeleteBill } from "@/api/bills/delete-bill";
-import { useAuth } from "@/auth/auth-provider";
-import { Link, useNavigate } from "react-router-dom";
-import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
-import { DateRange } from "react-day-picker";
-import { useTranslation } from "react-i18next";
-import { Card, CardContent } from "@/components/ui/card";
-import { Eye, Pencil, Plus, ReceiptText, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { dateFormatter } from "@/utils/formatter";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
@@ -221,15 +225,12 @@ export function Bills() {
                   </TableCell>
                   <TableCell>${bill.amountDue.toFixed(2)}</TableCell>
                   <TableCell className="flex flex-row space-x-2 items-center">
-                    <Button size="icon" variant="outline">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="outline">
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="outline">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <DetailsBillDialog bill={bill} />
+                    <EditBillDialog bill={bill} onEdit={handleEditBill} />
+                    <DeleteBillDialog
+                      id={bill.id}
+                      onDelete={handleDeleteBill}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

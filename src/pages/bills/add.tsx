@@ -70,8 +70,6 @@ export function AddBill() {
   const navigate = useNavigate();
 
   async function onSubmit(data: AddBillFormValues) {
-    console.log(data);
-
     try {
       const response = await CreateBill({
         description: data.description,

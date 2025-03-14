@@ -11,8 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { CalendarIcon, PencilLine } from "lucide-react";
+import { CalendarIcon, Pencil } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
@@ -60,7 +59,7 @@ interface EditBillDialogProps {
   onEdit: (data: any) => void;
 }
 
-export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
+export function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
   const [open, setOpen] = useState<boolean>(false);
   const form = useForm<EditBillForm>({
     resolver: zodResolver(EditBillSchema),
@@ -88,10 +87,14 @@ export default function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <PencilLine className="mr-2 h-4 w-4" />
-          <span>{t("labels.edit")}</span>
-        </DropdownMenuItem>
+        <Button
+          size="icon"
+          variant="outline"
+          onSelect={(e) => e.preventDefault()}
+        >
+          <Pencil className="h-4 w-4" />
+          <span className="sr-only">{t("labels.edit")}</span>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
