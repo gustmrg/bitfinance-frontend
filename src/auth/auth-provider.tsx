@@ -1,14 +1,14 @@
 import { api, privateAPI } from "@/lib/axios";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-type User = {
+export type User = {
   id: string;
   username: string;
   email: string;
-  organizations?: Organization[] | null;
+  organizations: Organization[];
 };
 
-type Organization = {
+export type Organization = {
   id: string;
   name: string;
 };

@@ -5,14 +5,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { FileText, Paperclip } from "lucide-react";
+import { Eye, Paperclip } from "lucide-react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Bill } from "../types";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 
 interface DetailsBillDialogProps {
   bill: Bill;
@@ -47,10 +47,14 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <FileText className="mr-2 h-4 w-4" />
-          <span>{t("labels.details")}</span>
-        </DropdownMenuItem>
+        <Button
+          size="icon"
+          variant="outline"
+          onSelect={(e) => e.preventDefault()}
+        >
+          <Eye className="h-4 w-4" />
+          <span className="sr-only">{t("labels.details")}</span>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader className="px-4 sm:px-0">
