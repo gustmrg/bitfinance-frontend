@@ -82,7 +82,7 @@ export function AddBill() {
         organizationId: selectedOrganization!.id,
       });
       if (response) {
-        navigate("/new-dashboard/bills");
+        navigate("/dashboard/bills");
       }
     } catch (error) {
       console.error("Failed to add the bill:", error);

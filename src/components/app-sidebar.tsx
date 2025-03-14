@@ -111,9 +111,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuButton
                       asChild
                       isActive={
-                        location.pathname.substring(
-                          "/new-dashboard/".length
-                        ) === item.url
+                        location.pathname.substring("/dashboard/".length) ===
+                        item.url
                       }
                     >
                       <Link to={item.url}>

@@ -48,7 +48,7 @@ export function SignIn() {
     });
     if (isSuccess) {
       await getMe();
-      navigate("/new-dashboard");
+      navigate("/dashboard");
     } else {
       console.log("Login failed");
     }
