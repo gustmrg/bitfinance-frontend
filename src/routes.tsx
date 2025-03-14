@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import { DashboardLayout } from "./pages/_layouts/dashboard-layout";
 import { AuthLayout } from "./pages/_layouts/auth-layout";
 import { Home } from "./pages/home";
 import { Error } from "./pages/error";
@@ -9,8 +8,8 @@ import { SignIn } from "./pages/auth/sign-in";
 import { SignUp } from "./pages/auth/sign-up";
 import { Dashboard } from "./pages/dashboard";
 import { Expenses } from "./pages/expenses";
-import { NewDashboardLayout } from "./layouts/DashboardLayout";
 import { AddBill } from "./pages/bills/add";
+import { DashboardLayout } from "./layouts/dashboard-layout";
 
 export const router = createBrowserRouter(
   [
@@ -20,8 +19,8 @@ export const router = createBrowserRouter(
       errorElement: <Error />,
     },
     {
-      path: "/new-dashboard",
-      element: <NewDashboardLayout />,
+      path: "/dashboard",
+      element: <DashboardLayout />,
       children: [
         {
           path: "",
@@ -39,24 +38,6 @@ export const router = createBrowserRouter(
               element: <AddBill />,
             },
           ],
-        },
-        {
-          path: "expenses",
-          element: <Expenses />,
-        },
-      ],
-    },
-    {
-      path: "/dashboard",
-      element: <DashboardLayout />,
-      children: [
-        {
-          path: "",
-          element: <Dashboard />,
-        },
-        {
-          path: "bills",
-          element: <Bills />,
         },
         {
           path: "expenses",

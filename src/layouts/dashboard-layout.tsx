@@ -16,7 +16,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-export function NewDashboardLayout() {
+export function DashboardLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />

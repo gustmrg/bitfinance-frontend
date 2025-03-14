@@ -11,10 +11,16 @@ import {
   ExpenseResponseModel,
   getRecentExpenses,
 } from "@/api/dashboard/get-recent-expenses";
+import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRange } from "react-day-picker";
 
 export function Dashboard() {
   const [bills, setBills] = useState<Bill[]>([]);
   const [expenses, setExpenses] = useState<ExpenseResponseModel[]>([]);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+  });
   const { isAuthenticated, isLoading, selectedOrganization } = useAuth();
   const navigate = useNavigate();
 
@@ -68,10 +74,21 @@ export function Dashboard() {
     fetchRecentExpenses();
   }, [selectedOrganization]);
 
+  const handleDateFilterChange = (newDate: DateRange) => {
+    setDateRange(newDate);
+  };
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <CalendarDateRangePicker
+            startDate={dateRange?.from}
+            endDate={dateRange?.to}
+            onDateChange={handleDateFilterChange}
+          />
+        </div>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
