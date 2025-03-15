@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Check, ChevronsUpDown, DollarSign } from "lucide-react";
 
 import {
@@ -12,17 +11,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Organization } from "@/auth/auth-provider";
+import { Organization, useAuth } from "@/auth/auth-provider";
 
 export function OrganizationSwitcher({
   organizations,
-  defaultOrganization,
 }: {
   organizations: Organization[];
   defaultOrganization: Organization;
 }) {
-  const [selectedOrganization, setSelectedOrganization] =
-    useState<Organization>(defaultOrganization);
+  const { selectedOrganization, setSelectedOrganization } = useAuth();
 
   return (
     <SidebarMenu>
@@ -38,7 +35,7 @@ export function OrganizationSwitcher({
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">BitFinance</span>
-                <span className="">{selectedOrganization.name}</span>
+                <span className="">{selectedOrganization!.name}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
