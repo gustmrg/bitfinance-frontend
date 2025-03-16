@@ -15,6 +15,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/toaster";
 
 export function DashboardLayout() {
   return (
@@ -40,6 +41,7 @@ export function DashboardLayout() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <Outlet />
+          <Toaster />
         </div>
       </SidebarInset>
     </SidebarProvider>

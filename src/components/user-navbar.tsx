@@ -1,5 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/auth/auth-provider";
+import { useTranslation } from "react-i18next";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,9 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { useAuth } from "@/auth/auth-provider";
-import { useTranslation } from "react-i18next";
+} from "@/components/ui/dropdown-menu";
 
 export default function UserNavBar() {
   const { logout, user, isAuthenticated } = useAuth();
@@ -41,7 +43,9 @@ export default function UserNavBar() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>{t("labels.profile")}</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link to="account">{t("labels.profile")}</Link>
+            </DropdownMenuItem>
             <DropdownMenuItem>{t("labels.settings")}</DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />

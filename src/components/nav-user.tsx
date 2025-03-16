@@ -1,3 +1,6 @@
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/auth/auth-provider";
+
 import {
   BadgeCheck,
   Bell,
@@ -6,7 +9,6 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -31,6 +33,13 @@ export interface NavUserProps {
 
 export function NavUser({ name, email }: NavUserProps) {
   const { isMobile } = useSidebar();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const onLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <SidebarMenu>
@@ -89,10 +98,12 @@ export function NavUser({ name, email }: NavUserProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
+              <Link to="account">
+                <DropdownMenuItem>
+                  <BadgeCheck />
+                  Account
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem>
                 <CreditCard />
                 Billing
@@ -103,7 +114,7 @@ export function NavUser({ name, email }: NavUserProps) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={onLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
