@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 export type User = {
   id: string;
   username: string;
+  fullName: string;
   email: string;
   organizations: Organization[];
 };
@@ -114,6 +115,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         let user: User = {
           id: response.data.id,
           username: response.data.username,
+          fullName: response.data.fullName,
           email: response.data.email,
           organizations: response.data.organizations ?? null,
         };
