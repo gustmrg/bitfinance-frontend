@@ -1,15 +1,17 @@
 import { createBrowserRouter } from "react-router-dom";
+
 import { AuthLayout } from "./pages/_layouts/auth-layout";
-import { Home } from "./pages/home";
-import { Error } from "./pages/error";
-import { NotFound } from "./pages/404";
+import { DashboardLayout } from "./layouts/dashboard-layout";
+import { AddBill } from "./pages/bills/add";
+import { Account } from "./pages/account";
 import { Bills } from "./pages/bills";
-import { SignIn } from "./pages/auth/sign-in";
-import { SignUp } from "./pages/auth/sign-up";
 import { Dashboard } from "./pages/dashboard";
 import { Expenses } from "./pages/expenses";
-import { AddBill } from "./pages/bills/add";
-import { DashboardLayout } from "./layouts/dashboard-layout";
+import { Error } from "./pages/error";
+import { Home } from "./pages/home";
+import { NotFound } from "./pages/404";
+import { SignIn } from "./pages/auth/sign-in";
+import { SignUp } from "./pages/auth/sign-up";
 
 export const router = createBrowserRouter(
   [
@@ -42,6 +44,10 @@ export const router = createBrowserRouter(
         {
           path: "expenses",
           element: <Expenses />,
+        },
+        {
+          path: "account",
+          element: <Account />,
         },
       ],
     },

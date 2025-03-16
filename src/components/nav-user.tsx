@@ -1,3 +1,6 @@
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/auth/auth-provider";
+
 import {
   BadgeCheck,
   Bell,
@@ -6,7 +9,6 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -23,8 +25,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/auth/auth-provider";
-import { useNavigate } from "react-router-dom";
 
 export interface NavUserProps {
   name: string;
@@ -98,10 +98,12 @@ export function NavUser({ name, email }: NavUserProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
+              <Link to="account">
+                <DropdownMenuItem>
+                  <BadgeCheck />
+                  Account
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem>
                 <CreditCard />
                 Billing
