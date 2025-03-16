@@ -40,8 +40,6 @@ export function Account() {
       const response = await UpdateProfile(data);
 
       if (response) {
-        console.log(response);
-
         toast({
           title: "Profile updated",
           description:
@@ -49,7 +47,11 @@ export function Account() {
         });
       }
     } catch (error) {
-      console.error("Error updating account:", error);
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+        variant: "destructive",
+      });
     }
   }
 
