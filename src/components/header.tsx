@@ -1,6 +1,5 @@
 import {
   Barcode,
-  Bell,
   Home,
   Menu,
   Package2,
@@ -14,6 +13,7 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Link } from "react-router-dom";
 import UserNavBar from "./user-navbar";
 import { LanguageSwitcher } from "./language-switcher";
+import { ModeToggle } from "./mode-toggle";
 
 export default function Header() {
   return (
@@ -78,10 +78,7 @@ export default function Header() {
         </form>
       </div>
       <LanguageSwitcher />
-      <Button variant="ghost" size="icon" className="relative">
-        <Bell className="h-5 w-5" />
-        <span className="absolute right-1 top-1 flex h-2 w-2 rounded-full bg-primary"></span>
-      </Button>
+      <ModeToggle />
       <UserNavBar />
     </header>
   );
