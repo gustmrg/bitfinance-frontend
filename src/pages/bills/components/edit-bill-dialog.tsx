@@ -262,7 +262,14 @@ export function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
               render={({ field }) => (
                 <FormItem className="grid grid-cols-4 items-center gap-4">
                   <FormLabel className="text-right">Status</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={(val) => {
+                      if (val !== field.value) {
+                        field.onChange(val);
+                      }
+                    }}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger className="col-span-3">
                         <SelectValue placeholder={t("labels.selectStatus")} />
