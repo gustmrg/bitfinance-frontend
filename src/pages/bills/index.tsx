@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getBills } from "@/api/bills/get-bills";
+import { CreateBill } from "@/api/bills/create-bill";
 import { UpdateBill } from "@/api/bills/update-bill";
 import { DeleteBill } from "@/api/bills/delete-bill";
 import { useAuth } from "@/auth/auth-provider";
@@ -11,8 +12,7 @@ import { Bill } from "./types";
 import { DetailsBillDialog } from "./components/details-bill-dialog";
 import { DeleteBillDialog } from "./components/delete-bill-dialog";
 import { EditBillDialog } from "./components/edit-bill-dialog";
-import { Plus, ReceiptText } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ReceiptText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AddBillDialog } from "./components/add-bill-dialog";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
@@ -120,6 +121,47 @@ export function Bills() {
     return bills.reduce((total, bill) => total + bill.amountDue, 0).toFixed(2);
   };
 
+  const handleAddBill = async (data: any) => {
+    try {
+      const response = await CreateBill({
+        description: data.description,
+        category: data.category,
+        status: "upcoming",
+        dueDate: data.dueDate.toISOString(),
+        amountDue: data.amount,
+        paymentDate: null,
+        amountPaid: null,
+        organizationId: selectedOrganization!.id,
+      });
+
+      if (response) {
+        const newBill: Bill = {
+          id: response.id,
+          description: response.description,
+          category: response.category,
+          status: response.status.toLowerCase() as
+            | "created"
+            | "due"
+            | "paid"
+            | "overdue"
+            | "cancelled"
+            | "upcoming",
+          amountDue: response.amountDue,
+          amountPaid: response.amountPaid || null,
+          createdDate: response.createdDate,
+          dueDate: response.dueDate,
+          paymentDate: response.paidDate || null,
+          deletedDate: null,
+          notes: data.notes || "",
+        };
+
+        setBills((prevBills) => [...prevBills, newBill]);
+      }
+    } catch (error) {
+      console.error("Failed to add the bill:", error);
+    }
+  };
+
   const handleDeleteBill = async (id: string) => {
     try {
       const response = await DeleteBill(id, selectedOrganization!.id);
@@ -181,15 +223,7 @@ export function Bills() {
       <div className="flex flex-col md:flex-row justify-between space-y-2 md:space-y-0">
         <h2 className="text-3xl font-bold tracking-tight">Bills</h2>
         <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <Link to="add">
-            <Button
-              size="lg"
-              className="h-8 gap-2 cursor-pointer p-4 font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-sm"
-            >
-              <Plus />
-              {t("bills.cta")}
-            </Button>
-          </Link>
+          <AddBillDialog onAddBill={handleAddBill} />
           <CalendarDateRangePicker
             startDate={dateRange?.from}
             endDate={dateRange?.to}
