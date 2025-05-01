@@ -374,7 +374,11 @@ export function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
               >
                 {t("labels.cancel")}
               </Button>
-              <Button variant="default" type="submit">
+              <Button
+                variant="default"
+                type="submit"
+                className="text-white bg-blue-600 hover:bg-blue-500 shadow-sm"
+              >
                 {t("labels.confirm")}
               </Button>
             </DialogFooter>

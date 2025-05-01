@@ -50,6 +50,9 @@ const AddBillSchema = z.object({
     "savings",
     "education",
     "entertainment",
+    "pets",
+    "subscriptions",
+    "taxes",
     "miscellaneous",
   ]),
   amount: z.coerce

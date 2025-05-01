@@ -17,6 +17,9 @@ export interface CreateBillRequest {
     | "savings"
     | "education"
     | "entertainment"
+    | "pets"
+    | "subscriptions"
+    | "taxes"
     | "miscellaneous";
   status: "created" | "due" | "paid" | "overdue" | "cancelled" | "upcoming";
   dueDate: string;
