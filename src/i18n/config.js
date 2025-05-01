@@ -8,18 +8,21 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: "en",
+    fallbackLng: "en-US",
     debug: process.env.NODE_ENV === "development",
     backend: {
       loadPath: "/bitfinance/locales/{{lng}}/translation.json",
     },
     detection: {
-      order: ["navigator", "htmlTag", "path", "subdomain"], // Ordem de detecção
-      caches: [], // Não usar cache
+      order: ["navigator", "htmlTag", "path", "subdomain"],
+      caches: [],
+    },
+    loadLocale: (lng, ns) => {
+      if (lng === "pt") {
+        return "pt-BR";
+      }
+      return lng;
     },
   });
-
-// Log do idioma detectado
-console.log("Idioma detectado:", i18n.language);
 
 export default i18n;
