@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import {
@@ -16,8 +16,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
+import React from "react";
 
 export function DashboardLayout() {
+  const breadcrumbs = useBreadcrumbs();
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -27,15 +31,23 @@ export function DashboardLayout() {
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">
-                  Building Your Application
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-              </BreadcrumbItem>
+              {breadcrumbs.map((crumb) => (
+                <React.Fragment key={crumb.path}>
+                  <BreadcrumbItem>
+                    {crumb.isLast ? (
+                      // Last item is the current page
+                      <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                    ) : (
+                      // Intermediate items are links
+                      <BreadcrumbLink asChild>
+                        <Link to={crumb.path}>{crumb.label}</Link>
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                  {/* Add separator if not the last item */}
+                  {!crumb.isLast && <BreadcrumbSeparator />}
+                </React.Fragment>
+              ))}
             </BreadcrumbList>
           </Breadcrumb>
         </header>
