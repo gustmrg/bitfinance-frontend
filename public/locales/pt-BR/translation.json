@@ -126,6 +126,10 @@
       "add": {
         "title": "Adicionar Nova Despesa",
         "description": "Adicione uma nova despesa às suas transações. Clique para adicionar quando terminar."
+      },
+      "delete": {
+        "title": "Excluir Despesa",
+        "description": "Tem certeza de que deseja excluir esta despesa? Todos os seus dados serão removidos permanentemente e esta ação não pode ser desfeita."
       }
     }
   },

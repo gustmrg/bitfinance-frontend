@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash2 } from "lucide-react";
+import { ReceiptText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AddExpenseDialog } from "./components/add-expense-dialog";
 import { useAuth } from "@/auth/auth-provider";
@@ -21,6 +21,8 @@ import { AddExpense } from "@/api/expenses/add-expense";
 import { dateFormatter } from "@/utils/formatter";
 import { DeleteExpense } from "@/api/expenses/delete-expense";
 import { useTranslation } from "react-i18next";
+import { Card, CardContent } from "@/components/ui/card";
+import { DeleteExpenseDialog } from "./components/delete-expense-dialog";
 
 export function Expenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -102,6 +104,12 @@ export function Expenses() {
     }
   };
 
+  const getTotalAmount = () => {
+    return expenses
+      .reduce((total, expense) => total + expense.amount, 0)
+      .toFixed(2);
+  };
+
   const handleAddExpense = async (data: any) => {
     try {
       const response = await AddExpense({
@@ -150,27 +158,21 @@ export function Expenses() {
   };
 
   return (
-    <div className="grow m-6 p-6 lg:rounded-lg lg:bg-white lg:p-10 lg:shadow-sm dark:lg:bg-zinc-900">
-      <div className="flex flex-row items-end justify-between gap-4">
-        <div className="space-y-2">
-          <h1 className="text-2xl/8 font-semibold text-zinc-950 sm:text-xl/8 dark:text-white">
-            {t("expenses.title")}
-          </h1>
-          <p className="text-sm font-regular text-zinc-500">
-            {t("expenses.subtitle")}
-          </p>
-          <div className="mt-2">
-            <CalendarDateRangePicker
-              startDate={dateRange?.from}
-              endDate={dateRange?.to}
-              onDateChange={handleDateFilterChange}
-            />
-          </div>
+    <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex flex-col md:flex-row justify-between space-y-2 md:space-y-0">
+        <h2 className="text-3xl font-bold tracking-tight">Expenses</h2>
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <AddExpenseDialog onAddExpense={handleAddExpense} />
+          <CalendarDateRangePicker
+            startDate={dateRange?.from}
+            endDate={dateRange?.to}
+            onDateChange={handleDateFilterChange}
+          />
         </div>
-        <AddExpenseDialog onAddExpense={handleAddExpense} />
       </div>
-      <div className="flow-root">
-        <div className="mt-8 overflow-x-auto whitespace-nowrap">
+
+      <Card className="w-full col-span-8">
+        <CardContent className="p-0">
           <Table className="min-w-full text-left text-sm/6 text-zinc-950 dark:text-white">
             <TableHeader className="font-sans text-zinc-500 dark:text-zinc-400">
               <TableRow>
@@ -184,10 +186,10 @@ export function Expenses() {
                   {t("labels.date")}
                 </TableHead>
                 <TableHead className="font-semibold">
-                  {t("labels.amount")}
+                  {t("labels.createdBy")}
                 </TableHead>
                 <TableHead className="font-semibold">
-                  {t("labels.createdBy")}
+                  {t("labels.amount")}
                 </TableHead>
                 <TableHead className="font-semibold text-center">
                   Status
@@ -208,35 +210,42 @@ export function Expenses() {
                     <TableCell className="dark:text-zinc-500">
                       {dateFormatter.format(new Date(expense.occurredAt))}
                     </TableCell>
-                    <TableCell>$ {expense.amount.toFixed(2)}</TableCell>
                     <TableCell>{expense.createdBy}</TableCell>
+                    <TableCell>$ {expense.amount.toFixed(2)}</TableCell>
                     <TableCell className="text-center">
                       {getStatusBadge(expense.status)}
                     </TableCell>
                     <TableCell>
-                      <Button
-                        variant="link"
-                        className="h-8 w-8 p-0"
-                        onClick={() => {}}
-                      >
-                        <span className="sr-only">{t("labels.edit")}</span>
-                        <Pencil className="h-4 w-4 text-gray-950" />
-                      </Button>
-                      <Button
-                        variant="link"
-                        className="h-8 w-8 p-0"
-                        onClick={() => handleDeleteExpense(expense.id)}
-                      >
-                        <span className="sr-only">{t("labels.delete")}</span>
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                      </Button>
+                      <DeleteExpenseDialog
+                        id={expense.id}
+                        onDelete={handleDeleteExpense}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
             </TableBody>
+            {expenses.length > 0 && (
+              <TableFooter className="hidden md:table-footer-group">
+                <TableRow className="font-semibold">
+                  <TableCell colSpan={4}>Total</TableCell>
+                  <TableCell colSpan={1}>${getTotalAmount()}</TableCell>
+                  <TableCell colSpan={2}></TableCell>
+                </TableRow>
+              </TableFooter>
+            )}
           </Table>
-        </div>
-      </div>
+          {expenses.length === 0 ? (
+            <div className="text-center py-6">
+              <ReceiptText className="mx-auto h-12 w-12 text-muted-foreground/50" />
+              <h3 className="mt-2 text-lg font-semibold">No Expenses</h3>
+              <p className="text-sm text-muted-foreground">
+                You haven&apos;t added any expenses. Start tracking your
+                expenses by adding one now!
+              </p>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
     </div>
   );
 }

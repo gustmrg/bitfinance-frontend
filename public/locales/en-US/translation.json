@@ -130,6 +130,10 @@
       "details": {
         "title": "Add New Expense",
         "description": "Add a new expense to your transactions. Click to add when you're done."
+      },
+      "delete": {
+        "title": "Delete Expense",
+        "description": "Are you sure you want to delete this expense? All of its data will be permanently removed and this action cannot be undone."
       }
     }
   },
