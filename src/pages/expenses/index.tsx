@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import {
   Table,
@@ -9,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, ReceiptText, Trash2 } from "lucide-react";
+import { ReceiptText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AddExpenseDialog } from "./components/add-expense-dialog";
 import { useAuth } from "@/auth/auth-provider";
