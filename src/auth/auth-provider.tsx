@@ -23,6 +23,7 @@ interface AuthContextValues {
   setToken: (token: string | null) => void;
   getAccessToken: () => string | null;
   refreshToken: () => Promise<boolean>;
+  register: (body: RegisterBody) => Promise<any>;
   login: (credentials: LoginCredentialsBody) => Promise<boolean>;
   logout: () => void;
   getMe: () => void;
@@ -38,6 +39,7 @@ const initialContext = {
   setToken: () => {},
   getAccessToken: () => null,
   refreshToken: async () => false,
+  register: async () => null,
   login: async () => false,
   logout: () => {},
   getMe: async () => null,
@@ -50,6 +52,14 @@ const AuthContext = createContext<AuthContextValues>(initialContext);
 
 interface AuthProviderProps {
   children: React.ReactNode;
+}
+
+export interface RegisterBody {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
 }
 
 interface LoginCredentialsBody {
@@ -80,17 +90,49 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(false);
   }, []);
 
-  const login = async ({ email, password }: LoginCredentialsBody) => {
+  const register = async ({
+    firstName,
+    lastName,
+    email,
+    password,
+    confirmPassword,
+  }: RegisterBody) => {
     try {
-      const response = await api.post("/identity/login", { email, password });
+      const response = await api.post("/identity/register", {
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+      });
+
+      if (response.status !== 200) {
+        throw new Error("Registration failed");
+      }
       const accessToken = response.data.accessToken;
-      const refreshToken = response.data.refreshToken;
       const expiresIn = response.data.expiresIn;
       const tokenType = response.data.tokenType;
       localStorage.setItem("_authAccessToken", accessToken);
       localStorage.setItem("_authTokenType", tokenType);
       localStorage.setItem("_authExpiresIn", expiresIn);
-      localStorage.setItem("_authRefreshToken", refreshToken);
+    } catch (error) {
+      console.log("Registration failed", error);
+      return null;
+    }
+  };
+
+  const login = async ({ email, password }: LoginCredentialsBody) => {
+    try {
+      const response = await api.post("/identity/login", {
+        email,
+        password,
+      });
+      const accessToken = response.data.accessToken;
+      const expiresIn = response.data.expiresIn;
+      const tokenType = response.data.tokenType;
+      localStorage.setItem("_authAccessToken", accessToken);
+      localStorage.setItem("_authTokenType", tokenType);
+      localStorage.setItem("_authExpiresIn", expiresIn);
       setToken(accessToken);
       return true;
     } catch (error) {
@@ -173,6 +215,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser,
     token,
     setToken,
+    register,
     login,
     logout,
     getAccessToken,
@@ -191,6 +234,7 @@ export function useAuth() {
 
   const {
     user,
+    register,
     login,
     logout,
     isAuthenticated,
@@ -203,6 +247,7 @@ export function useAuth() {
 
   return {
     user,
+    register,
     login,
     logout,
     isAuthenticated,
