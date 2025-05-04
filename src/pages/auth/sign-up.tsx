@@ -11,18 +11,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signUp } from "@/api/auth/sign-up";
-import { useMutation } from "@tanstack/react-query";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import logoImg from "/assets/logo.png";
+import { useAuth } from "@/auth/auth-provider";
 
 const passwordValidation = new RegExp(
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/
 );
 
 const signUpForm = z.object({
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
   email: z.string().email({ message: "Must be a valid email" }),
   password: z
     .string()
@@ -37,16 +38,25 @@ export function SignUp() {
     resolver: zodResolver(signUpForm),
   });
 
+  const { register } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const { mutateAsync: register } = useMutation({
-    mutationFn: signUp,
-    onSuccess: () => navigate("/auth/sign-in"),
-  });
-
   async function handleSignUp(data: SignUpForm) {
-    await register({ email: data.email, password: data.password });
+    try {
+      await register({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.password, // Assuming confirmPassword is the same as password for now
+      });
+      navigate("/account/create-organization");
+    } catch (error) {
+      // Handle registration error (e.g., show a toast notification)
+      console.error("Registration failed:", error);
+      // You might want to display an error message to the user here
+    }
   }
 
   return (
@@ -67,6 +77,38 @@ export function SignUp() {
             className="space-y-6"
             onSubmit={form.handleSubmit(handleSignUp)}
           >
+            <div className="flex gap-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel className="text-sm font-medium leading-6 text-gray-900">
+                      First Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} type="text" placeholder="Steve" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel className="text-sm font-medium leading-6 text-gray-900">
+                      Last Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} type="text" placeholder="Jobs" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="email"
