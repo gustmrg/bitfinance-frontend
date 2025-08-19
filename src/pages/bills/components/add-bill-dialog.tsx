@@ -71,10 +71,7 @@ export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          size="lg"
-          className="h-8 gap-2 cursor-pointer p-4 font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-sm"
-        >
+        <Button className="gap-2 cursor-pointer font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-sm">
           <FontAwesomeIcon icon={faPlus} />
           {t("bills.cta")}
         </Button>
