@@ -12,6 +12,7 @@ import { Bill } from "./types";
 import { DetailsBillDialog } from "./components/details-bill-dialog";
 import { DeleteBillDialog } from "./components/delete-bill-dialog";
 import { EditBillDialog } from "./components/edit-bill-dialog";
+import { UploadDocumentsDialog } from "./components/upload-documents-dialog";
 import { ReceiptText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
@@ -27,6 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AddBillDialog } from "./components/add-bill-dialog";
+import { uploadMultipleDocuments } from "@/api/bills/upload-document";
 
 export function Bills() {
   const [bills, setBills] = useState<Bill[]>([]);
@@ -67,8 +69,9 @@ export function Bills() {
           return;
         }
 
-        const bills: Bill[] = response?.data.map((bill: Bill) => ({
+        const bills: Bill[] = response?.data.map((bill: any) => ({
           ...bill,
+          createdDate: bill.createdAt,
           status: bill.status.toLowerCase() as
             | "created"
             | "due"
@@ -218,6 +221,24 @@ export function Bills() {
     }
   };
 
+  const handleUploadDocuments = async (
+    billId: string,
+    files: File[],
+    documentType: string
+  ) => {
+    try {
+      await uploadMultipleDocuments(
+        selectedOrganization!.id,
+        billId,
+        files,
+        documentType as any
+      );
+    } catch (error) {
+      console.error("Failed to upload documents:", error);
+      throw error;
+    }
+  };
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex flex-col md:flex-row justify-between space-y-2 md:space-y-0">
@@ -261,6 +282,10 @@ export function Bills() {
                   <TableCell className="flex flex-row space-x-2 items-center">
                     <DetailsBillDialog bill={bill} />
                     <EditBillDialog bill={bill} onEdit={handleEditBill} />
+                    <UploadDocumentsDialog
+                      billId={bill.id}
+                      onUpload={handleUploadDocuments}
+                    />
                     <DeleteBillDialog
                       id={bill.id}
                       onDelete={handleDeleteBill}

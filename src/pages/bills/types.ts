@@ -1,3 +1,11 @@
+export type BillDocument = {
+  id: string;
+  billId: string;
+  fileName: string;
+  contentType: string;
+  documentType: number;
+};
+
 export type Bill = {
   id: string;
   description: string;
@@ -26,4 +34,5 @@ export type Bill = {
   paymentDate?: string | null;
   deletedDate?: string | null;
   notes?: string;
+  documents?: BillDocument[];
 };
