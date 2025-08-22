@@ -13,6 +13,8 @@ import { Bill } from "../types";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { downloadDocument } from "@/api/bills/download-document";
+import { useAuth } from "@/auth/auth-provider";
 
 interface DetailsBillDialogProps {
   bill: Bill;
@@ -20,6 +22,28 @@ interface DetailsBillDialogProps {
 
 export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
   const { t } = useTranslation();
+  const { selectedOrganization } = useAuth();
+
+  const handleDownloadDocument = async (
+    documentId: string,
+    fileName: string
+  ) => {
+    if (!selectedOrganization) {
+      console.error("No organization selected");
+      return;
+    }
+
+    try {
+      await downloadDocument(
+        selectedOrganization.id,
+        bill.id,
+        documentId,
+        fileName
+      );
+    } catch (error) {
+      console.error("Failed to download document:", error);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -142,60 +166,51 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
                 </dd>
               </div>
             ) : null}
-            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium leading-6 text-gray-900">
-                {t("labels.attachments")}
-              </dt>
-              <dd className="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                <ul
-                  role="list"
-                  className="divide-y divide-gray-100 rounded-md border border-gray-200"
-                >
-                  <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                    <div className="flex w-0 flex-1 items-center">
-                      <Paperclip
-                        aria-hidden="true"
-                        className="h-5 w-5 flex-shrink-0 text-gray-400"
-                      />
-                      <div className="ml-4 flex min-w-0 flex-1 gap-2">
-                        <span className="truncate font-medium">
-                          resume_back_end_developer.pdf
-                        </span>
-                      </div>
-                    </div>
-                    <div className="ml-4 flex-shrink-0">
-                      <a
-                        href="#"
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
+            {bill.documents && bill.documents.length > 0 && (
+              <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                <dt className="text-sm font-medium leading-6 text-gray-900">
+                  {t("labels.attachments")}
+                </dt>
+                <dd className="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                  <ul
+                    role="list"
+                    className="divide-y divide-gray-100 rounded-md border border-gray-200"
+                  >
+                    {bill.documents.map((document) => (
+                      <li
+                        key={document.id}
+                        className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6"
                       >
-                        {t("labels.download")}
-                      </a>
-                    </div>
-                  </li>
-                  <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                    <div className="flex w-0 flex-1 items-center">
-                      <Paperclip
-                        aria-hidden="true"
-                        className="h-5 w-5 flex-shrink-0 text-gray-400"
-                      />
-                      <div className="ml-4 flex min-w-0 flex-1 gap-2">
-                        <span className="truncate font-medium">
-                          coverletter_back_end_developer.pdf
-                        </span>
-                      </div>
-                    </div>
-                    <div className="ml-4 flex-shrink-0">
-                      <a
-                        href="#"
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
-                      >
-                        {t("labels.download")}
-                      </a>
-                    </div>
-                  </li>
-                </ul>
-              </dd>
-            </div>
+                        <div className="flex w-0 flex-1 items-center">
+                          <Paperclip
+                            aria-hidden="true"
+                            className="h-5 w-5 flex-shrink-0 text-gray-400"
+                          />
+                          <div className="ml-4 flex min-w-0 flex-1 gap-2">
+                            <span className="truncate font-medium">
+                              {document.fileName}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="ml-4 flex-shrink-0">
+                          <button
+                            onClick={() =>
+                              handleDownloadDocument(
+                                document.id,
+                                document.fileName
+                              )
+                            }
+                            className="font-medium text-blue-700 hover:text-blue-500"
+                          >
+                            {t("labels.download")}
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
           </dl>
         </div>
       </DialogContent>
