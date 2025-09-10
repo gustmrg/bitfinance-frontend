@@ -12,6 +12,7 @@ import { NotFound } from "./pages/404";
 import { SignIn } from "./pages/auth/sign-in";
 import { SignUp } from "./pages/auth/sign-up";
 import { CreateOrganization } from "./pages/organizations";
+import { ProtectedRoute } from "./components/protected-route";
 
 export const router = createBrowserRouter(
   [
@@ -22,7 +23,11 @@ export const router = createBrowserRouter(
     },
     {
       path: "/dashboard",
-      element: <DashboardLayout />,
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout />
+        </ProtectedRoute>
+      ),
       children: [
         {
           path: "",
@@ -40,7 +45,11 @@ export const router = createBrowserRouter(
     },
     {
       path: "account",
-      element: <DashboardLayout />,
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout />
+        </ProtectedRoute>
+      ),
       children: [
         {
           path: "settings",
@@ -50,7 +59,11 @@ export const router = createBrowserRouter(
     },
     {
       path: "account/create-organization",
-      element: <CreateOrganization />,
+      element: (
+        <ProtectedRoute>
+          <CreateOrganization />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/auth",
