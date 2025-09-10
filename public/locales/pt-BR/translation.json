@@ -1,8 +1,40 @@
 {
   "home": {
     "title": "Gerencie suas finanças de forma simples e inteligente",
-    "subtitle": "Descubra uma maneira fácil de gerenciar suas despesas, rastrear seus gastos e planejar seu futuro financeiro. Com nosso aplicativo, você tem todas as ferramentas para monitorar suas contas, definir metas e tomar decisões financeiras confiantes. Simplicidade, segurança e eficiência para seu dinheiro, tudo em um só lugar.",
-    "cta": "Comece agora"
+    "subtitle": "Assuma o controle do seu futuro financeiro com ferramentas poderosas para rastreamento de despesas, gerenciamento de contas e planejamento financeiro. Tudo o que você precisa em uma plataforma segura e intuitiva.",
+    "cta": "Comece agora",
+    "ctaSecondary": "Ver Demo",
+    "features": {
+      "title": "Tudo que você precisa para gerenciar suas finanças",
+      "subtitle": "Recursos poderosos projetados para tornar o gerenciamento financeiro sem esforço",
+      "expenseTracking": {
+        "title": "Rastreamento de Despesas",
+        "description": "Monitore seus gastos por categorias e identifique áreas de melhoria com análises detalhadas."
+      },
+      "billManagement": {
+        "title": "Gerenciamento de Contas",
+        "description": "Nunca perca um pagamento novamente com lembretes automáticos e rastreamento de datas de vencimento."
+      },
+      "financialInsights": {
+        "title": "Insights Financeiros",
+        "description": "Obtenha insights personalizados e recomendações para otimizar sua saúde financeira e economias."
+      },
+      "secureData": {
+        "title": "Segurança Bancária",
+        "description": "Seus dados financeiros são protegidos com criptografia e protocolos de segurança de nível empresarial."
+      }
+    },
+    "benefits": {
+      "title": "Junte-se a milhares de usuários assumindo o controle de suas finanças",
+      "stats": {
+        "users": "1.000+",
+        "usersLabel": "Usuários Ativos",
+        "billsTracked": "10.000+",
+        "billsLabel": "Contas Rastreadas",
+        "moneySaved": "$1M+",
+        "moneySavedLabel": "Dinheiro Economizado"
+      }
+    }
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -134,6 +166,30 @@
     }
   },
   "footer": {
-    "developedBy": "Desenvolvido e mantido por"
+    "developedBy": "Desenvolvido e mantido por",
+    "tagline": "Seu parceiro confiável na gestão financeira",
+    "quickLinks": {
+      "title": "Links Rápidos",
+      "features": "Recursos",
+      "pricing": "Preços",
+      "about": "Sobre",
+      "contact": "Contato"
+    },
+    "product": {
+      "title": "Produto",
+      "dashboard": "Dashboard",
+      "expenses": "Despesas",
+      "bills": "Contas",
+      "reports": "Relatórios"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Política de Privacidade",
+      "terms": "Termos de Serviço",
+      "security": "Segurança"
+    },
+    "connect": "Conecte-se conosco",
+    "copyright": "© 2024-2025 BitFinance. Todos os direitos reservados.",
+    "madeWith": "Feito com ❤️ por"
   }
 }
