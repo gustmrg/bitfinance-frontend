@@ -1,4 +1,5 @@
 import { api, privateAPI } from "@/lib/axios";
+import { logger } from "@/lib/logger";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export type User = {
@@ -116,7 +117,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.setItem("_authTokenType", tokenType);
       localStorage.setItem("_authExpiresIn", expiresIn);
     } catch (error) {
-      console.log("Registration failed", error);
+      logger.error("Registration failed", error);
       return null;
     }
   };
@@ -136,7 +137,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setToken(accessToken);
       return true;
     } catch (error) {
-      console.log("Login failed", error);
+      logger.error("Login failed", error);
       return false;
     }
   };
@@ -173,7 +174,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       }
     } catch (error) {
-      console.log(error);
+      logger.error("Failed to fetch user data", error);
     }
   };
 
@@ -204,7 +205,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         );
       }
     } catch (error) {
-      console.log("Could not refresh token", error);
+      logger.error("Could not refresh token", error);
       return false;
     }
   };
@@ -286,11 +287,11 @@ export const refreshTokenSilently = async () => {
 
       return newAccessToken;
     } else {
-      console.log("Unexpected error during token refresh");
+      logger.error("Unexpected error during token refresh");
       return null;
     }
   } catch (error) {
-    console.log("Token refresh failed", error);
+    logger.error("Token refresh failed", error);
     return null;
   }
 };

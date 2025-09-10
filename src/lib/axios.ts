@@ -1,11 +1,24 @@
-import axios from "axios";
-import { env } from "@/env";
 import { getTokenSilently, refreshTokenSilently } from "@/auth/auth-provider";
+import { env } from "@/env";
+import axios from "axios";
+import { toast } from "sonner";
 
 export const api = axios.create({
   baseURL: env.VITE_API_URL,
   withCredentials: true,
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status >= 500) {
+      toast.error("Server error. Please try again later.");
+    } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+      toast.error("Network error. Please check your connection.");
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const privateAPI = () => {
   const instance = axios.create({
@@ -34,9 +47,6 @@ export const privateAPI = () => {
       const originalRequest = error.config;
 
       if (error.response?.status === 401 && !originalRequest._retry) {
-        console.log(originalRequest._retry);
-        console.log("Error returned 401 code");
-
         originalRequest._retry = true;
         const newToken = await refreshTokenSilently();
 
@@ -45,7 +55,6 @@ export const privateAPI = () => {
 
           return instance(originalRequest);
         } else {
-          console.log("Token refresh failed");
           return Promise.reject(error);
         }
       }

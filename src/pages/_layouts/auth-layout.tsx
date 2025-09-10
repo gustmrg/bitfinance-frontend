@@ -1,6 +1,7 @@
-import { NavLink, Outlet } from "react-router-dom";
 import { CircleDollarSign } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { NavLink, Outlet } from "react-router-dom";
+import { Toaster } from "sonner";
 
 import securitySvg from "/assets/undraw_security_on_re_e491.svg";
 
@@ -31,6 +32,7 @@ export function AuthLayout() {
       </div>
       <div className="items-center justify-center relative">
         <Outlet />
+        <Toaster richColors />
       </div>
     </div>
   );
