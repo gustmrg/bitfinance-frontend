@@ -1,8 +1,40 @@
 {
   "home": {
     "title": "Manage your finances simply and smartly",
-    "subtitle": "Discover an easy way to manage your expenses, track your spending, and plan for your financial future. With our app, you have all the tools to monitor your accounts, set goals, and make confident financial decisions. Simplicity, security, and efficiency for your money, all in one place.",
-    "cta": "Get Started Now"
+    "subtitle": "Take control of your financial future with powerful tools for expense tracking, bill management, and financial planning. Everything you need in one secure, intuitive platform.",
+    "cta": "Get Started Now",
+    "ctaSecondary": "View Demo",
+    "features": {
+      "title": "Everything you need to manage your finances",
+      "subtitle": "Powerful features designed to make financial management effortless",
+      "expenseTracking": {
+        "title": "Expense Tracking",
+        "description": "Monitor your spending across categories and identify areas for improvement with detailed analytics."
+      },
+      "billManagement": {
+        "title": "Bill Management",
+        "description": "Never miss a payment again with automated reminders and due date tracking for all your bills."
+      },
+      "financialInsights": {
+        "title": "Financial Insights",
+        "description": "Get personalized insights and recommendations to optimize your financial health and savings."
+      },
+      "secureData": {
+        "title": "Bank-Level Security",
+        "description": "Your financial data is protected with enterprise-grade encryption and security protocols."
+      }
+    },
+    "benefits": {
+      "title": "Join thousands of users taking control of their finances",
+      "stats": {
+        "users": "1,000+",
+        "usersLabel": "Active Users",
+        "billsTracked": "10,000+",
+        "billsLabel": "Bills Tracked",
+        "moneySaved": "$1M+",
+        "moneySavedLabel": "Money Saved"
+      }
+    }
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -138,6 +170,30 @@
     }
   },
   "footer": {
-    "developedBy": "Developed and maintained by"
+    "developedBy": "Developed and maintained by",
+    "tagline": "Your trusted partner in financial management",
+    "quickLinks": {
+      "title": "Quick Links",
+      "features": "Features",
+      "pricing": "Pricing",
+      "about": "About",
+      "contact": "Contact"
+    },
+    "product": {
+      "title": "Product",
+      "dashboard": "Dashboard",
+      "expenses": "Expenses",
+      "bills": "Bills",
+      "reports": "Reports"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "security": "Security"
+    },
+    "connect": "Connect with us",
+    "copyright": "© 2024-2025 BitFinance. All rights reserved.",
+    "madeWith": "Made with ❤️ by"
   }
 }
