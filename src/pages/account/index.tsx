@@ -1,7 +1,8 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
+import { UpdateProfile } from "@/api/account/update-profile";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,8 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { UpdateProfile } from "@/api/account/update-profile";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const UpdateProfileSchema = z.object({
   firstName: z.string(),
@@ -33,24 +33,19 @@ export function Account() {
     },
   });
 
-  const { toast } = useToast();
-
   async function onSubmit(data: UpdateProfileFormValues) {
     try {
       const response = await UpdateProfile(data);
 
       if (response) {
-        toast({
-          title: "Profile updated",
+        toast.success("Profile updated", {
           description:
             "You have successfully updated your account information.",
         });
       }
     } catch (error) {
-      toast({
-        title: "Uh oh! Something went wrong.",
+      toast.error("Uh oh! Something went wrong.", {
         description: "There was a problem with your request.",
-        variant: "destructive",
       });
     }
   }

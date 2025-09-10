@@ -1,3 +1,4 @@
+import React from "react";
 import { Link, Outlet } from "react-router-dom";
 
 import { AppSidebar } from "@/components/app-sidebar";
@@ -15,9 +16,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
+
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
-import React from "react";
 
 export function DashboardLayout() {
   const breadcrumbs = useBreadcrumbs();
@@ -53,7 +54,7 @@ export function DashboardLayout() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <Outlet />
-          <Toaster />
+          <Toaster richColors />
         </div>
       </SidebarInset>
     </SidebarProvider>

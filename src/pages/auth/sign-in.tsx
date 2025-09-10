@@ -1,6 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useAuth } from "@/auth/auth-provider";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,12 +10,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "@/auth/auth-provider";
-import logoImg from "/assets/logo.png";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { z } from "zod";
+import logoImg from "/assets/logo.png";
 
 const passwordValidation = new RegExp(
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/
@@ -50,7 +51,7 @@ export function SignIn() {
       await getMe();
       navigate("/dashboard");
     } else {
-      console.log("Login failed");
+      toast.error("Login failed. Check your email and password and try again.");
     }
   }
 

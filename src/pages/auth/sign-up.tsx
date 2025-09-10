@@ -1,6 +1,4 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useAuth } from "@/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,11 +9,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { NavLink, useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router-dom";
+import { toast } from "sonner";
+import { z } from "zod";
 
 import logoImg from "/assets/logo.png";
-import { useAuth } from "@/auth/auth-provider";
 
 const passwordValidation = new RegExp(
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/
@@ -39,7 +40,6 @@ export function SignUp() {
   });
 
   const { register } = useAuth();
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   async function handleSignUp(data: SignUpForm) {
@@ -51,11 +51,8 @@ export function SignUp() {
         password: data.password,
         confirmPassword: data.password, // Assuming confirmPassword is the same as password for now
       });
-      navigate("/account/create-organization");
     } catch (error) {
-      // Handle registration error (e.g., show a toast notification)
-      console.error("Registration failed:", error);
-      // You might want to display an error message to the user here
+      toast.error("Registration failed. Please try again.");
     }
   }
 
