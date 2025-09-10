@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 
@@ -31,11 +31,11 @@ export function UpcomingBills({ bills }: UpcomingBillsProps) {
               {t("dashboard.upcomingBills.description")}
             </CardDescription>
           </div>
-          <NavLink to="/dashboard/bills">
+          <Link to="/bills">
             <Button variant="outline" size="sm">
               {t("labels.viewAll")}
             </Button>
-          </NavLink>
+          </Link>
         </div>
       </CardHeader>
       <CardContent>

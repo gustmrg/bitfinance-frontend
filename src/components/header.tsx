@@ -11,7 +11,7 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import UserNavBar from "./user-navbar";
 import { LanguageSwitcher } from "./language-switcher";
 
@@ -27,41 +27,35 @@ export default function Header() {
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col">
           <nav className="grid gap-2 text-lg font-medium">
-            <Link
-              to="#"
-              className="flex items-center gap-2 text-lg font-semibold"
-            >
+            <div className="flex items-center gap-2 text-lg font-semibold cursor-pointer">
               <Package2 className="h-6 w-6" />
               <span className="sr-only">Acme Inc</span>
-            </Link>
+            </div>
             <Link
-              to="#"
+              to="/dashboard"
               className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
             >
               <Home className="h-5 w-5" />
               Dashboard
             </Link>
             <Link
-              to="#"
+              to="/bills"
               className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
             >
               <Barcode className="h-5 w-5" />
               Bills
             </Link>
             <Link
-              to="#"
+              to="/expenses"
               className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
             >
               <Receipt className="h-5 w-5" />
               Expenses
             </Link>
-            <Link
-              to="#"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-            >
+            <div className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground cursor-pointer">
               <Users className="h-5 w-5" />
               Users
-            </Link>
+            </div>
           </nav>
         </SheetContent>
       </Sheet>

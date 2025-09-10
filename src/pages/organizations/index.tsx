@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 
 import logoImg from "/assets/logo.png";
 import { createOrganization } from "@/api/organizations/create-organization";
@@ -22,7 +22,7 @@ export function CreateOrganization() {
       if (response) {
         // Optionally handle the response data if needed
         console.log("Organization created:", response);
-        navigate("/dashboard"); // Navigate on success
+        navigate({ to: "/dashboard" }); // Navigate on success
       } else {
         // Handle cases where the API might return a falsy value without throwing an error
         console.error("Organization creation failed, no response data.");

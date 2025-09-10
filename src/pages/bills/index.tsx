@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { getBills } from "@/api/bills/get-bills";
 import { CreateBill } from "@/api/bills/create-bill";
@@ -47,7 +47,7 @@ export function Bills() {
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
-      navigate("/auth/sign-in");
+      navigate({ to: "/auth/sign-in" });
       return;
     }
 

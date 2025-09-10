@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -85,7 +85,7 @@ export function AddBill() {
         organizationId: selectedOrganization!.id,
       });
       if (response) {
-        navigate("/dashboard/bills");
+        navigate({ to: "/bills" });
       }
     } catch (error) {
       console.error("Failed to add the bill:", error);
@@ -259,7 +259,7 @@ export function AddBill() {
             />
             <div className="space-x-4">
               <Button type="submit">Add bill</Button>
-              <Link to=".." relative="path">
+              <Link to="/bills">
                 <Button variant="outline" type="button">
                   Cancel
                 </Button>

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/auth/auth-provider";
 
 import {
@@ -38,7 +38,7 @@ export function NavUser({ name, email }: NavUserProps) {
 
   const onLogout = () => {
     logout();
-    navigate("/");
+    navigate({ to: "/" });
   };
 
   return (
@@ -98,7 +98,7 @@ export function NavUser({ name, email }: NavUserProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <Link to="account">
+              <Link to="/account">
                 <DropdownMenuItem>
                   <BadgeCheck />
                   Account

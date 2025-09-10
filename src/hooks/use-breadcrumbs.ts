@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation } from "@tanstack/react-router";
 
 const routeNameMap: { [key: string]: string } = {
   dashboard: "Dashboard",

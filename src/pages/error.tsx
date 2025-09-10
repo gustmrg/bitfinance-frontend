@@ -1,7 +1,7 @@
-import { Link, useRouteError } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 
 export function Error() {
-  const error = useRouteError() as Error;
+  const error = { message: "An unexpected error occurred" };
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-2">

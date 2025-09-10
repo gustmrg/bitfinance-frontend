@@ -24,7 +24,7 @@ import {
 import { NavUser } from "@/components/nav-user";
 import { Organization, useAuth } from "@/auth/auth-provider";
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "@tanstack/react-router";
 
 const data = {
   user: {

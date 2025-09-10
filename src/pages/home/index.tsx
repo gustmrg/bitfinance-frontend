@@ -1,10 +1,10 @@
-import Footer from "./components/footer";
-import { LoginButton } from "./components/login-button";
-import { CTAButton } from "./components/cta-button";
-import { LogoutButton } from "./components/logout-button";
-import { GoToDashboardButton } from "./components/dashboard-button";
 import { useAuth } from "@/auth/auth-provider";
 import { useTranslation } from "react-i18next";
+import { CTAButton } from "./components/cta-button";
+import { GoToDashboardButton } from "./components/dashboard-button";
+import Footer from "./components/footer";
+import { LoginButton } from "./components/login-button";
+import { LogoutButton } from "./components/logout-button";
 
 import logoImg from "/assets/logo.png";
 

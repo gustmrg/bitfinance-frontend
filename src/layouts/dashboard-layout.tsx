@@ -1,4 +1,5 @@
-import { Link, Outlet } from "react-router-dom";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import React from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import {
@@ -17,7 +18,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
-import React from "react";
 
 export function DashboardLayout() {
   const breadcrumbs = useBreadcrumbs();
@@ -59,3 +59,5 @@ export function DashboardLayout() {
     </SidebarProvider>
   );
 }
+
+export const Route = createRootRoute({ component: DashboardLayout });

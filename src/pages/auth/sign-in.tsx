@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/auth/auth-provider";
 import logoImg from "/assets/logo.png";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -48,7 +48,7 @@ export function SignIn() {
     });
     if (isSuccess) {
       await getMe();
-      navigate("/dashboard");
+      navigate({ to: "/dashboard" });
     } else {
       console.log("Login failed");
     }
@@ -130,12 +130,13 @@ export function SignIn() {
         <div className="mt-6">
           <p className="text-sm text-center leading-5 text-gray-600">
             {t("auth.signIn.redirect")}{" "}
-            <NavLink
-              to={form.formState.isSubmitting ? "#" : "/auth/sign-up"}
+            <Link
+              to="/auth/sign-up"
               className="font-medium text-blue-600 hover:text-blue-500"
+              disabled={form.formState.isSubmitting}
             >
               {t("labels.signUp")}
-            </NavLink>
+            </Link>
           </p>
         </div>
       </div>

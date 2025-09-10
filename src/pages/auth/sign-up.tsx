@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 import logoImg from "/assets/logo.png";
@@ -51,7 +51,7 @@ export function SignUp() {
         password: data.password,
         confirmPassword: data.password, // Assuming confirmPassword is the same as password for now
       });
-      navigate("/account/create-organization");
+      navigate({ to: "/organizations" });
     } catch (error) {
       // Handle registration error (e.g., show a toast notification)
       console.error("Registration failed:", error);
@@ -157,12 +157,12 @@ export function SignUp() {
         <div className="mt-6">
           <p className="text-sm text-center leading-5 text-gray-600">
             {t("auth.signUp.redirect")}{" "}
-            <NavLink
-              to={form.formState.isSubmitting ? "#" : "/auth/sign-in"}
+            <Link
+              to="/auth/sign-in"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
               {t("labels.signIn")}
-            </NavLink>
+            </Link>
           </p>
         </div>
       </div>

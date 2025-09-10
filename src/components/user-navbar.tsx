@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/auth/auth-provider";
 import { useTranslation } from "react-i18next";
 
@@ -44,7 +44,7 @@ export default function UserNavBar() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
-              <Link to="account">{t("labels.profile")}</Link>
+              <Link to="/account">{t("labels.profile")}</Link>
             </DropdownMenuItem>
             <DropdownMenuItem>{t("labels.settings")}</DropdownMenuItem>
           </DropdownMenuGroup>

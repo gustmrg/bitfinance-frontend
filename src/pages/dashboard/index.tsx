@@ -6,7 +6,7 @@ import { RecentExpenses } from "./components/recent-expenses";
 import { UpcomingBills } from "./components/upcoming-bills";
 import { getUpcomingBills } from "@/api/dashboard/get-upcoming-bills";
 import { Bill } from "../bills/types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import {
   ExpenseResponseModel,
   getRecentExpenses,
@@ -26,7 +26,7 @@ export function Dashboard() {
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
-      navigate("/auth/sign-in");
+      navigate({ to: "/auth/sign-in" });
       return;
     }
 

@@ -12,7 +12,7 @@ import { ReceiptText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AddExpenseDialog } from "./components/add-expense-dialog";
 import { useAuth } from "@/auth/auth-provider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 import { Expense } from "./types";
@@ -41,7 +41,7 @@ export function Expenses() {
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
-      navigate("/auth/sign-in");
+      navigate({ to: "/auth/sign-in" });
       return;
     }
 

@@ -27,7 +27,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { NavLink } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ExpenseResponseModel } from "@/api/dashboard/get-recent-expenses";
 
@@ -120,11 +120,11 @@ export function RecentExpenses({ expenses }: RecentExpensesProps) {
               {t("dashboard.recentExpenses.description")}
             </CardDescription>
           </div>
-          <NavLink to="/dashboard/expenses">
+          <Link to="/expenses">
             <Button variant="outline" size="sm">
               {t("labels.viewAll")}
             </Button>
-          </NavLink>
+          </Link>
         </div>
       </CardHeader>
       <CardContent>
