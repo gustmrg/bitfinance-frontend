@@ -12,7 +12,7 @@ i18n
       fallbackLng: "en-US",
       debug: process.env.NODE_ENV === "development",
       backend: {
-        loadPath: "/bitfinance/locales/{{lng}}/translation.json",
+        loadPath: "/locales/{{lng}}/translation.json",
       },
       detection: {
         order: ["navigator", "htmlTag", "path", "subdomain"],
