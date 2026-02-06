@@ -5,11 +5,16 @@ export interface SignInBody {
   password: string;
 }
 
-interface SignInResponse {
-  tokenType: string;
+export interface SignInResponse {
   accessToken: string;
-  expiresIn: number;
-  refreshToken: string;
+  accessTokenExpiresAt: string;
+  user: {
+    id: string;
+    email: string;
+    userName: string;
+    firstName: string;
+    lastName: string;
+  };
 }
 
 export async function signInAsync({ email, password }: SignInBody) {

@@ -1,6 +1,18 @@
-import { api, privateAPI } from "@/lib/axios";
+import { api, authApi, setOnRefreshFailure } from "@/lib/axios";
+import {
+  setAccessToken,
+  clearAccessToken,
+} from "@/lib/auth-token";
 import { logger } from "@/lib/logger";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 export type User = {
   id: string;
@@ -21,29 +33,23 @@ interface AuthContextValues {
   user: User | null;
   setUser: (user: User | null) => void;
   token: string | null;
-  setToken: (token: string | null) => void;
-  getAccessToken: () => string | null;
-  refreshToken: () => Promise<boolean>;
-  register: (body: RegisterBody) => Promise<any>;
+  register: (body: RegisterBody) => Promise<boolean>;
   login: (credentials: LoginCredentialsBody) => Promise<boolean>;
-  logout: () => void;
-  getMe: () => void;
+  logout: () => Promise<void>;
+  getMe: () => Promise<void>;
   selectedOrganization: Organization | null;
   setSelectedOrganization: (organization: Organization | null) => void;
 }
 
-const initialContext = {
+const initialContext: AuthContextValues = {
   isAuthenticated: false,
   user: null,
   setUser: () => {},
   token: null,
-  setToken: () => {},
-  getAccessToken: () => null,
-  refreshToken: async () => false,
-  register: async () => null,
+  register: async () => false,
   login: async () => false,
-  logout: () => {},
-  getMe: async () => null,
+  logout: async () => {},
+  getMe: async () => {},
   isLoading: true,
   selectedOrganization: null,
   setSelectedOrganization: () => {},
@@ -68,6 +74,18 @@ interface LoginCredentialsBody {
   password: string;
 }
 
+interface AuthenticationResponse {
+  accessToken: string;
+  accessTokenExpiresAt: string;
+  user: {
+    id: string;
+    email: string;
+    userName: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -75,21 +93,92 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [selectedOrganization, setSelectedOrganization] =
     useState<Organization | null>(null);
   const isAuthenticated = useMemo(() => !!token, [token]);
+  const isInitialized = useRef(false);
+
+  const updateToken = useCallback(
+    (newToken: string | null, expiresAt?: string | null) => {
+      setToken(newToken);
+      if (newToken) {
+        setAccessToken(newToken, expiresAt);
+      } else {
+        clearAccessToken();
+      }
+    },
+    []
+  );
+
+  const clearAuthState = useCallback(() => {
+    updateToken(null);
+    setUser(null);
+    setSelectedOrganization(null);
+  }, [updateToken]);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("_authAccessToken");
-    if (storedToken) {
-      setToken(storedToken);
-    }
+    setOnRefreshFailure(() => {
+      clearAuthState();
+      window.location.href = "/auth/sign-in";
+    });
+  }, [clearAuthState]);
 
-    const fetchUserData = async () => {
-      await getMe();
+  const fetchUserProfile = useCallback(async () => {
+    try {
+      const response = await authApi.get("/identity/me");
+
+      if (response) {
+        const userData: User = {
+          id: response.data.id,
+          username: response.data.username,
+          fullName: response.data.fullName,
+          email: response.data.email,
+          organizations: response.data.organizations ?? [],
+        };
+
+        setUser(userData);
+
+        if (userData.organizations && userData.organizations.length > 0) {
+          setSelectedOrganization({
+            id: userData.organizations[0].id,
+            name: userData.organizations[0].name,
+          });
+        }
+      }
+    } catch (error) {
+      logger.error("Failed to fetch user data", error);
+    }
+  }, []);
+
+  // Session restoration on mount
+  useEffect(() => {
+    if (isInitialized.current) return;
+    isInitialized.current = true;
+
+    const initializeAuth = async () => {
+      // One-time cleanup of old localStorage tokens
+      localStorage.removeItem("_authAccessToken");
+      localStorage.removeItem("_authTokenType");
+      localStorage.removeItem("_authExpiresIn");
+      localStorage.removeItem("_authRefreshToken");
+
+      try {
+        const response = await api.post<AuthenticationResponse>(
+          "/identity/refresh"
+        );
+
+        if (response.status === 200) {
+          const { accessToken, accessTokenExpiresAt } = response.data;
+          updateToken(accessToken, accessTokenExpiresAt);
+          await fetchUserProfile();
+        }
+      } catch {
+        logger.debug("No existing session to restore");
+        clearAuthState();
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    fetchUserData();
-
-    setIsLoading(false);
-  }, []);
+    initializeAuth();
+  }, [updateToken, fetchUserProfile, clearAuthState]);
 
   const register = async ({
     firstName,
@@ -97,44 +186,48 @@ export function AuthProvider({ children }: AuthProviderProps) {
     email,
     password,
     confirmPassword,
-  }: RegisterBody) => {
+  }: RegisterBody): Promise<boolean> => {
     try {
-      const response = await api.post("/identity/register", {
-        firstName,
-        lastName,
-        email,
-        password,
-        confirmPassword,
-      });
+      const response = await api.post<AuthenticationResponse>(
+        "/identity/register",
+        {
+          firstName,
+          lastName,
+          email,
+          password,
+          confirmPassword,
+        }
+      );
 
       if (response.status !== 200) {
         throw new Error("Registration failed");
       }
-      const accessToken = response.data.accessToken;
-      const expiresIn = response.data.expiresIn;
-      const tokenType = response.data.tokenType;
-      localStorage.setItem("_authAccessToken", accessToken);
-      localStorage.setItem("_authTokenType", tokenType);
-      localStorage.setItem("_authExpiresIn", expiresIn);
+
+      const { accessToken, accessTokenExpiresAt } = response.data;
+      updateToken(accessToken, accessTokenExpiresAt);
+      await fetchUserProfile();
+      return true;
     } catch (error) {
       logger.error("Registration failed", error);
-      return null;
+      return false;
     }
   };
 
-  const login = async ({ email, password }: LoginCredentialsBody) => {
+  const login = async ({
+    email,
+    password,
+  }: LoginCredentialsBody): Promise<boolean> => {
     try {
-      const response = await api.post("/identity/login", {
-        email,
-        password,
-      });
-      const accessToken = response.data.accessToken;
-      const expiresIn = response.data.expiresIn;
-      const tokenType = response.data.tokenType;
-      localStorage.setItem("_authAccessToken", accessToken);
-      localStorage.setItem("_authTokenType", tokenType);
-      localStorage.setItem("_authExpiresIn", expiresIn);
-      setToken(accessToken);
+      const response = await api.post<AuthenticationResponse>(
+        "/identity/login",
+        {
+          email,
+          password,
+        }
+      );
+
+      const { accessToken, accessTokenExpiresAt } = response.data;
+      updateToken(accessToken, accessTokenExpiresAt);
       return true;
     } catch (error) {
       logger.error("Login failed", error);
@@ -142,85 +235,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("_authAccessToken");
-    localStorage.removeItem("_authTokenType");
-    localStorage.removeItem("_authExpiresIn");
-    localStorage.removeItem("_authRefreshToken");
-    setToken(null);
+  const logout = async (): Promise<void> => {
+    try {
+      await authApi.post("/identity/logout");
+    } catch (error) {
+      logger.error("Logout API call failed", error);
+    } finally {
+      clearAuthState();
+    }
   };
 
   const getMe = async () => {
-    try {
-      const response = await privateAPI().get("/identity/me");
-
-      if (response) {
-        let user: User = {
-          id: response.data.id,
-          username: response.data.username,
-          fullName: response.data.fullName,
-          email: response.data.email,
-          organizations: response.data.organizations ?? null,
-        };
-
-        setUser(user);
-
-        if (selectedOrganization === null && user.organizations !== null) {
-          let organization: Organization = {
-            id: user.organizations![0].id,
-            name: user.organizations![0].name,
-          };
-          setSelectedOrganization(organization);
-        }
-      }
-    } catch (error) {
-      logger.error("Failed to fetch user data", error);
-    }
+    await fetchUserProfile();
   };
 
-  const getAccessToken = (): string | null => {
-    return token;
-  };
-
-  const refreshToken = async () => {
-    const refreshToken = localStorage.getItem("_authRefreshToken");
-
-    try {
-      const response = await api.post("/identity/refresh", { refreshToken });
-
-      if (response.status === 200) {
-        const accessToken = response.data.accessToken;
-        const newRefreshToken = response.data.refreshToken;
-        const expiresIn = response.data.expiresIn;
-        const tokenType = response.data.tokenType;
-        localStorage.setItem("_authAccessToken", accessToken);
-        localStorage.setItem("_authTokenType", tokenType);
-        localStorage.setItem("_authExpiresIn", expiresIn);
-        localStorage.setItem("_authRefreshToken", newRefreshToken);
-        setToken(accessToken);
-        return true;
-      } else {
-        throw new Error(
-          "An unexpected error occurred when trying to refresh token"
-        );
-      }
-    } catch (error) {
-      logger.error("Could not refresh token", error);
-      return false;
-    }
-  };
-
-  const value = {
+  const value: AuthContextValues = {
     isAuthenticated,
     user,
     setUser,
     token,
-    setToken,
     register,
     login,
     logout,
-    getAccessToken,
-    refreshToken,
     getMe,
     isLoading,
     selectedOrganization,
@@ -259,39 +295,3 @@ export function useAuth() {
     setSelectedOrganization,
   };
 }
-
-export const getTokenSilently = () => {
-  return localStorage.getItem("_authAccessToken");
-};
-
-export const refreshTokenSilently = async () => {
-  const storedRefreshToken = localStorage.getItem("_authRefreshToken");
-
-  if (!storedRefreshToken) return null;
-
-  try {
-    const response = await api.post("/identity/refresh", {
-      refreshToken: storedRefreshToken,
-    });
-
-    if (response.status === 200) {
-      const newAccessToken = response.data.accessToken;
-      const newRefreshToken = response.data.refreshToken;
-      const expiresIn = response.data.expiresIn;
-      const tokenType = response.data.tokenType;
-
-      localStorage.setItem("_authAccessToken", newAccessToken);
-      localStorage.setItem("_authTokenType", tokenType);
-      localStorage.setItem("_authExpiresIn", expiresIn);
-      localStorage.setItem("_authRefreshToken", newRefreshToken);
-
-      return newAccessToken;
-    } else {
-      logger.error("Unexpected error during token refresh");
-      return null;
-    }
-  } catch (error) {
-    logger.error("Token refresh failed", error);
-    return null;
-  }
-};
