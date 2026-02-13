@@ -5,7 +5,7 @@ export function LogoutButton() {
   const { logout } = useAuth();
 
   return (
-    <Button className="flex flex-row space-x-2 gap-2 font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-sm" onClick={logout}>
+    <Button className="flex flex-row space-x-2 gap-2 font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-sm" onClick={async () => await logout()}>
       Log Out
     </Button>
   );

@@ -36,8 +36,8 @@ export function NavUser({ name, email }: NavUserProps) {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const onLogout = () => {
-    logout();
+  const onLogout = async () => {
+    await logout();
     navigate("/");
   };
 

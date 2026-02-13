@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -40,18 +40,21 @@ export function SignUp() {
   });
 
   const { register } = useAuth();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   async function handleSignUp(data: SignUpForm) {
-    try {
-      await register({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.password, // Assuming confirmPassword is the same as password for now
-      });
-    } catch (error) {
+    const isSuccess = await register({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.password,
+    });
+
+    if (isSuccess) {
+      navigate("/dashboard");
+    } else {
       toast.error("Registration failed. Please try again.");
     }
   }

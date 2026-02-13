@@ -49,7 +49,7 @@ export default function UserNavBar() {
             <DropdownMenuItem>{t("labels.settings")}</DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={logout}>
+          <DropdownMenuItem onClick={async () => await logout()}>
             {t("labels.logout")}
           </DropdownMenuItem>
         </DropdownMenuContent>
