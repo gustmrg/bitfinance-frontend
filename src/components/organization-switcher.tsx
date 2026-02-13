@@ -17,7 +17,7 @@ export function OrganizationSwitcher({
   organizations,
 }: {
   organizations: Organization[];
-  defaultOrganization: Organization;
+  defaultOrganization?: Organization | null;
 }) {
   const { selectedOrganization, setSelectedOrganization } = useAuth();
 
@@ -35,7 +35,7 @@ export function OrganizationSwitcher({
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">BitFinance</span>
-                <span className="">{selectedOrganization!.name}</span>
+                <span className="">{selectedOrganization?.name ?? "Select Organization"}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>

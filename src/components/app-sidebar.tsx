@@ -22,8 +22,7 @@ import {
   Users,
 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
-import { Organization, useAuth } from "@/auth/auth-provider";
-import { useEffect, useState } from "react";
+import { useAuth } from "@/auth/auth-provider";
 import { Link, useLocation } from "react-router-dom";
 
 const data = {
@@ -76,28 +75,15 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, selectedOrganization } = useAuth();
-  const [organization, setOrganization] = useState<Organization | null>(
-    selectedOrganization
-  );
 
   let location = useLocation();
-
-  useEffect(() => {
-    if (selectedOrganization) {
-      setOrganization(selectedOrganization);
-    }
-  }, [selectedOrganization]);
-
-  if (!organization) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <Sidebar {...props}>
       <SidebarHeader>
         <OrganizationSwitcher
           organizations={user?.organizations ?? []}
-          defaultOrganization={user?.organizations?.[0]!}
+          defaultOrganization={selectedOrganization}
         />
       </SidebarHeader>
       <SidebarContent>
@@ -127,7 +113,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser name={user!.fullName} email={user!.email} />
+        <NavUser 
+          name={user?.fullName ?? "User"} 
+          email={user?.email ?? ""} 
+        />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

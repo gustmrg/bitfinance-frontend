@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -38,9 +39,15 @@ export function SignIn() {
     resolver: zodResolver(signInForm),
   });
 
-  const { login, getMe } = useAuth();
+  const { login, getMe, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   async function handleSignIn(data: SignInForm) {
     const isSuccess = await login({
@@ -120,10 +127,17 @@ export function SignIn() {
             <div className="mt-2">
               <Button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-70 disabled:cursor-not-allowed"
                 disabled={form.formState.isSubmitting}
               >
-                {t("labels.signIn")}
+                {form.formState.isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t("labels.signingIn")}
+                  </>
+                ) : (
+                  t("labels.signIn")
+                )}
               </Button>
             </div>
           </form>
