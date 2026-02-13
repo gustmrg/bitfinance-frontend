@@ -33,10 +33,30 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
           SSH_HOST_IP: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
         run: |
+          set -euo pipefail
+
           mkdir -p ~/.ssh
-          ssh-keyscan -H $SSH_HOST_IP >> ~/.ssh/known_hosts
-          echo "$SSH_PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          scp -i private_key.pem -r dist/* $SSH_USERNAME@$SSH_HOST_IP:/var/www/bitfinance/
-          rm private_key.pem
+          chmod 700 ~/.ssh
+          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST_IP" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+          KEY_FILE="$(mktemp)"
+          trap 'rm -f "$KEY_FILE"' EXIT
+          printf '%s' "$SSH_PRIVATE_KEY" > "$KEY_FILE"
+          chmod 600 "$KEY_FILE"
+
+          ssh -i "$KEY_FILE" \
+            -p "$SSH_PORT" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "$SSH_USERNAME@$SSH_HOST_IP" 'echo "SSH auth OK"'
+
+          scp -i "$KEY_FILE" \
+            -P "$SSH_PORT" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -r dist/* "$SSH_USERNAME@$SSH_HOST_IP:/var/www/bitfinance/"
