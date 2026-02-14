@@ -16,7 +16,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 export function DashboardLayout() {
@@ -26,32 +25,31 @@ export function DashboardLayout() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/70 sm:h-16 sm:px-6">
           <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
+          <Separator orientation="vertical" className="mr-2 hidden h-4 sm:block" />
+          <Breadcrumb className="min-w-0">
+            <BreadcrumbList className="flex-nowrap overflow-hidden">
               {breadcrumbs.map((crumb) => (
                 <React.Fragment key={crumb.path}>
-                  <BreadcrumbItem>
+                  <BreadcrumbItem className="truncate">
                     {crumb.isLast ? (
-                      // Last item is the current page
-                      <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                      <BreadcrumbPage className="truncate">{crumb.label}</BreadcrumbPage>
                     ) : (
-                      // Intermediate items are links
                       <BreadcrumbLink asChild>
-                        <Link to={crumb.path}>{crumb.label}</Link>
+                        <Link to={crumb.path} className="truncate">
+                          {crumb.label}
+                        </Link>
                       </BreadcrumbLink>
                     )}
                   </BreadcrumbItem>
-                  {/* Add separator if not the last item */}
-                  {!crumb.isLast && <BreadcrumbSeparator />}
+                  {!crumb.isLast ? <BreadcrumbSeparator /> : null}
                 </React.Fragment>
               ))}
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
+        <div className="flex flex-1 flex-col">
           <Outlet />
         </div>
       </SidebarInset>

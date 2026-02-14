@@ -1,3 +1,12 @@
+import { useEffect } from "react";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { NavLink, useNavigate } from "react-router-dom";
+import { z } from "zod";
+
 import { useIsAuthenticated, useLoginAction } from "@/auth/auth-provider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -10,13 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Loader2 } from "lucide-react";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { NavLink, useNavigate } from "react-router-dom";
-import { z } from "zod";
+
 import logoImg from "/assets/logo.png";
 
 const passwordValidation = new RegExp(
@@ -54,24 +57,21 @@ export function SignIn() {
       email: data.email,
       password: data.password,
     });
+
     if (isSuccess) {
       navigate("/dashboard");
     }
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          alt="BitFinance logo"
-          src={logoImg}
-          className="mx-auto h-16 w-auto"
-        />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+    <div className="w-full max-w-sm py-2">
+      <div className="w-full">
+        <img alt="BitFinance logo" src={logoImg} className="mx-auto h-14 w-auto" />
+        <h2 className="mt-8 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           {t("auth.signIn.title")}
         </h2>
       </div>
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="mt-8 w-full">
         <Alert variant="warning" className="mb-6">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -83,10 +83,7 @@ export function SignIn() {
           </AlertDescription>
         </Alert>
         <Form {...form}>
-          <form
-            className="space-y-6"
-            onSubmit={form.handleSubmit(handleSignIn)}
-          >
+          <form className="space-y-6" onSubmit={form.handleSubmit(handleSignIn)}>
             <FormField
               control={form.control}
               name="email"
@@ -96,11 +93,7 @@ export function SignIn() {
                     Email
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="johndoe@email.com"
-                      {...field}
-                      type="text"
-                    />
+                    <Input placeholder="johndoe@email.com" {...field} type="text" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -121,26 +114,24 @@ export function SignIn() {
                 </FormItem>
               )}
             />
-            <div className="mt-2">
-              <Button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-70 disabled:cursor-not-allowed"
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t("labels.signingIn")}
-                  </>
-                ) : (
-                  t("labels.signIn")
-                )}
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              className="mt-2 flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-70"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("labels.signingIn")}
+                </>
+              ) : (
+                t("labels.signIn")
+              )}
+            </Button>
           </form>
         </Form>
         <div className="mt-6">
-          <p className="text-sm text-center leading-5 text-gray-600">
+          <p className="text-center text-sm leading-5 text-gray-600">
             {t("auth.signIn.redirect")}{" "}
             <NavLink
               to={form.formState.isSubmitting ? "#" : "/auth/sign-up"}

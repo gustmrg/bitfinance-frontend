@@ -1,21 +1,25 @@
 import { useState } from "react";
-import { useSelectedOrganization } from "@/auth/auth-provider";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RecentExpenses } from "./components/recent-expenses";
-import { UpcomingBills } from "./components/upcoming-bills";
-import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
+
+import { useSelectedOrganization } from "@/auth/auth-provider";
+import { PageContainer, PageHeader } from "@/components/page-shell";
+import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   useRecentExpensesQuery,
   useUpcomingBillsQuery,
 } from "@/hooks/queries/use-dashboard-query";
+
+import { RecentExpenses } from "./components/recent-expenses";
+import { UpcomingBills } from "./components/upcoming-bills";
 
 export function Dashboard() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
   });
+
   const selectedOrganization = useSelectedOrganization();
   const upcomingBillsQuery = useUpcomingBillsQuery(selectedOrganization?.id ?? null);
   const recentExpensesQuery = useRecentExpensesQuery(
@@ -27,18 +31,19 @@ export function Dashboard() {
   };
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
+    <PageContainer>
+      <PageHeader
+        title="Dashboard"
+        actions={
           <CalendarDateRangePicker
             startDate={dateRange?.from}
             endDate={dateRange?.to}
             onDateChange={handleDateFilterChange}
           />
-        </div>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        }
+      />
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -57,11 +62,10 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$45,231.89</div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Subscriptions</CardTitle>
@@ -82,11 +86,10 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+2350</div>
-            <p className="text-xs text-muted-foreground">
-              +180.1% from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+180.1% from last month</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Sales</CardTitle>
@@ -106,11 +109,10 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+12,234</div>
-            <p className="text-xs text-muted-foreground">
-              +19% from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+19% from last month</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Now</CardTitle>
@@ -129,16 +131,15 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+573</div>
-            <p className="text-xs text-muted-foreground">
-              +201 since last hour
-            </p>
+            <p className="text-xs text-muted-foreground">+201 since last hour</p>
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+
+      <div className="grid gap-4 xl:grid-cols-7">
         <UpcomingBills bills={upcomingBillsQuery.data ?? []} />
         <RecentExpenses expenses={recentExpensesQuery.data ?? []} />
       </div>
-    </div>
+    </PageContainer>
   );
 }
