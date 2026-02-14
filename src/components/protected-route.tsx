@@ -1,4 +1,8 @@
-import { useAuth } from "@/auth/auth-provider";
+import {
+  useAuthInitialization,
+  useCurrentUser,
+  useIsAuthenticated,
+} from "@/auth/auth-provider";
 import { Navigate, useLocation } from "react-router-dom";
 
 interface ProtectedRouteProps {
@@ -6,8 +10,12 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const isInitialized = useAuthInitialization();
+  const isAuthenticated = useIsAuthenticated();
+  const currentUserQuery = useCurrentUser();
   const location = useLocation();
+  const isLoading =
+    !isInitialized || (isAuthenticated && currentUserQuery.isPending);
 
   if (isLoading) {
     return (

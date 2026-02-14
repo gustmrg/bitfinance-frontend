@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getBills } from "@/api/bills/get-bills";
-import { CreateBill } from "@/api/bills/create-bill";
-import { UpdateBill } from "@/api/bills/update-bill";
-import { DeleteBill } from "@/api/bills/delete-bill";
-import { useAuth } from "@/auth/auth-provider";
+
+import type { BillDocumentType } from "@/api/bills";
+import { useSelectedOrganization } from "@/auth/auth-provider";
 import { dateFormatter } from "@/utils/formatter";
-import { Bill } from "./types";
 
 import { DetailsBillDialog } from "./components/details-bill-dialog";
 import { DeleteBillDialog } from "./components/delete-bill-dialog";
@@ -28,74 +24,30 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AddBillDialog } from "./components/add-bill-dialog";
-import { uploadMultipleDocuments } from "@/api/bills/upload-document";
+import { useBillMutations } from "@/hooks/mutations/use-bill-mutations";
+import { useBillsQuery } from "@/hooks/queries/use-bills-query";
 
 export function Bills() {
-  const [bills, setBills] = useState<Bill[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
   });
 
-  const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
-  const navigate = useNavigate();
+  const selectedOrganization = useSelectedOrganization();
   const { t } = useTranslation();
+  const billsQuery = useBillsQuery(selectedOrganization?.id ?? null, {
+    from: dateRange?.from,
+    to: dateRange?.to,
+  });
+  const { addBillAsync, deleteBillAsync, updateBillAsync, uploadBillDocumentsAsync } =
+    useBillMutations({
+      organizationId: selectedOrganization?.id ?? null,
+    });
+  const bills = billsQuery.data ?? [];
 
   const handleDateFilterChange = (newDate: DateRange) => {
     setDateRange(newDate);
   };
-
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      navigate("/auth/sign-in");
-      return;
-    }
-
-    let organizationId = selectedOrganization ? selectedOrganization.id : null;
-
-    const fetchBills = async () => {
-      if (!organizationId) return;
-
-      try {
-        const response = await getBills({
-          organizationId: organizationId,
-          from: dateRange?.from,
-          to: dateRange?.to,
-        });
-
-        if (!response) {
-          console.error("Failed to fetch bills.");
-          setBills([]);
-          return;
-        }
-
-        const bills: Bill[] = response?.data.map((bill: any) => ({
-          ...bill,
-          createdDate: bill.createdAt,
-          status: bill.status.toLowerCase() as
-            | "created"
-            | "due"
-            | "paid"
-            | "overdue"
-            | "cancelled"
-            | "upcoming",
-        }));
-
-        setBills(bills);
-      } catch (error) {
-        console.error("Failed to fetch bills:", error);
-      }
-    };
-
-    fetchBills();
-  }, [
-    isAuthenticated,
-    navigate,
-    isLoading,
-    user,
-    selectedOrganization,
-    dateRange,
-  ]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -126,7 +78,7 @@ export function Bills() {
 
   const handleAddBill = async (data: any) => {
     try {
-      const response = await CreateBill({
+      await addBillAsync({
         description: data.description,
         category: data.category,
         status: "upcoming",
@@ -134,32 +86,7 @@ export function Bills() {
         amountDue: data.amount,
         paymentDate: null,
         amountPaid: null,
-        organizationId: selectedOrganization!.id,
       });
-
-      if (response) {
-        const newBill: Bill = {
-          id: response.id,
-          description: response.description,
-          category: response.category,
-          status: response.status.toLowerCase() as
-            | "created"
-            | "due"
-            | "paid"
-            | "overdue"
-            | "cancelled"
-            | "upcoming",
-          amountDue: response.amountDue,
-          amountPaid: response.amountPaid || null,
-          createdDate: response.createdDate,
-          dueDate: response.dueDate,
-          paymentDate: response.paidDate || null,
-          deletedDate: null,
-          notes: data.notes || "",
-        };
-
-        setBills((prevBills) => [...prevBills, newBill]);
-      }
     } catch (error) {
       console.error("Failed to add the bill:", error);
     }
@@ -167,12 +94,7 @@ export function Bills() {
 
   const handleDeleteBill = async (id: string) => {
     try {
-      const response = await DeleteBill(id, selectedOrganization!.id);
-
-      if (response?.status == 204) {
-        const updatedBills = bills.filter((item) => item.id !== id);
-        setBills(updatedBills);
-      }
+      await deleteBillAsync(id);
     } catch (error) {
       console.error("Failed to delete the bill:", error);
     }
@@ -180,7 +102,7 @@ export function Bills() {
 
   const handleEditBill = async (data: any) => {
     try {
-      const response = await UpdateBill({
+      await updateBillAsync({
         id: data.id,
         description: data.description,
         category: data.category,
@@ -189,33 +111,7 @@ export function Bills() {
         amountDue: data.amountDue,
         paymentDate: data.paymentDate,
         amountPaid: data.amountPaid,
-        organizationId: selectedOrganization!.id,
       });
-
-      if (response) {
-        const updatedBills = bills.map((bill) =>
-          bill.id === response.id
-            ? {
-                ...bill,
-                description: response.description,
-                category: response.category,
-                status: response.status.toLowerCase() as
-                  | "created"
-                  | "due"
-                  | "paid"
-                  | "overdue"
-                  | "cancelled"
-                  | "upcoming",
-                dueDate: response.dueDate,
-                paymentDate: response.paymentDate || null,
-                amountDue: response.amountDue,
-                amountPaid: response.amountPaid || null,
-              }
-            : bill
-        );
-
-        setBills(updatedBills);
-      }
     } catch (error) {
       console.error("Failed to update the bill:", error);
     }
@@ -227,12 +123,11 @@ export function Bills() {
     documentType: string
   ) => {
     try {
-      await uploadMultipleDocuments(
-        selectedOrganization!.id,
+      await uploadBillDocumentsAsync({
         billId,
         files,
-        documentType as any
-      );
+        documentType: documentType as BillDocumentType,
+      });
     } catch (error) {
       console.error("Failed to upload documents:", error);
       throw error;
@@ -286,10 +181,7 @@ export function Bills() {
                       billId={bill.id}
                       onUpload={handleUploadDocuments}
                     />
-                    <DeleteBillDialog
-                      id={bill.id}
-                      onDelete={handleDeleteBill}
-                    />
+                    <DeleteBillDialog id={bill.id} onDelete={handleDeleteBill} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -315,7 +207,11 @@ export function Bills() {
               </>
             )}
           </Table>
-          {bills.length === 0 ? (
+          {billsQuery.isPending ? (
+            <div className="text-center py-6">
+              <h3 className="mt-2 text-lg font-semibold">Loading bills...</h3>
+            </div>
+          ) : bills.length === 0 ? (
             <div className="text-center py-6">
               <ReceiptText className="mx-auto h-12 w-12 text-muted-foreground/50" />
               <h3 className="mt-2 text-lg font-semibold">No Bills</h3>

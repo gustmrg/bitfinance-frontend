@@ -22,7 +22,7 @@ import {
   Users,
 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
-import { useAuth } from "@/auth/auth-provider";
+import { useCurrentUser } from "@/auth/auth-provider";
 import { Link, useLocation } from "react-router-dom";
 
 const data = {
@@ -74,17 +74,15 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user, selectedOrganization } = useAuth();
+  const currentUserQuery = useCurrentUser();
+  const user = currentUserQuery.data ?? null;
 
   let location = useLocation();
 
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <OrganizationSwitcher
-          organizations={user?.organizations ?? []}
-          defaultOrganization={selectedOrganization}
-        />
+        <OrganizationSwitcher organizations={user?.organizations ?? []} />
       </SidebarHeader>
       <SidebarContent>
         {data.navMain.map((item) => (

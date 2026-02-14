@@ -2,11 +2,11 @@ import { privateAPI } from "@/lib/axios";
 
 const api = privateAPI();
 
-interface GetUpcomingBillsResponse {
-  data: Bill[];
+export interface GetUpcomingBillsResponse {
+  data: UpcomingBillResponseModel[];
 }
 
-type Bill = {
+export type UpcomingBillResponseModel = {
   id: string;
   description: string;
   category:
@@ -28,21 +28,17 @@ type Bill = {
     | "pets";
   status: "created" | "due" | "paid" | "overdue" | "cancelled" | "upcoming";
   amountDue: number;
-  createdDate: string;
+  createdDate?: string;
+  createdAt?: string;
   dueDate: string;
 };
 
 export async function getUpcomingBills(
   organizationId: string
-): Promise<GetUpcomingBillsResponse | null> {
-  try {
-    const response = await api.get<GetUpcomingBillsResponse>(
-      `/organizations/${organizationId}/dashboard/upcoming-bills`
-    );
+): Promise<GetUpcomingBillsResponse> {
+  const response = await api.get<GetUpcomingBillsResponse>(
+    `/organizations/${organizationId}/dashboard/upcoming-bills`
+  );
 
-    return response.data;
-  } catch (error) {
-    console.error("Could not find a valid access token");
-    return null;
-  }
+  return response.data;
 }

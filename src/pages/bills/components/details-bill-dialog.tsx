@@ -13,8 +13,8 @@ import { Bill } from "../types";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { downloadDocument } from "@/api/bills/download-document";
-import { useAuth } from "@/auth/auth-provider";
+import { billsService } from "@/api/bills";
+import { useSelectedOrganization } from "@/auth/auth-provider";
 
 interface DetailsBillDialogProps {
   bill: Bill;
@@ -22,7 +22,7 @@ interface DetailsBillDialogProps {
 
 export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
   const { t } = useTranslation();
-  const { selectedOrganization } = useAuth();
+  const selectedOrganization = useSelectedOrganization();
 
   const handleDownloadDocument = async (
     documentId: string,
@@ -34,12 +34,12 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
     }
 
     try {
-      await downloadDocument(
-        selectedOrganization.id,
-        bill.id,
+      await billsService.downloadDocumentAsync({
+        organizationId: selectedOrganization.id,
+        billId: bill.id,
         documentId,
-        fileName
-      );
+        fileName,
+      });
     } catch (error) {
       console.error("Failed to download document:", error);
     }

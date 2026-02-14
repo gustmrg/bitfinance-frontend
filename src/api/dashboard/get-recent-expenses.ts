@@ -2,7 +2,7 @@ import { privateAPI } from "@/lib/axios";
 
 const api = privateAPI();
 
-interface GetRecentExpensesResponse {
+export interface GetRecentExpensesResponse {
   data: ExpenseResponseModel[];
 }
 
@@ -34,15 +34,10 @@ export type ExpenseResponseModel = {
 
 export async function getRecentExpenses(
   organizationId: string
-): Promise<GetRecentExpensesResponse | null> {
-  try {
-    const response = await api.get<GetRecentExpensesResponse>(
-      `/organizations/${organizationId}/dashboard/recent-expenses`
-    );
+): Promise<GetRecentExpensesResponse> {
+  const response = await api.get<GetRecentExpensesResponse>(
+    `/organizations/${organizationId}/dashboard/recent-expenses`
+  );
 
-    return response.data;
-  } catch (error) {
-    console.error("Could not find a valid access token");
-    return null;
-  }
+  return response.data;
 }

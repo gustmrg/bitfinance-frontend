@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 import logoImg from "/assets/logo.png";
 import { createOrganization } from "@/api/organizations/create-organization";
+import {
+  useGetMeAction,
+  useSetSelectedOrganizationId,
+} from "@/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
@@ -10,6 +14,8 @@ export function CreateOrganization() {
   const [organizationName, setOrganizationName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const getMe = useGetMeAction();
+  const setSelectedOrganizationId = useSetSelectedOrganizationId();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -19,20 +25,13 @@ export function CreateOrganization() {
 
     try {
       const response = await createOrganization({ name: organizationName });
-      if (response) {
-        // Optionally handle the response data if needed
-        console.log("Organization created:", response);
-        navigate("/dashboard"); // Navigate on success
-      } else {
-        // Handle cases where the API might return a falsy value without throwing an error
-        console.error("Organization creation failed, no response data.");
-        // Optionally: Show an error message to the user
-      }
+      await getMe();
+      setSelectedOrganizationId(response.id);
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error creating organization:", error);
-      // Optionally: Show an error message to the user based on the error
     } finally {
-      setIsLoading(false); // Set loading state back to false regardless of success or error
+      setIsLoading(false);
     }
   };
 

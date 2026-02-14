@@ -16,7 +16,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Toaster } from "sonner";
 
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
@@ -54,7 +53,6 @@ export function DashboardLayout() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <Outlet />
-          <Toaster richColors />
         </div>
       </SidebarInset>
     </SidebarProvider>

@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth/auth-provider";
+import { useIsAuthenticated, useLoginAction } from "@/auth/auth-provider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { NavLink, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { z } from "zod";
 import logoImg from "/assets/logo.png";
 
@@ -39,7 +38,8 @@ export function SignIn() {
     resolver: zodResolver(signInForm),
   });
 
-  const { login, getMe, isAuthenticated } = useAuth();
+  const login = useLoginAction();
+  const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -55,10 +55,7 @@ export function SignIn() {
       password: data.password,
     });
     if (isSuccess) {
-      await getMe();
       navigate("/dashboard");
-    } else {
-      toast.error("Login failed. Check your email and password and try again.");
     }
   }
 

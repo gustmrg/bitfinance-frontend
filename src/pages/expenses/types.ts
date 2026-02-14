@@ -1,27 +1,11 @@
+import type { ExpenseCategory, ExpenseStatus } from "@/api/expenses";
+
 export type Expense = {
   id: string;
   description: string;
-  category:
-    | "housing"
-    | "transportation"
-    | "food"
-    | "utilities"
-    | "clothing"
-    | "healthcare"
-    | "insurance"
-    | "personal"
-    | "debt"
-    | "savings"
-    | "education"
-    | "entertainment"
-    | "miscellaneous"
-    | "travel"
-    | "pets"
-    | "gifts"
-    | "subscriptions"
-    | "taxes";
+  category: ExpenseCategory;
   amount: number;
-  status: "pending" | "paid" | "cancelled";
+  status: ExpenseStatus;
   occurredAt: string;
   createdBy: string;
   createdAt: string;

@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth/auth-provider";
+import { useRegisterAction } from "@/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,7 +13,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { NavLink, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { z } from "zod";
 
 import logoImg from "/assets/logo.png";
@@ -39,7 +38,7 @@ export function SignUp() {
     resolver: zodResolver(signUpForm),
   });
 
-  const { register } = useAuth();
+  const register = useRegisterAction();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -54,8 +53,6 @@ export function SignUp() {
 
     if (isSuccess) {
       navigate("/dashboard");
-    } else {
-      toast.error("Registration failed. Please try again.");
     }
   }
 

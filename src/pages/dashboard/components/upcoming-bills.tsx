@@ -42,6 +42,9 @@ export function UpcomingBills({ bills }: UpcomingBillsProps) {
         <div className="space-y-4 max-h-[500px] overflow-auto">
           {bills.length > 0 ? (
             bills.map((bill) => {
+              const isOverdue = bill.status === "overdue";
+              const isDueSoon = bill.status === "due";
+
               return (
                 <div
                   key={bill.id}
@@ -50,18 +53,18 @@ export function UpcomingBills({ bills }: UpcomingBillsProps) {
                   <div className="flex items-center gap-3">
                     <div
                       className={`p-2 rounded-full ${
-                        status === "overdue"
+                        isOverdue
                           ? "bg-destructive/10"
-                          : status === "due-soon"
+                          : isDueSoon
                           ? "bg-warning/10"
                           : "bg-muted"
                       }`}
                     >
                       <Receipt
                         className={`h-5 w-5 ${
-                          status === "overdue"
+                          isOverdue
                             ? "text-destructive"
-                            : status === "due-soon"
+                            : isDueSoon
                             ? "text-warning"
                             : "text-muted-foreground"
                         }`}
@@ -72,7 +75,8 @@ export function UpcomingBills({ bills }: UpcomingBillsProps) {
                       <div className="flex items-center text-xs text-muted-foreground">
                         <CalendarClock className="mr-1 h-3 w-3" />
                         <span>
-                          {t("labels.dueIn")} {format(bill.dueDate, "MMM d")}
+                          {t("labels.dueIn")}{" "}
+                          {format(new Date(bill.dueDate), "MMM d")}
                         </span>
                       </div>
                     </div>
