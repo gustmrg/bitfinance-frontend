@@ -98,6 +98,12 @@ npm run build
 
 Uses `.env.production` (created by CI/CD) to generate a production build with relative API URLs for same-origin deployment.
 
+### Deployment and Versioning
+
+- `.github/workflows/deploy.yml` deploys on pushes to `main`.
+- Application version shown in npm scripts comes from `package.json`, not GitHub release tags.
+- `.github/workflows/release-version-check.yml` validates that a published release tag (for example `v1.6.0`) matches `package.json` version (`1.6.0`).
+
 ### Security Note
 
 - Never commit actual `.env` files - they are gitignored
