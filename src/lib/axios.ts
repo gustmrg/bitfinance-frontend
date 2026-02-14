@@ -5,7 +5,7 @@ import axios, {
 } from "axios";
 import { toast } from "sonner";
 
-import { extractApiErrorMessage } from "@/api/shared/normalize-error";
+import { normalizeError } from "@/api/shared/normalize-error";
 import { env } from "@/env";
 import {
   getAccessToken,
@@ -28,7 +28,7 @@ function handleApiExceptionToast(
   options: HandleApiExceptionToastOptions = {}
 ): void {
   if (!isAxiosError(error)) {
-    toast.error(extractApiErrorMessage(error, REQUEST_FAILED_MESSAGE));
+    toast.error(normalizeError(error, REQUEST_FAILED_MESSAGE).message);
     return;
   }
 
@@ -47,10 +47,10 @@ function handleApiExceptionToast(
     return;
   }
 
-  const extractedMessage = extractApiErrorMessage(
+  const extractedMessage = normalizeError(
     error,
     MISSING_API_MESSAGE_SENTINEL
-  );
+  ).message;
   const hasBackendMessage =
     extractedMessage !== MISSING_API_MESSAGE_SENTINEL &&
     extractedMessage !== error.message;
