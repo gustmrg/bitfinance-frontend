@@ -13,7 +13,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { NavLink, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { z } from "zod";
 
 import logoImg from "/assets/logo.png";
@@ -54,8 +53,6 @@ export function SignUp() {
 
     if (isSuccess) {
       navigate("/dashboard");
-    } else {
-      toast.error("Registration failed. Please try again.");
     }
   }
 

@@ -13,7 +13,7 @@ import { Bill } from "../types";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { downloadDocument } from "@/api/bills/download-document";
+import { billsService } from "@/api/bills";
 import { useAuth } from "@/auth/auth-provider";
 
 interface DetailsBillDialogProps {
@@ -34,12 +34,12 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
     }
 
     try {
-      await downloadDocument(
-        selectedOrganization.id,
-        bill.id,
+      await billsService.downloadDocumentAsync({
+        organizationId: selectedOrganization.id,
+        billId: bill.id,
         documentId,
-        fileName
-      );
+        fileName,
+      });
     } catch (error) {
       console.error("Failed to download document:", error);
     }

@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/auth/auth-provider";
-import { CreateBill } from "@/api/bills/create-bill";
+import { billsService } from "@/api/bills";
 
 const AddBillSchema = z.object({
   description: z.string().min(1, "Description is required"),
@@ -74,7 +74,7 @@ export function AddBill() {
 
   async function onSubmit(data: AddBillFormValues) {
     try {
-      const response = await CreateBill({
+      const response = await billsService.createAsync({
         description: data.description,
         category: data.category,
         status: "upcoming",

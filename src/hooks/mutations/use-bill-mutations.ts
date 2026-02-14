@@ -1,20 +1,17 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { CreateBill } from "@/api/bills/create-bill";
-import { DeleteBill } from "@/api/bills/delete-bill";
-import { UpdateBill } from "@/api/bills/update-bill";
 import {
-  type DocumentType,
-  uploadMultipleDocuments,
-} from "@/api/bills/upload-document";
-import type { CreateBillRequest } from "@/api/bills/create-bill";
-import type { UpdateBillRequest } from "@/api/bills/update-bill";
+  billsService,
+  type BillDocumentType,
+  type CreateBillRequest,
+  type UpdateBillRequest,
+} from "@/api/bills";
 import { queryKeys } from "@/lib/query-keys";
 
 interface UploadBillDocumentsPayload {
   billId: string;
   files: File[];
-  documentType: DocumentType;
+  documentType: BillDocumentType;
 }
 
 interface UseBillMutationsOptions {
@@ -47,7 +44,7 @@ export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
     mutationFn: async (request: Omit<CreateBillRequest, "organizationId">) => {
       const orgId = requireOrganizationId(organizationId);
 
-      return CreateBill({
+      return billsService.createAsync({
         ...request,
         organizationId: orgId,
       });
@@ -63,7 +60,7 @@ export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
     mutationFn: async (request: Omit<UpdateBillRequest, "organizationId">) => {
       const orgId = requireOrganizationId(organizationId);
 
-      return UpdateBill({
+      return billsService.updateAsync({
         ...request,
         organizationId: orgId,
       });
@@ -78,7 +75,7 @@ export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
   const deleteBillMutation = useMutation({
     mutationFn: async (billId: string) => {
       const orgId = requireOrganizationId(organizationId);
-      return DeleteBill(billId, orgId);
+      return billsService.deleteAsync(billId, orgId);
     },
     onSuccess: async () => {
       if (organizationId) {
@@ -91,12 +88,12 @@ export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
     mutationFn: async (payload: UploadBillDocumentsPayload) => {
       const orgId = requireOrganizationId(organizationId);
 
-      return uploadMultipleDocuments(
-        orgId,
-        payload.billId,
-        payload.files,
-        payload.documentType
-      );
+      return billsService.uploadDocumentsAsync({
+        organizationId: orgId,
+        billId: payload.billId,
+        files: payload.files,
+        documentType: payload.documentType,
+      });
     },
     onSuccess: async () => {
       if (organizationId) {

@@ -6,8 +6,8 @@ import {
   getUpcomingBills,
   type UpcomingBillResponseModel,
 } from "@/api/dashboard/get-upcoming-bills";
+import type { Bill } from "@/api/bills";
 import { queryKeys } from "@/lib/query-keys";
-import type { Bill } from "@/pages/bills/types";
 
 function mapUpcomingBillResponse(bill: UpcomingBillResponseModel): Bill {
   return {

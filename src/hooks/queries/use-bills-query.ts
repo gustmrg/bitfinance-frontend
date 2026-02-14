@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import type { BillResponseModel } from "@/api/bills/get-bills";
-import { getBills } from "@/api/bills/get-bills";
+import { billsService, type Bill } from "@/api/bills";
 import { queryKeys } from "@/lib/query-keys";
-import type { Bill } from "@/pages/bills/types";
 
 export interface BillsQueryFilters {
   from?: Date;
@@ -14,7 +12,7 @@ function normalizeBillStatus(status: string): Bill["status"] {
   return status.toLowerCase() as Bill["status"];
 }
 
-function mapBillResponse(bill: BillResponseModel): Bill {
+function mapBillResponse(bill: Bill): Bill {
   return {
     ...bill,
     status: normalizeBillStatus(bill.status),
@@ -34,7 +32,7 @@ export function useBillsQuery(
         return [];
       }
 
-      const response = await getBills({
+      const response = await billsService.listAsync({
         organizationId,
         from: filters.from,
         to: filters.to,

@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import type { ExpenseResponseModel } from "@/api/expenses/get-expenses";
-import { getExpenses } from "@/api/expenses/get-expenses";
+import { expensesService, type Expense } from "@/api/expenses";
 import { queryKeys } from "@/lib/query-keys";
-import type { Expense } from "@/pages/expenses/types";
 
 export interface ExpensesQueryFilters {
   from?: Date;
@@ -14,7 +12,7 @@ function normalizeExpenseStatus(status: string): Expense["status"] {
   return status.toLowerCase() as Expense["status"];
 }
 
-function mapExpenseResponse(expense: ExpenseResponseModel): Expense {
+function mapExpenseResponse(expense: Expense): Expense {
   return {
     ...expense,
     status: normalizeExpenseStatus(expense.status),
@@ -37,7 +35,7 @@ export function useExpensesQuery(
         return [];
       }
 
-      const response = await getExpenses({
+      const response = await expensesService.listAsync({
         organizationId,
         from: filters.from,
         to: filters.to,

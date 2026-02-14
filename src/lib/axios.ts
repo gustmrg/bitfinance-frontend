@@ -1,12 +1,72 @@
+import axios, {
+  AxiosError,
+  InternalAxiosRequestConfig,
+  isAxiosError,
+} from "axios";
+import { toast } from "sonner";
+
+import { extractApiErrorMessage } from "@/api/shared/normalize-error";
+import { env } from "@/env";
 import {
   getAccessToken,
   setAccessToken,
   clearAccessToken,
 } from "@/lib/auth-token";
-import { env } from "@/env";
 import { logger } from "@/lib/logger";
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { toast } from "sonner";
+
+const NETWORK_ERROR_MESSAGE = "Network error. Please check your connection.";
+const SERVER_ERROR_MESSAGE = "Server error. Please try again later.";
+const REQUEST_FAILED_MESSAGE = "Request failed. Please try again.";
+const MISSING_API_MESSAGE_SENTINEL = "__MISSING_API_MESSAGE__";
+
+interface HandleApiExceptionToastOptions {
+  suppressUnauthorized?: boolean;
+}
+
+function handleApiExceptionToast(
+  error: unknown,
+  options: HandleApiExceptionToastOptions = {}
+): void {
+  if (!isAxiosError(error)) {
+    toast.error(extractApiErrorMessage(error, REQUEST_FAILED_MESSAGE));
+    return;
+  }
+
+  if (error.code === "ERR_CANCELED") {
+    return;
+  }
+
+  const statusCode = error.response?.status;
+
+  if (options.suppressUnauthorized && statusCode === 401) {
+    return;
+  }
+
+  if (!error.response) {
+    toast.error(NETWORK_ERROR_MESSAGE);
+    return;
+  }
+
+  const extractedMessage = extractApiErrorMessage(
+    error,
+    MISSING_API_MESSAGE_SENTINEL
+  );
+  const hasBackendMessage =
+    extractedMessage !== MISSING_API_MESSAGE_SENTINEL &&
+    extractedMessage !== error.message;
+
+  if (hasBackendMessage) {
+    toast.error(extractedMessage);
+    return;
+  }
+
+  if (statusCode && statusCode >= 500) {
+    toast.error(SERVER_ERROR_MESSAGE);
+    return;
+  }
+
+  toast.error(REQUEST_FAILED_MESSAGE);
+}
 
 // --- Public API instance (no auth) ---
 export const api = axios.create({
@@ -17,11 +77,7 @@ export const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status >= 500) {
-      toast.error("Server error. Please try again later.");
-    } else if (error.code === "NETWORK_ERROR" || !error.response) {
-      toast.error("Network error. Please check your connection.");
-    }
+    handleApiExceptionToast(error);
     return Promise.reject(error);
   }
 );
@@ -153,11 +209,7 @@ authApi.interceptors.response.use(
       }
     }
 
-    if (error.response?.status && error.response.status >= 500) {
-      toast.error("Server error. Please try again later.");
-    } else if (error.code === "NETWORK_ERROR" || !error.response) {
-      toast.error("Network error. Please check your connection.");
-    }
+    handleApiExceptionToast(error, { suppressUnauthorized: true });
 
     return Promise.reject(error);
   }

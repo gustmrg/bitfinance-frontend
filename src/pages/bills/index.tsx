@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { DocumentType } from "@/api/bills/upload-document";
+import type { BillDocumentType } from "@/api/bills";
 import { useAuth } from "@/auth/auth-provider";
 import { dateFormatter } from "@/utils/formatter";
 
@@ -126,7 +126,7 @@ export function Bills() {
       await uploadBillDocumentsAsync({
         billId,
         files,
-        documentType: documentType as DocumentType,
+        documentType: documentType as BillDocumentType,
       });
     } catch (error) {
       console.error("Failed to upload documents:", error);

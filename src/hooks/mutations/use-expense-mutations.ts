@@ -1,8 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { AddExpense } from "@/api/expenses/add-expense";
-import { DeleteExpense } from "@/api/expenses/delete-expense";
-import type { CreateExpenseRequest } from "@/api/expenses/add-expense";
+import { expensesService, type CreateExpenseRequest } from "@/api/expenses";
 import { queryKeys } from "@/lib/query-keys";
 
 interface UseExpenseMutationsOptions {
@@ -39,7 +37,7 @@ export function useExpenseMutations({
     ) => {
       const orgId = requireOrganizationId(organizationId);
 
-      return AddExpense({
+      return expensesService.createAsync({
         ...request,
         organizationId: orgId,
       });
@@ -54,7 +52,7 @@ export function useExpenseMutations({
   const deleteExpenseMutation = useMutation({
     mutationFn: async (expenseId: string) => {
       const orgId = requireOrganizationId(organizationId);
-      return DeleteExpense(expenseId, orgId);
+      return expensesService.deleteAsync(expenseId, orgId);
     },
     onSuccess: async () => {
       if (organizationId) {

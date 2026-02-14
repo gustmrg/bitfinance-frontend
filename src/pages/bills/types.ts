@@ -1,3 +1,5 @@
+import type { BillCategory, BillStatus } from "@/api/bills";
+
 export type BillDocument = {
   id: string;
   billId: string;
@@ -9,24 +11,8 @@ export type BillDocument = {
 export type Bill = {
   id: string;
   description: string;
-  category:
-    | "housing"
-    | "transportation"
-    | "food"
-    | "utilities"
-    | "clothing"
-    | "healthcare"
-    | "insurance"
-    | "personal"
-    | "debt"
-    | "savings"
-    | "education"
-    | "entertainment"
-    | "miscellaneous"
-    | "subscriptions"
-    | "taxes"
-    | "pets";
-  status: "created" | "due" | "paid" | "overdue" | "cancelled" | "upcoming";
+  category: BillCategory;
+  status: BillStatus;
   amountDue: number;
   amountPaid?: number | null;
   createdDate: string;

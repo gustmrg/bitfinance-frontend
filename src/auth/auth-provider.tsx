@@ -9,8 +9,9 @@ import {
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
+import { authService } from "@/api/auth";
 import type { Organization, User } from "@/auth/types";
-import { api, authApi, setOnRefreshFailure } from "@/lib/axios";
+import { setOnRefreshFailure } from "@/lib/axios";
 import { clearAccessToken, setAccessToken } from "@/lib/auth-token";
 import { fetchMeAsync, useMeQuery } from "@/hooks/queries/use-me-query";
 import { logger } from "@/lib/logger";
@@ -63,18 +64,6 @@ export interface RegisterBody {
 interface LoginCredentialsBody {
   email: string;
   password: string;
-}
-
-interface AuthenticationResponse {
-  accessToken: string;
-  accessTokenExpiresAt: string;
-  user: {
-    id: string;
-    email: string;
-    userName: string;
-    firstName: string;
-    lastName: string;
-  };
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
@@ -172,14 +161,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.removeItem("_authRefreshToken");
 
       try {
-        const response = await api.post<AuthenticationResponse>(
-          "/identity/refresh"
-        );
-
-        if (response.status === 200) {
-          const { accessToken, accessTokenExpiresAt } = response.data;
-          updateToken(accessToken, accessTokenExpiresAt);
-        }
+        const response = await authService.refreshAsync();
+        const { accessToken, accessTokenExpiresAt } = response;
+        updateToken(accessToken, accessTokenExpiresAt);
       } catch {
         logger.debug("No existing session to restore");
         clearAuthState();
@@ -199,22 +183,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     confirmPassword,
   }: RegisterBody): Promise<boolean> => {
     try {
-      const response = await api.post<AuthenticationResponse>(
-        "/identity/register",
-        {
-          firstName,
-          lastName,
-          email,
-          password,
-          confirmPassword,
-        }
-      );
+      const response = await authService.signUpAsync({
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+      });
 
-      if (response.status !== 200) {
-        throw new Error("Registration failed");
-      }
-
-      const { accessToken, accessTokenExpiresAt } = response.data;
+      const { accessToken, accessTokenExpiresAt } = response;
       updateToken(accessToken, accessTokenExpiresAt);
       await queryClient.fetchQuery({
         queryKey: queryKeys.auth.me(),
@@ -232,15 +209,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     password,
   }: LoginCredentialsBody): Promise<boolean> => {
     try {
-      const response = await api.post<AuthenticationResponse>(
-        "/identity/login",
-        {
-          email,
-          password,
-        }
-      );
+      const response = await authService.signInAsync({
+        email,
+        password,
+      });
 
-      const { accessToken, accessTokenExpiresAt } = response.data;
+      const { accessToken, accessTokenExpiresAt } = response;
       updateToken(accessToken, accessTokenExpiresAt);
       await queryClient.fetchQuery({
         queryKey: queryKeys.auth.me(),
@@ -255,7 +229,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = async (): Promise<void> => {
     try {
-      await authApi.post("/identity/logout");
+      await authService.logoutAsync();
     } catch (error) {
       logger.error("Logout API call failed", error);
     } finally {

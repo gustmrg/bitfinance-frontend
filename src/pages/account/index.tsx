@@ -43,10 +43,8 @@ export function Account() {
             "You have successfully updated your account information.",
         });
       }
-    } catch (error) {
-      toast.error("Uh oh! Something went wrong.", {
-        description: "There was a problem with your request.",
-      });
+    } catch {
+      // Error toast is handled globally by Axios interceptors.
     }
   }
 

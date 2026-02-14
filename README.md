@@ -19,6 +19,39 @@ A modern, full-stack finance application designed to simplify expense tracking a
 - **🏢 Multi-Organization Support**: Join and manage finances across multiple organizations
 - **🔐 Secure**: Built with security best practices and Azure integration for production environments
 
+## 🧩 API Organization
+
+API calls are organized by feature, not in a single global file.
+
+```text
+src/api/
+  auth/
+    auth.service.ts
+    auth.types.ts
+    index.ts
+  bills/
+    bills.service.ts
+    bills.types.ts
+    index.ts
+  expenses/
+    expenses.service.ts
+    expenses.types.ts
+    index.ts
+  shared/
+    http-error.ts
+    normalize-error.ts
+```
+
+### Conventions
+
+- Import API modules from feature barrels only:
+  - `@/api/auth`
+  - `@/api/bills`
+  - `@/api/expenses`
+- Service methods use `camelCase + Async` naming (example: `billsService.listAsync`).
+- HTTP concerns stay in service files; API error toasts are handled globally via Axios interceptors.
+- Shared API error normalization lives in `src/api/shared/`.
+
 ## 🔧 Configuration
 
 ### Environment Setup
