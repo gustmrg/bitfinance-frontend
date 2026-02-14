@@ -1,6 +1,8 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
 
+import { MobileAppHeader } from "@/components/layout/mobile-app-header";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -17,9 +19,23 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function DashboardLayout() {
   const breadcrumbs = useBreadcrumbs();
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <div className="flex min-h-svh flex-col bg-white dark:bg-zinc-950">
+        <MobileAppHeader />
+        <main className="flex flex-1 flex-col pb-[calc(4.25rem+env(safe-area-inset-bottom))]">
+          <Outlet />
+        </main>
+        <MobileBottomNav />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>

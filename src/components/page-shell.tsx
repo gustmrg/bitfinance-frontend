@@ -9,7 +9,12 @@ interface PageContainerProps {
 
 export function PageContainer({ children, className }: PageContainerProps) {
   return (
-    <section className={cn("flex flex-1 flex-col gap-4 p-4 sm:gap-6 sm:p-6", className)}>
+    <section
+      className={cn(
+        "flex flex-1 flex-col gap-4 p-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:gap-6 sm:p-6 sm:pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-6",
+        className
+      )}
+    >
       {children}
     </section>
   );
