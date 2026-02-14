@@ -1,9 +1,3 @@
-import { api, authApi, setOnRefreshFailure } from "@/lib/axios";
-import {
-  setAccessToken,
-  clearAccessToken,
-} from "@/lib/auth-token";
-import { logger } from "@/lib/logger";
 import {
   createContext,
   useCallback,
@@ -13,19 +7,16 @@ import {
   useRef,
   useState,
 } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
-export type User = {
-  id: string;
-  username: string;
-  fullName: string;
-  email: string;
-  organizations: Organization[];
-};
+import type { Organization, User } from "@/auth/types";
+import { api, authApi, setOnRefreshFailure } from "@/lib/axios";
+import { clearAccessToken, setAccessToken } from "@/lib/auth-token";
+import { fetchMeAsync, useMeQuery } from "@/hooks/queries/use-me-query";
+import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
-export type Organization = {
-  id: string;
-  name: string;
-};
+export type { Organization, User } from "@/auth/types";
 
 interface AuthContextValues {
   isAuthenticated: boolean;
@@ -87,13 +78,16 @@ interface AuthenticationResponse {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+  const queryClient = useQueryClient();
+  const [isInitialized, setIsInitialized] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [selectedOrganization, setSelectedOrganization] =
     useState<Organization | null>(null);
   const isAuthenticated = useMemo(() => !!token, [token]);
-  const isInitialized = useRef(false);
+  const initializationRef = useRef(false);
+  const meQuery = useMeQuery(isInitialized && isAuthenticated);
+  const user = meQuery.data ?? null;
+  const isLoading = !isInitialized || (isAuthenticated && meQuery.isPending);
 
   const updateToken = useCallback(
     (newToken: string | null, expiresAt?: string | null) => {
@@ -107,11 +101,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     []
   );
 
+  const setUser = useCallback(
+    (nextUser: User | null) => {
+      if (nextUser) {
+        queryClient.setQueryData(queryKeys.auth.me(), nextUser);
+        return;
+      }
+
+      queryClient.removeQueries({ queryKey: queryKeys.auth.me() });
+    },
+    [queryClient]
+  );
+
   const clearAuthState = useCallback(() => {
     updateToken(null);
-    setUser(null);
+    queryClient.clear();
     setSelectedOrganization(null);
-  }, [updateToken]);
+  }, [queryClient, updateToken]);
 
   useEffect(() => {
     setOnRefreshFailure(() => {
@@ -120,37 +126,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
   }, [clearAuthState]);
 
-  const fetchUserProfile = useCallback(async () => {
-    try {
-      const response = await authApi.get("/identity/me");
-
-      if (response) {
-        const userData: User = {
-          id: response.data.id,
-          username: response.data.username,
-          fullName: response.data.fullName,
-          email: response.data.email,
-          organizations: response.data.organizations ?? [],
-        };
-
-        setUser(userData);
-
-        if (userData.organizations && userData.organizations.length > 0) {
-          setSelectedOrganization({
-            id: userData.organizations[0].id,
-            name: userData.organizations[0].name,
-          });
-        }
-      }
-    } catch (error) {
-      logger.error("Failed to fetch user data", error);
+  const getMe = useCallback(async () => {
+    if (!token) {
+      return;
     }
-  }, []);
+
+    await queryClient.fetchQuery({
+      queryKey: queryKeys.auth.me(),
+      queryFn: fetchMeAsync,
+    });
+  }, [queryClient, token]);
+
+  useEffect(() => {
+    if (!user) {
+      setSelectedOrganization(null);
+      return;
+    }
+
+    setSelectedOrganization((currentOrganization) => {
+      if (user.organizations.length === 0) {
+        return null;
+      }
+
+      if (
+        currentOrganization &&
+        user.organizations.some((org) => org.id === currentOrganization.id)
+      ) {
+        return currentOrganization;
+      }
+
+      return user.organizations[0];
+    });
+  }, [user]);
 
   // Session restoration on mount
   useEffect(() => {
-    if (isInitialized.current) return;
-    isInitialized.current = true;
+    if (initializationRef.current) return;
+    initializationRef.current = true;
 
     const initializeAuth = async () => {
       // One-time cleanup of old localStorage tokens
@@ -167,18 +179,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (response.status === 200) {
           const { accessToken, accessTokenExpiresAt } = response.data;
           updateToken(accessToken, accessTokenExpiresAt);
-          await fetchUserProfile();
         }
       } catch {
         logger.debug("No existing session to restore");
         clearAuthState();
       } finally {
-        setIsLoading(false);
+        setIsInitialized(true);
       }
     };
 
     initializeAuth();
-  }, [updateToken, fetchUserProfile, clearAuthState]);
+  }, [clearAuthState, updateToken]);
 
   const register = async ({
     firstName,
@@ -205,7 +216,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       const { accessToken, accessTokenExpiresAt } = response.data;
       updateToken(accessToken, accessTokenExpiresAt);
-      await fetchUserProfile();
+      await queryClient.fetchQuery({
+        queryKey: queryKeys.auth.me(),
+        queryFn: fetchMeAsync,
+      });
       return true;
     } catch (error) {
       logger.error("Registration failed", error);
@@ -228,6 +242,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       const { accessToken, accessTokenExpiresAt } = response.data;
       updateToken(accessToken, accessTokenExpiresAt);
+      await queryClient.fetchQuery({
+        queryKey: queryKeys.auth.me(),
+        queryFn: fetchMeAsync,
+      });
       return true;
     } catch (error) {
       logger.error("Login failed", error);
@@ -243,10 +261,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       clearAuthState();
     }
-  };
-
-  const getMe = async () => {
-    await fetchUserProfile();
   };
 
   const value: AuthContextValues = {

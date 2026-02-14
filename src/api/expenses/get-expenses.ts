@@ -9,14 +9,14 @@ export interface GetExpensesQuery {
 }
 
 export interface GetExpensesResponse {
-  data: Expense[];
+  data: ExpenseResponseModel[];
   page: number;
   pageSize: number;
   totalRecords: number;
   totalPages: number;
 }
 
-type Expense = {
+export type ExpenseResponseModel = {
   id: string;
   description: string;
   category:
@@ -51,21 +51,16 @@ export async function getExpenses({
   organizationId,
   from,
   to,
-}: GetExpensesQuery): Promise<GetExpensesResponse | null> {
-  try {
-    const response = await api.get<GetExpensesResponse>(
-      `/organizations/${organizationId}/expenses`,
-      {
-        params: {
-          from,
-          to,
-        },
-      }
-    );
+}: GetExpensesQuery): Promise<GetExpensesResponse> {
+  const response = await api.get<GetExpensesResponse>(
+    `/organizations/${organizationId}/expenses`,
+    {
+      params: {
+        from,
+        to,
+      },
+    }
+  );
 
-    return response.data;
-  } catch (error) {
-    console.error("Could not find a valid access token");
-    return null;
-  }
+  return response.data;
 }

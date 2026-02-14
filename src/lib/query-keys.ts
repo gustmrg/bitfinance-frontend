@@ -1,0 +1,41 @@
+function getDateKey(value?: Date) {
+  return value ? value.toISOString() : null;
+}
+
+export const queryKeys = {
+  auth: {
+    all: ["auth"] as const,
+    me: () => [...queryKeys.auth.all, "me"] as const,
+  },
+  bills: {
+    all: ["bills"] as const,
+    lists: () => [...queryKeys.bills.all, "list"] as const,
+    listByOrganization: (organizationId: string) =>
+      [...queryKeys.bills.lists(), organizationId] as const,
+    list: (organizationId: string, from?: Date, to?: Date) =>
+      [
+        ...queryKeys.bills.listByOrganization(organizationId),
+        getDateKey(from),
+        getDateKey(to),
+      ] as const,
+  },
+  expenses: {
+    all: ["expenses"] as const,
+    lists: () => [...queryKeys.expenses.all, "list"] as const,
+    listByOrganization: (organizationId: string) =>
+      [...queryKeys.expenses.lists(), organizationId] as const,
+    list: (organizationId: string, from?: Date, to?: Date) =>
+      [
+        ...queryKeys.expenses.listByOrganization(organizationId),
+        getDateKey(from),
+        getDateKey(to),
+      ] as const,
+  },
+  dashboard: {
+    all: ["dashboard"] as const,
+    upcomingBills: (organizationId: string) =>
+      [...queryKeys.dashboard.all, "upcoming-bills", organizationId] as const,
+    recentExpenses: (organizationId: string) =>
+      [...queryKeys.dashboard.all, "recent-expenses", organizationId] as const,
+  },
+} as const;

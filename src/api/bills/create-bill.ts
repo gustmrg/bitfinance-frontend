@@ -66,23 +66,19 @@ export async function CreateBill({
   paymentDate,
   amountPaid,
   organizationId,
-}: CreateBillRequest) {
-  try {
-    const response = await api.post<CreateBillResponse>(
-      `/organizations/${organizationId}/bills`,
-      {
-        description,
-        category,
-        status,
-        dueDate,
-        amountDue,
-        paymentDate,
-        amountPaid,
-      }
-    );
+}: CreateBillRequest): Promise<CreateBillResponse> {
+  const response = await api.post<CreateBillResponse>(
+    `/organizations/${organizationId}/bills`,
+    {
+      description,
+      category,
+      status,
+      dueDate,
+      amountDue,
+      paymentDate,
+      amountPaid,
+    }
+  );
 
-    return response.data;
-  } catch (error) {
-    console.error("Could not find a valid access token");
-  }
+  return response.data;
 }

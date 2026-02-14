@@ -1,78 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/auth/auth-provider";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecentExpenses } from "./components/recent-expenses";
 import { UpcomingBills } from "./components/upcoming-bills";
-import { getUpcomingBills } from "@/api/dashboard/get-upcoming-bills";
-import { Bill } from "../bills/types";
-import { useNavigate } from "react-router-dom";
-import {
-  ExpenseResponseModel,
-  getRecentExpenses,
-} from "@/api/dashboard/get-recent-expenses";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
+import {
+  useRecentExpensesQuery,
+  useUpcomingBillsQuery,
+} from "@/hooks/queries/use-dashboard-query";
 
 export function Dashboard() {
-  const [bills, setBills] = useState<Bill[]>([]);
-  const [expenses, setExpenses] = useState<ExpenseResponseModel[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
   });
-  const { isAuthenticated, isLoading, selectedOrganization } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      navigate("/auth/sign-in");
-      return;
-    }
-
-    let organizationId = selectedOrganization ? selectedOrganization.id : null;
-
-    const fetchUpcomingBills = async () => {
-      if (organizationId) {
-        const response = await getUpcomingBills(organizationId);
-        if (response) {
-          setBills(response.data.reverse());
-        }
-      }
-    };
-
-    const fetchRecentExpenses = async () => {
-      if (organizationId) {
-        const response = await getRecentExpenses(organizationId);
-        if (response) {
-          const expenses: ExpenseResponseModel[] = response?.data.map(
-            (expense: ExpenseResponseModel) => ({
-              ...expense,
-              category: expense.category.toLowerCase() as
-                | "housing"
-                | "transportation"
-                | "food"
-                | "utilities"
-                | "clothing"
-                | "healthcare"
-                | "insurance"
-                | "personal"
-                | "debt"
-                | "savings"
-                | "education"
-                | "entertainment"
-                | "miscellaneous",
-            })
-          );
-
-          setExpenses(expenses);
-        }
-      }
-    };
-
-    fetchUpcomingBills();
-    fetchRecentExpenses();
-  }, [selectedOrganization]);
+  const { selectedOrganization } = useAuth();
+  const upcomingBillsQuery = useUpcomingBillsQuery(selectedOrganization?.id ?? null);
+  const recentExpensesQuery = useRecentExpensesQuery(
+    selectedOrganization?.id ?? null
+  );
 
   const handleDateFilterChange = (newDate: DateRange) => {
     setDateRange(newDate);
@@ -188,8 +136,8 @@ export function Dashboard() {
         </Card>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <UpcomingBills bills={bills} />
-        <RecentExpenses expenses={expenses} />
+        <UpcomingBills bills={upcomingBillsQuery.data ?? []} />
+        <RecentExpenses expenses={recentExpensesQuery.data ?? []} />
       </div>
     </div>
   );

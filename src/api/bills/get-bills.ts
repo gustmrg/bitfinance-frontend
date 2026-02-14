@@ -9,14 +9,14 @@ export interface GetBillsQuery {
 }
 
 export interface GetBillsResponse {
-  data: Bill[];
+  data: BillResponseModel[];
   page: number;
   pageSize: number;
   totalRecords: number;
   totalPages: number;
 }
 
-type Bill = {
+export type BillResponseModel = {
   id: string;
   description: string;
   category:
@@ -39,7 +39,8 @@ type Bill = {
   status: "created" | "due" | "paid" | "overdue" | "cancelled" | "upcoming";
   amountDue: number;
   amountPaid?: number | null;
-  createdDate: string;
+  createdDate?: string;
+  createdAt?: string;
   dueDate: string;
   paymentDate?: string | null;
   deletedDate?: string | null;
@@ -50,21 +51,16 @@ export async function getBills({
   organizationId,
   from,
   to,
-}: GetBillsQuery): Promise<GetBillsResponse | null> {
-  try {
-    const response = await api.get<GetBillsResponse>(
-      `/organizations/${organizationId}/bills`,
-      {
-        params: {
-          from,
-          to,
-        },
-      }
-    );
+}: GetBillsQuery): Promise<GetBillsResponse> {
+  const response = await api.get<GetBillsResponse>(
+    `/organizations/${organizationId}/bills`,
+    {
+      params: {
+        from,
+        to,
+      },
+    }
+  );
 
-    return response.data;
-  } catch (error) {
-    console.error("Could not find a valid access token");
-    return null;
-  }
+  return response.data;
 }

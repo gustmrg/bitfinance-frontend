@@ -11,7 +11,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Organization, useAuth } from "@/auth/auth-provider";
+import { useAuth } from "@/auth/auth-provider";
+import type { Organization } from "@/auth/types";
 
 export function OrganizationSwitcher({
   organizations,

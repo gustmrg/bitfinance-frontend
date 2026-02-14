@@ -57,22 +57,18 @@ export async function AddExpense({
   occurredAt,
   createdBy,
   organizationId,
-}: CreateExpenseRequest) {
-  try {
-    const response = await api.post<CreateExpenseResponse>(
-      `/organizations/${organizationId}/expenses`,
-      {
-        description,
-        category,
-        status,
-        amount,
-        occurredAt,
-        createdBy,
-      }
-    );
+}: CreateExpenseRequest): Promise<CreateExpenseResponse> {
+  const response = await api.post<CreateExpenseResponse>(
+    `/organizations/${organizationId}/expenses`,
+    {
+      description,
+      category,
+      status,
+      amount,
+      occurredAt,
+      createdBy,
+    }
+  );
 
-    return response.data;
-  } catch (error) {
-    console.error("Could not find a valid access token");
-  }
+  return response.data;
 }

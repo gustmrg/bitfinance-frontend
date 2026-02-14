@@ -9,83 +9,39 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ReceiptText } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AddExpenseDialog } from "./components/add-expense-dialog";
 import { useAuth } from "@/auth/auth-provider";
-import { useNavigate } from "react-router-dom";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
-import { Expense } from "./types";
-import { getExpenses } from "@/api/expenses/get-expenses";
-import { AddExpense } from "@/api/expenses/add-expense";
 import { dateFormatter } from "@/utils/formatter";
-import { DeleteExpense } from "@/api/expenses/delete-expense";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { DeleteExpenseDialog } from "./components/delete-expense-dialog";
+import { useExpenseMutations } from "@/hooks/mutations/use-expense-mutations";
+import { useExpensesQuery } from "@/hooks/queries/use-expenses-query";
+import { Expense } from "./types";
 
 export function Expenses() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
   });
 
-  const { user, isAuthenticated, isLoading, selectedOrganization } = useAuth();
-  const navigate = useNavigate();
+  const { user, selectedOrganization } = useAuth();
   const { t } = useTranslation();
+  const expensesQuery = useExpensesQuery(selectedOrganization?.id ?? null, {
+    from: dateRange?.from,
+    to: dateRange?.to,
+  });
+  const { addExpenseAsync, deleteExpenseAsync } = useExpenseMutations({
+    organizationId: selectedOrganization?.id ?? null,
+  });
+  const expenses = expensesQuery.data ?? [];
 
   const handleDateFilterChange = (newDate: DateRange) => {
     setDateRange(newDate);
   };
-
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      navigate("/auth/sign-in");
-      return;
-    }
-
-    let organizationId = selectedOrganization ? selectedOrganization.id : null;
-
-    const fetchExpenses = async () => {
-      if (!organizationId) return;
-
-      try {
-        const response = await getExpenses({
-          organizationId: organizationId,
-          from: dateRange?.from,
-          to: dateRange?.to,
-        });
-
-        if (!response) {
-          console.error("Failed to fetch expenses.");
-          setExpenses([]);
-          return;
-        }
-
-        const expenses: Expense[] = response?.data.map((expense: Expense) => ({
-          ...expense,
-          status: expense.status.toLowerCase() as
-            | "pending"
-            | "paid"
-            | "cancelled",
-        }));
-
-        setExpenses(expenses);
-      } catch (error) {
-        console.error("Failed to fetch expenses:", error);
-      }
-    };
-
-    fetchExpenses();
-  }, [
-    isAuthenticated,
-    navigate,
-    isLoading,
-    user,
-    selectedOrganization,
-    dateRange,
-  ]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -111,34 +67,19 @@ export function Expenses() {
   };
 
   const handleAddExpense = async (data: any) => {
+    if (!user) {
+      return;
+    }
+
     try {
-      const response = await AddExpense({
+      await addExpenseAsync({
         description: data.description,
         category: data.category,
         status: data.status,
         amount: data.amount,
         occurredAt: data.occurredAt.toISOString(),
-        createdBy: user!.id,
-        organizationId: selectedOrganization!.id,
+        createdBy: user.id,
       });
-
-      if (response) {
-        const newExpense: Expense = {
-          id: response.id,
-          description: response.description,
-          category: response.category,
-          amount: response.amount,
-          status: response.status.toLowerCase() as
-            | "pending"
-            | "paid"
-            | "cancelled",
-          occurredAt: response.occurredAt,
-          createdBy: response.createdBy,
-          createdAt: response.createdAt,
-        };
-
-        setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
-      }
     } catch (error) {
       console.error("Failed to add the expense:", error);
     }
@@ -146,12 +87,7 @@ export function Expenses() {
 
   const handleDeleteExpense = async (id: string) => {
     try {
-      const response = await DeleteExpense(id, selectedOrganization!.id);
-
-      if (response?.status == 204) {
-        const updatedExpenses = expenses.filter((item) => item.id !== id);
-        setExpenses(updatedExpenses);
-      }
+      await deleteExpenseAsync(id);
     } catch (error) {
       console.error("Failed to delete the expense:", error);
     }
@@ -234,7 +170,11 @@ export function Expenses() {
               </TableFooter>
             )}
           </Table>
-          {expenses.length === 0 ? (
+          {expensesQuery.isPending ? (
+            <div className="text-center py-6">
+              <h3 className="mt-2 text-lg font-semibold">Loading expenses...</h3>
+            </div>
+          ) : expenses.length === 0 ? (
             <div className="text-center py-6">
               <ReceiptText className="mx-auto h-12 w-12 text-muted-foreground/50" />
               <h3 className="mt-2 text-lg font-semibold">No Expenses</h3>

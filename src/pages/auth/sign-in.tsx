@@ -39,7 +39,7 @@ export function SignIn() {
     resolver: zodResolver(signInForm),
   });
 
-  const { login, getMe, isAuthenticated } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -55,7 +55,6 @@ export function SignIn() {
       password: data.password,
     });
     if (isSuccess) {
-      await getMe();
       navigate("/dashboard");
     } else {
       toast.error("Login failed. Check your email and password and try again.");

@@ -1,15 +1,11 @@
 import { privateAPI } from "@/lib/axios";
+import type { AxiosResponse } from "axios";
 
 const api = privateAPI();
 
-export async function DeleteExpense(id: string, organizationId: string) {
-  try {
-    const response = await api.delete(
-      `organizations/${organizationId}/expenses/${id}`
-    );
-
-    return response;
-  } catch (error) {
-    console.error("Could not find a valid access token");
-  }
+export async function DeleteExpense(
+  id: string,
+  organizationId: string
+): Promise<AxiosResponse<void>> {
+  return api.delete(`/organizations/${organizationId}/expenses/${id}`);
 }
