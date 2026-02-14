@@ -103,6 +103,25 @@
   },
   "dashboard": {
     "subtitle": "Overview of your finances",
+    "metrics": {
+      "monthlyBudget": {
+        "title": "Monthly Budget",
+        "subtitle": "Current month planned limit"
+      },
+      "spentThisMonth": {
+        "title": "Spent This Month",
+        "subtitle": "{{percentage}}% of budget used"
+      },
+      "remainingBudget": {
+        "title": "Remaining Budget",
+        "subtitleAvailable": "Available to spend",
+        "subtitleDepleted": "Budget fully used"
+      },
+      "upcomingBills": {
+        "title": "Upcoming Bills (7 days)",
+        "subtitle": "{{count}} bill(s) due soon"
+      }
+    },
     "upcomingBills": {
       "title": "Upcoming Bills",
       "description": "Manage your upcoming payments",

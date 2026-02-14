@@ -103,6 +103,25 @@
   },
   "dashboard": {
     "subtitle": "Visão geral de suas finanças",
+    "metrics": {
+      "monthlyBudget": {
+        "title": "Orçamento Mensal",
+        "subtitle": "Limite planejado para o mês atual"
+      },
+      "spentThisMonth": {
+        "title": "Gasto no Mês",
+        "subtitle": "{{percentage}}% do orçamento utilizado"
+      },
+      "remainingBudget": {
+        "title": "Orçamento Restante",
+        "subtitleAvailable": "Disponível para gastar",
+        "subtitleDepleted": "Orçamento totalmente utilizado"
+      },
+      "upcomingBills": {
+        "title": "Contas a Vencer (7 dias)",
+        "subtitle": "{{count}} conta(s) vencendo em breve"
+      }
+    },
     "upcomingBills": {
       "title": "Contas a Vencer",
       "description": "Gerencie suas contas a vencer",

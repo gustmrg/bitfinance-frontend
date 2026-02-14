@@ -1,3 +1,10 @@
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import {
+  faCreditCard,
+  faEllipsis,
+  faFileInvoiceDollar,
+  faTableCellsLarge,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   CreditCard,
   LayoutGrid,
@@ -13,6 +20,7 @@ export interface AppNavItem {
   label: string;
   to: string;
   icon: typeof LayoutGrid;
+  activeIcon?: IconDefinition;
   section: "management" | "account";
   surfaces: AppNavSurface[];
   isMatch: (pathname: string) => boolean;
@@ -24,15 +32,17 @@ export const appNavigation: AppNavItem[] = [
     label: "Dashboard",
     to: "/dashboard",
     icon: LayoutGrid,
+    activeIcon: faTableCellsLarge,
     section: "management",
     surfaces: ["desktop-sidebar", "mobile-bottom"],
-    isMatch: (pathname) => pathname === "/dashboard",
+    isMatch: (pathname) => pathname === "/dashboard" || pathname === "/dashboard/",
   },
   {
     id: "bills",
     label: "Bills",
     to: "/dashboard/bills",
     icon: ReceiptText,
+    activeIcon: faFileInvoiceDollar,
     section: "management",
     surfaces: ["desktop-sidebar", "mobile-bottom"],
     isMatch: (pathname) =>
@@ -43,6 +53,7 @@ export const appNavigation: AppNavItem[] = [
     label: "Expenses",
     to: "/dashboard/expenses",
     icon: CreditCard,
+    activeIcon: faCreditCard,
     section: "management",
     surfaces: ["desktop-sidebar", "mobile-bottom"],
     isMatch: (pathname) => pathname.startsWith("/dashboard/expenses"),
@@ -61,6 +72,7 @@ export const appNavigation: AppNavItem[] = [
     label: "More",
     to: "/account/more",
     icon: MoreHorizontal,
+    activeIcon: faEllipsis,
     section: "account",
     surfaces: ["mobile-bottom"],
     isMatch: (pathname) => pathname.startsWith("/account"),

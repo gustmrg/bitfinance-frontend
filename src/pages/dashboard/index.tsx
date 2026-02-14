@@ -1,6 +1,14 @@
 import { useState } from "react";
 
+import {
+  CalendarClock,
+  PiggyBank,
+  TrendingDown,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 import { DateRange } from "react-day-picker";
+import { useTranslation } from "react-i18next";
 
 import { useSelectedOrganization } from "@/auth/auth-provider";
 import { PageContainer, PageHeader } from "@/components/page-shell";
@@ -14,6 +22,14 @@ import {
 import { RecentExpenses } from "./components/recent-expenses";
 import { UpcomingBills } from "./components/upcoming-bills";
 
+interface DashboardMetric {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: LucideIcon;
+  tone: "default" | "success" | "warning";
+}
+
 export function Dashboard() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -21,6 +37,7 @@ export function Dashboard() {
   });
 
   const selectedOrganization = useSelectedOrganization();
+  const { t } = useTranslation();
   const upcomingBillsQuery = useUpcomingBillsQuery(selectedOrganization?.id ?? null);
   const recentExpensesQuery = useRecentExpensesQuery(
     selectedOrganization?.id ?? null
@@ -30,10 +47,71 @@ export function Dashboard() {
     setDateRange(newDate);
   };
 
+  // TODO: Replace with backend summary endpoint when available.
+  const mockedSummary = {
+    monthlyBudget: 4000,
+    spentThisMonth: 2486.35,
+    upcomingBillsAmount: 820,
+    upcomingBillsCount: 3,
+  };
+
+  const remainingBudget = Math.max(
+    mockedSummary.monthlyBudget - mockedSummary.spentThisMonth,
+    0
+  );
+  const spentPercentage = Math.round(
+    (mockedSummary.spentThisMonth / mockedSummary.monthlyBudget) * 100
+  );
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 2,
+    }).format(value);
+
+  const metrics: DashboardMetric[] = [
+    {
+      title: t("dashboard.metrics.monthlyBudget.title"),
+      value: formatCurrency(mockedSummary.monthlyBudget),
+      subtitle: t("dashboard.metrics.monthlyBudget.subtitle"),
+      icon: Wallet,
+      tone: "default",
+    },
+    {
+      title: t("dashboard.metrics.spentThisMonth.title"),
+      value: formatCurrency(mockedSummary.spentThisMonth),
+      subtitle: t("dashboard.metrics.spentThisMonth.subtitle", {
+        percentage: spentPercentage,
+      }),
+      icon: TrendingDown,
+      tone: spentPercentage >= 85 ? "warning" : "default",
+    },
+    {
+      title: t("dashboard.metrics.remainingBudget.title"),
+      value: formatCurrency(remainingBudget),
+      subtitle:
+        remainingBudget > 0
+          ? t("dashboard.metrics.remainingBudget.subtitleAvailable")
+          : t("dashboard.metrics.remainingBudget.subtitleDepleted"),
+      icon: PiggyBank,
+      tone: remainingBudget > 0 ? "success" : "warning",
+    },
+    {
+      title: t("dashboard.metrics.upcomingBills.title"),
+      value: formatCurrency(mockedSummary.upcomingBillsAmount),
+      subtitle: t("dashboard.metrics.upcomingBills.subtitle", {
+        count: mockedSummary.upcomingBillsCount,
+      }),
+      icon: CalendarClock,
+      tone: mockedSummary.upcomingBillsCount > 0 ? "warning" : "default",
+    },
+  ];
+
   return (
     <PageContainer>
       <PageHeader
-        title="Dashboard"
+        title={t("sidebar.dashboard")}
         actions={
           <CalendarDateRangePicker
             startDate={dateRange?.from}
@@ -43,97 +121,29 @@ export function Dashboard() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
-            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        {metrics.map((metric) => {
+          const Icon = metric.icon;
+          const iconToneClass =
+            metric.tone === "success"
+              ? "text-emerald-600"
+              : metric.tone === "warning"
+                ? "text-amber-600"
+                : "text-muted-foreground";
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Subscriptions</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+2350</div>
-            <p className="text-xs text-muted-foreground">+180.1% from last month</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sales</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <rect width="20" height="14" x="2" y="5" rx="2" />
-              <path d="M2 10h20" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+12,234</div>
-            <p className="text-xs text-muted-foreground">+19% from last month</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Now</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+573</div>
-            <p className="text-xs text-muted-foreground">+201 since last hour</p>
-          </CardContent>
-        </Card>
+          return (
+            <Card key={metric.title}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
+                <Icon className={`h-4 w-4 ${iconToneClass}`} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{metric.value}</div>
+                <p className="text-xs text-muted-foreground">{metric.subtitle}</p>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="grid gap-4 xl:grid-cols-7">
