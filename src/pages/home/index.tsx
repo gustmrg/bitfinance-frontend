@@ -3,7 +3,7 @@ import { LoginButton } from "./components/login-button";
 import { CTAButton } from "./components/cta-button";
 import { LogoutButton } from "./components/logout-button";
 import { GoToDashboardButton } from "./components/dashboard-button";
-import { useAuth } from "@/auth/auth-provider";
+import { useIsAuthenticated } from "@/auth/auth-provider";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +15,7 @@ import logoImg from "/assets/logo.png";
 
 export function Home() {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = useIsAuthenticated();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">

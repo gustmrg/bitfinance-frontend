@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 import logoImg from "/assets/logo.png";
 import { createOrganization } from "@/api/organizations/create-organization";
-import { useAuth } from "@/auth/auth-provider";
+import {
+  useGetMeAction,
+  useSetSelectedOrganizationId,
+} from "@/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
@@ -11,7 +14,8 @@ export function CreateOrganization() {
   const [organizationName, setOrganizationName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { getMe, setSelectedOrganization } = useAuth();
+  const getMe = useGetMeAction();
+  const setSelectedOrganizationId = useSetSelectedOrganizationId();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -22,7 +26,7 @@ export function CreateOrganization() {
     try {
       const response = await createOrganization({ name: organizationName });
       await getMe();
-      setSelectedOrganization(response);
+      setSelectedOrganizationId(response.id);
       navigate("/dashboard");
     } catch (error) {
       console.error("Error creating organization:", error);

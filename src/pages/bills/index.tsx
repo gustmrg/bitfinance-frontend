@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { BillDocumentType } from "@/api/bills";
-import { useAuth } from "@/auth/auth-provider";
+import { useSelectedOrganization } from "@/auth/auth-provider";
 import { dateFormatter } from "@/utils/formatter";
 
 import { DetailsBillDialog } from "./components/details-bill-dialog";
@@ -33,7 +33,7 @@ export function Bills() {
     to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
   });
 
-  const { selectedOrganization } = useAuth();
+  const selectedOrganization = useSelectedOrganization();
   const { t } = useTranslation();
   const billsQuery = useBillsQuery(selectedOrganization?.id ?? null, {
     from: dateRange?.from,

@@ -11,16 +11,19 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/auth/auth-provider";
+import {
+  useSelectedOrganization,
+  useSetSelectedOrganizationId,
+} from "@/auth/auth-provider";
 import type { Organization } from "@/auth/types";
 
 export function OrganizationSwitcher({
   organizations,
 }: {
   organizations: Organization[];
-  defaultOrganization?: Organization | null;
 }) {
-  const { selectedOrganization, setSelectedOrganization } = useAuth();
+  const selectedOrganization = useSelectedOrganization();
+  const setSelectedOrganizationId = useSetSelectedOrganizationId();
 
   return (
     <SidebarMenu>
@@ -48,7 +51,7 @@ export function OrganizationSwitcher({
             {organizations.map((organization) => (
               <DropdownMenuItem
                 key={organization.id}
-                onSelect={() => setSelectedOrganization(organization)}
+                onSelect={() => setSelectedOrganizationId(organization.id)}
               >
                 {organization.name}
                 {""}

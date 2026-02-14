@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "@/auth/auth-provider";
+import { useSelectedOrganization } from "@/auth/auth-provider";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecentExpenses } from "./components/recent-expenses";
@@ -16,7 +16,7 @@ export function Dashboard() {
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
   });
-  const { selectedOrganization } = useAuth();
+  const selectedOrganization = useSelectedOrganization();
   const upcomingBillsQuery = useUpcomingBillsQuery(selectedOrganization?.id ?? null);
   const recentExpensesQuery = useRecentExpensesQuery(
     selectedOrganization?.id ?? null

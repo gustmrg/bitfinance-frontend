@@ -1,53 +1,16 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { authService } from "@/api/auth";
-import type { Organization, User } from "@/auth/types";
+import { useAuthStore } from "@/auth/auth-store";
+import type { Organization } from "@/auth/types";
+import { fetchMeAsync, useMeQuery } from "@/hooks/queries/use-me-query";
 import { setOnRefreshFailure } from "@/lib/axios";
 import { clearAccessToken, setAccessToken } from "@/lib/auth-token";
-import { fetchMeAsync, useMeQuery } from "@/hooks/queries/use-me-query";
 import { logger } from "@/lib/logger";
 import { queryKeys } from "@/lib/query-keys";
 
 export type { Organization, User } from "@/auth/types";
-
-interface AuthContextValues {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  user: User | null;
-  setUser: (user: User | null) => void;
-  token: string | null;
-  register: (body: RegisterBody) => Promise<boolean>;
-  login: (credentials: LoginCredentialsBody) => Promise<boolean>;
-  logout: () => Promise<void>;
-  getMe: () => Promise<void>;
-  selectedOrganization: Organization | null;
-  setSelectedOrganization: (organization: Organization | null) => void;
-}
-
-const initialContext: AuthContextValues = {
-  isAuthenticated: false,
-  user: null,
-  setUser: () => {},
-  token: null,
-  register: async () => false,
-  login: async () => false,
-  logout: async () => {},
-  getMe: async () => {},
-  isLoading: true,
-  selectedOrganization: null,
-  setSelectedOrganization: () => {},
-};
-
-const AuthContext = createContext<AuthContextValues>(initialContext);
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -66,56 +29,77 @@ interface LoginCredentialsBody {
   password: string;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
+interface ClearAuthStateOptions {
+  resetInitialization?: boolean;
+}
+
+function syncAccessToken(
+  token: string | null,
+  tokenExpiresAt?: string | null
+): void {
+  if (token) {
+    setAccessToken(token, tokenExpiresAt);
+    return;
+  }
+
+  clearAccessToken();
+}
+
+export function useAuthInitialization(): boolean {
+  return useAuthStore((state) => state.isInitialized);
+}
+
+export function useAuthToken(): string | null {
+  return useAuthStore((state) => state.token);
+}
+
+export function useIsAuthenticated(): boolean {
+  return useAuthStore((state) => Boolean(state.token));
+}
+
+export function useSelectedOrganizationId(): string | null {
+  return useAuthStore((state) => state.selectedOrganizationId);
+}
+
+export function useSetSelectedOrganizationId(): (
+  selectedOrganizationId: string | null
+) => void {
+  return useAuthStore((state) => state.setSelectedOrganizationId);
+}
+
+export function useCurrentUser() {
+  const isInitialized = useAuthInitialization();
+  const isAuthenticated = useIsAuthenticated();
+
+  return useMeQuery(isInitialized && isAuthenticated);
+}
+
+export function useSelectedOrganization(): Organization | null {
+  const selectedOrganizationId = useSelectedOrganizationId();
+  const currentUserQuery = useCurrentUser();
+  const organizations = currentUserQuery.data?.organizations ?? [];
+
+  return useMemo(() => {
+    if (organizations.length === 0) {
+      return null;
+    }
+
+    if (!selectedOrganizationId) {
+      return organizations[0];
+    }
+
+    return (
+      organizations.find((organization) => organization.id === selectedOrganizationId) ??
+      organizations[0]
+    );
+  }, [organizations, selectedOrganizationId]);
+}
+
+export function useGetMeAction(): () => Promise<void> {
   const queryClient = useQueryClient();
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-  const [selectedOrganization, setSelectedOrganization] =
-    useState<Organization | null>(null);
-  const isAuthenticated = useMemo(() => !!token, [token]);
-  const initializationRef = useRef(false);
-  const meQuery = useMeQuery(isInitialized && isAuthenticated);
-  const user = meQuery.data ?? null;
-  const isLoading = !isInitialized || (isAuthenticated && meQuery.isPending);
+  const token = useAuthToken();
 
-  const updateToken = useCallback(
-    (newToken: string | null, expiresAt?: string | null) => {
-      setToken(newToken);
-      if (newToken) {
-        setAccessToken(newToken, expiresAt);
-      } else {
-        clearAccessToken();
-      }
-    },
-    []
-  );
-
-  const setUser = useCallback(
-    (nextUser: User | null) => {
-      if (nextUser) {
-        queryClient.setQueryData(queryKeys.auth.me(), nextUser);
-        return;
-      }
-
-      queryClient.removeQueries({ queryKey: queryKeys.auth.me() });
-    },
-    [queryClient]
-  );
-
-  const clearAuthState = useCallback(() => {
-    updateToken(null);
-    queryClient.clear();
-    setSelectedOrganization(null);
-  }, [queryClient, updateToken]);
-
-  useEffect(() => {
-    setOnRefreshFailure(() => {
-      clearAuthState();
-      window.location.href = "/auth/sign-in";
-    });
-  }, [clearAuthState]);
-
-  const getMe = useCallback(async () => {
+  return useCallback(async (): Promise<void> => {
     if (!token) {
       return;
     }
@@ -125,36 +109,172 @@ export function AuthProvider({ children }: AuthProviderProps) {
       queryFn: fetchMeAsync,
     });
   }, [queryClient, token]);
+}
+
+export function useRegisterAction(): (
+  body: RegisterBody
+) => Promise<boolean> {
+  const queryClient = useQueryClient();
+  const setSession = useAuthStore((state) => state.setSession);
+
+  return useCallback(
+    async ({
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+    }: RegisterBody): Promise<boolean> => {
+      try {
+        const response = await authService.signUpAsync({
+          firstName,
+          lastName,
+          email,
+          password,
+          confirmPassword,
+        });
+
+        const { accessToken, accessTokenExpiresAt } = response;
+        setSession(accessToken, accessTokenExpiresAt);
+        syncAccessToken(accessToken, accessTokenExpiresAt);
+        await queryClient.fetchQuery({
+          queryKey: queryKeys.auth.me(),
+          queryFn: fetchMeAsync,
+        });
+        return true;
+      } catch (error) {
+        logger.error("Registration failed", error);
+        return false;
+      }
+    },
+    [queryClient, setSession]
+  );
+}
+
+export function useLoginAction(): (
+  credentials: LoginCredentialsBody
+) => Promise<boolean> {
+  const queryClient = useQueryClient();
+  const setSession = useAuthStore((state) => state.setSession);
+
+  return useCallback(
+    async ({ email, password }: LoginCredentialsBody): Promise<boolean> => {
+      try {
+        const response = await authService.signInAsync({
+          email,
+          password,
+        });
+
+        const { accessToken, accessTokenExpiresAt } = response;
+        setSession(accessToken, accessTokenExpiresAt);
+        syncAccessToken(accessToken, accessTokenExpiresAt);
+        await queryClient.fetchQuery({
+          queryKey: queryKeys.auth.me(),
+          queryFn: fetchMeAsync,
+        });
+        return true;
+      } catch (error) {
+        logger.error("Login failed", error);
+        return false;
+      }
+    },
+    [queryClient, setSession]
+  );
+}
+
+export function useLogoutAction(): () => Promise<void> {
+  const queryClient = useQueryClient();
+  const clearSession = useAuthStore((state) => state.clearSession);
+  const setInitialized = useAuthStore((state) => state.setInitialized);
+  const setSelectedOrganizationId = useSetSelectedOrganizationId();
+
+  return useCallback(async (): Promise<void> => {
+    try {
+      await authService.logoutAsync();
+    } catch (error) {
+      logger.error("Logout API call failed", error);
+    } finally {
+      clearSession();
+      setSelectedOrganizationId(null);
+      setInitialized(true);
+      syncAccessToken(null);
+      queryClient.clear();
+    }
+  }, [clearSession, queryClient, setInitialized, setSelectedOrganizationId]);
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const queryClient = useQueryClient();
+  const initializationRef = useRef(false);
+  const isInitialized = useAuthInitialization();
+  const isAuthenticated = useIsAuthenticated();
+  const selectedOrganizationId = useSelectedOrganizationId();
+  const setSession = useAuthStore((state) => state.setSession);
+  const clearSession = useAuthStore((state) => state.clearSession);
+  const setInitialized = useAuthStore((state) => state.setInitialized);
+  const setSelectedOrganizationId = useSetSelectedOrganizationId();
+  const resetAuthClientState = useAuthStore((state) => state.resetAuthClientState);
+  const meQuery = useMeQuery(isInitialized && isAuthenticated);
+  const user = meQuery.data ?? null;
+
+  const clearAuthState = useCallback(
+    (options: ClearAuthStateOptions = {}) => {
+      if (options.resetInitialization) {
+        resetAuthClientState();
+      } else {
+        clearSession();
+        setSelectedOrganizationId(null);
+        setInitialized(true);
+      }
+
+      syncAccessToken(null);
+      queryClient.clear();
+    },
+    [
+      clearSession,
+      queryClient,
+      resetAuthClientState,
+      setInitialized,
+      setSelectedOrganizationId,
+    ]
+  );
+
+  useEffect(() => {
+    setOnRefreshFailure(() => {
+      clearAuthState();
+      window.location.href = "/auth/sign-in";
+    });
+  }, [clearAuthState]);
 
   useEffect(() => {
     if (!user) {
-      setSelectedOrganization(null);
+      setSelectedOrganizationId(null);
       return;
     }
 
-    setSelectedOrganization((currentOrganization) => {
-      if (user.organizations.length === 0) {
-        return null;
-      }
+    if (user.organizations.length === 0) {
+      setSelectedOrganizationId(null);
+      return;
+    }
 
-      if (
-        currentOrganization &&
-        user.organizations.some((org) => org.id === currentOrganization.id)
-      ) {
-        return currentOrganization;
-      }
+    if (
+      selectedOrganizationId &&
+      user.organizations.some((organization) => organization.id === selectedOrganizationId)
+    ) {
+      return;
+    }
 
-      return user.organizations[0];
-    });
-  }, [user]);
+    setSelectedOrganizationId(user.organizations[0].id);
+  }, [selectedOrganizationId, setSelectedOrganizationId, user]);
 
-  // Session restoration on mount
   useEffect(() => {
-    if (initializationRef.current) return;
+    if (initializationRef.current) {
+      return;
+    }
+
     initializationRef.current = true;
 
     const initializeAuth = async () => {
-      // One-time cleanup of old localStorage tokens
       localStorage.removeItem("_authAccessToken");
       localStorage.removeItem("_authTokenType");
       localStorage.removeItem("_authExpiresIn");
@@ -163,123 +283,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         const response = await authService.refreshAsync();
         const { accessToken, accessTokenExpiresAt } = response;
-        updateToken(accessToken, accessTokenExpiresAt);
+        setSession(accessToken, accessTokenExpiresAt);
+        syncAccessToken(accessToken, accessTokenExpiresAt);
       } catch {
         logger.debug("No existing session to restore");
-        clearAuthState();
+        clearAuthState({ resetInitialization: true });
       } finally {
-        setIsInitialized(true);
+        setInitialized(true);
       }
     };
 
     initializeAuth();
-  }, [clearAuthState, updateToken]);
+  }, [clearAuthState, setInitialized, setSession]);
 
-  const register = async ({
-    firstName,
-    lastName,
-    email,
-    password,
-    confirmPassword,
-  }: RegisterBody): Promise<boolean> => {
-    try {
-      const response = await authService.signUpAsync({
-        firstName,
-        lastName,
-        email,
-        password,
-        confirmPassword,
-      });
-
-      const { accessToken, accessTokenExpiresAt } = response;
-      updateToken(accessToken, accessTokenExpiresAt);
-      await queryClient.fetchQuery({
-        queryKey: queryKeys.auth.me(),
-        queryFn: fetchMeAsync,
-      });
-      return true;
-    } catch (error) {
-      logger.error("Registration failed", error);
-      return false;
-    }
-  };
-
-  const login = async ({
-    email,
-    password,
-  }: LoginCredentialsBody): Promise<boolean> => {
-    try {
-      const response = await authService.signInAsync({
-        email,
-        password,
-      });
-
-      const { accessToken, accessTokenExpiresAt } = response;
-      updateToken(accessToken, accessTokenExpiresAt);
-      await queryClient.fetchQuery({
-        queryKey: queryKeys.auth.me(),
-        queryFn: fetchMeAsync,
-      });
-      return true;
-    } catch (error) {
-      logger.error("Login failed", error);
-      return false;
-    }
-  };
-
-  const logout = async (): Promise<void> => {
-    try {
-      await authService.logoutAsync();
-    } catch (error) {
-      logger.error("Logout API call failed", error);
-    } finally {
-      clearAuthState();
-    }
-  };
-
-  const value: AuthContextValues = {
-    isAuthenticated,
-    user,
-    setUser,
-    token,
-    register,
-    login,
-    logout,
-    getMe,
-    isLoading,
-    selectedOrganization,
-    setSelectedOrganization,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-
-  const {
-    user,
-    register,
-    login,
-    logout,
-    isAuthenticated,
-    token,
-    getMe,
-    isLoading,
-    selectedOrganization,
-    setSelectedOrganization,
-  } = context;
-
-  return {
-    user,
-    register,
-    login,
-    logout,
-    isAuthenticated,
-    token,
-    getMe,
-    isLoading,
-    selectedOrganization,
-    setSelectedOrganization,
-  };
+  return <>{children}</>;
 }

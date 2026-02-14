@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "@/auth/auth-provider";
+import {
+  useCurrentUser,
+  useIsAuthenticated,
+  useLogoutAction,
+} from "@/auth/auth-provider";
 import { useTranslation } from "react-i18next";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,7 +19,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function UserNavBar() {
-  const { logout, user, isAuthenticated } = useAuth();
+  const logout = useLogoutAction();
+  const isAuthenticated = useIsAuthenticated();
+  const currentUserQuery = useCurrentUser();
+  const user = currentUserQuery.data ?? null;
   const { t } = useTranslation();
 
   return isAuthenticated ? (

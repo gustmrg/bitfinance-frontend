@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/auth/auth-provider";
+import { useLogoutAction } from "@/auth/auth-provider";
 
 import {
   BadgeCheck,
@@ -33,7 +33,7 @@ export interface NavUserProps {
 
 export function NavUser({ name, email }: NavUserProps) {
   const { isMobile } = useSidebar();
-  const { logout } = useAuth();
+  const logout = useLogoutAction();
   const navigate = useNavigate();
 
   const onLogout = async () => {

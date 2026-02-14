@@ -11,7 +11,10 @@ import {
 import { ReceiptText } from "lucide-react";
 import { useState } from "react";
 import { AddExpenseDialog } from "./components/add-expense-dialog";
-import { useAuth } from "@/auth/auth-provider";
+import {
+  useCurrentUser,
+  useSelectedOrganization,
+} from "@/auth/auth-provider";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 import { dateFormatter } from "@/utils/formatter";
@@ -28,7 +31,9 @@ export function Expenses() {
     to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
   });
 
-  const { user, selectedOrganization } = useAuth();
+  const selectedOrganization = useSelectedOrganization();
+  const currentUserQuery = useCurrentUser();
+  const user = currentUserQuery.data ?? null;
   const { t } = useTranslation();
   const expensesQuery = useExpensesQuery(selectedOrganization?.id ?? null, {
     from: dateRange?.from,

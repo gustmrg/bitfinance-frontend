@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth/auth-provider";
+import { useRegisterAction } from "@/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -38,7 +38,7 @@ export function SignUp() {
     resolver: zodResolver(signUpForm),
   });
 
-  const { register } = useAuth();
+  const register = useRegisterAction();
   const navigate = useNavigate();
   const { t } = useTranslation();
 

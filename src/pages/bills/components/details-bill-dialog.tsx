@@ -14,7 +14,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { billsService } from "@/api/bills";
-import { useAuth } from "@/auth/auth-provider";
+import { useSelectedOrganization } from "@/auth/auth-provider";
 
 interface DetailsBillDialogProps {
   bill: Bill;
@@ -22,7 +22,7 @@ interface DetailsBillDialogProps {
 
 export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
   const { t } = useTranslation();
-  const { selectedOrganization } = useAuth();
+  const selectedOrganization = useSelectedOrganization();
 
   const handleDownloadDocument = async (
     documentId: string,

@@ -17,7 +17,11 @@ import {
 } from "./ui/command";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/auth/auth-provider";
+import {
+  useCurrentUser,
+  useSelectedOrganization,
+  useSetSelectedOrganizationId,
+} from "@/auth/auth-provider";
 import { useTranslation } from "react-i18next";
 
 export default function Sidebar() {
@@ -25,7 +29,10 @@ export default function Sidebar() {
   const [value, setValue] = useState("");
   const { t } = useTranslation();
 
-  const { user, selectedOrganization, setSelectedOrganization } = useAuth();
+  const currentUserQuery = useCurrentUser();
+  const selectedOrganization = useSelectedOrganization();
+  const setSelectedOrganizationId = useSetSelectedOrganizationId();
+  const user = currentUserQuery.data ?? null;
 
   useEffect(() => {
     if (selectedOrganization) {
@@ -75,9 +82,8 @@ export default function Sidebar() {
                         value={organization.id}
                         onSelect={(currentValue) => {
                           setValue(currentValue === value ? "" : currentValue);
-                          setSelectedOrganization(
-                            organizations.find((x) => x.id === currentValue) ??
-                              null
+                          setSelectedOrganizationId(
+                            currentValue === value ? null : currentValue
                           );
                           setOpen(false);
                         }}

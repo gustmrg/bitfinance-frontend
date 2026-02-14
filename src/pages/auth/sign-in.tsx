@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth/auth-provider";
+import { useIsAuthenticated, useLoginAction } from "@/auth/auth-provider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,7 +38,8 @@ export function SignIn() {
     resolver: zodResolver(signInForm),
   });
 
-  const { login, isAuthenticated } = useAuth();
+  const login = useLoginAction();
+  const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
   const { t } = useTranslation();
 

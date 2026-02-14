@@ -32,8 +32,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useAuth } from "@/auth/auth-provider";
 import { billsService } from "@/api/bills";
+import { useSelectedOrganization } from "@/auth/auth-provider";
 
 const AddBillSchema = z.object({
   description: z.string().min(1, "Description is required"),
@@ -64,7 +64,7 @@ const AddBillSchema = z.object({
 type AddBillFormValues = z.infer<typeof AddBillSchema>;
 
 export function AddBill() {
-  const { selectedOrganization } = useAuth();
+  const selectedOrganization = useSelectedOrganization();
   const form = useForm<AddBillFormValues>({
     resolver: zodResolver(AddBillSchema),
   });
