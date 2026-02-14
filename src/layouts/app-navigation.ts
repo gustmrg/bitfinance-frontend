@@ -35,7 +35,8 @@ export const appNavigation: AppNavItem[] = [
     icon: ReceiptText,
     section: "management",
     surfaces: ["desktop-sidebar", "mobile-bottom"],
-    isMatch: (pathname) => pathname.startsWith("/dashboard/bills"),
+    isMatch: (pathname) =>
+      pathname.startsWith("/dashboard/bills") || pathname.startsWith("/bills"),
   },
   {
     id: "expenses",

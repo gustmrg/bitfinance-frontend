@@ -176,13 +176,7 @@ export function Bills() {
       ) : (
         <>
           <div className="md:hidden">
-            <BillsMobileList
-              bills={bills}
-              renderStatusBadge={renderStatusBadge}
-              onDeleteBill={handleDeleteBill}
-              onEditBill={handleEditBill}
-              onUploadDocuments={handleUploadDocuments}
-            />
+            <BillsMobileList bills={bills} renderStatusBadge={renderStatusBadge} />
           </div>
           <div className="hidden md:block">
             <BillsTable

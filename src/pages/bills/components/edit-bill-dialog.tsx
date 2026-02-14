@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-import { Bill } from "../types";
+import type { Bill } from "../types";
 
 const EditBillSchema = z.object({
   id: z.string(),
@@ -51,10 +51,11 @@ type EditBillForm = z.infer<typeof EditBillSchema>;
 
 interface EditBillDialogProps {
   bill: Bill;
-  onEdit: (data: any) => void;
+  onEdit: (data: EditBillForm) => Promise<void> | void;
+  trigger?: ReactNode;
 }
 
-export function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
+export function EditBillDialog({ bill, onEdit, trigger }: EditBillDialogProps) {
   const [open, setOpen] = useState(false);
   const form = useForm<EditBillForm>({
     resolver: zodResolver(EditBillSchema),
@@ -84,10 +85,12 @@ export function EditBillDialog({ bill, onEdit }: EditBillDialogProps) {
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <Button size="icon" variant="outline" onSelect={(event) => event.preventDefault()}>
-          <Pencil className="h-4 w-4" />
-          <span className="sr-only">{t("labels.edit")}</span>
-        </Button>
+        trigger ?? (
+          <Button size="icon" variant="outline" onSelect={(event) => event.preventDefault()}>
+            <Pencil className="h-4 w-4" />
+            <span className="sr-only">{t("labels.edit")}</span>
+          </Button>
+        )
       }
       title={t("bills.dialog.edit.title")}
       description={t("bills.dialog.edit.description")}

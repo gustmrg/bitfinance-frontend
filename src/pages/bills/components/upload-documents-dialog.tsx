@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type ChangeEvent, type ReactNode, useState } from "react";
 
 import { FileText, Upload, X } from "lucide-react";
 
@@ -13,6 +13,7 @@ interface UploadDocumentsDialogProps {
     files: File[],
     documentType: string
   ) => Promise<void>;
+  trigger?: ReactNode;
 }
 
 const documentTypes = [
@@ -24,13 +25,14 @@ const documentTypes = [
 export function UploadDocumentsDialog({
   billId,
   onUpload,
+  trigger,
 }: UploadDocumentsDialogProps) {
   const [open, setOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [documentType, setDocumentType] = useState("Other");
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     setSelectedFiles((prev) => [...prev, ...files]);
   };
@@ -73,13 +75,15 @@ export function UploadDocumentsDialog({
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <Button variant="outline" size="sm">
-          <Upload className="h-4 w-4" />
-        </Button>
+        trigger ?? (
+          <Button variant="outline" size="sm">
+            <Upload className="h-4 w-4" />
+          </Button>
+        )
       }
       title="Upload Documents"
       description="Upload multiple files to attach to this bill."
-      contentClassName="max-w-md"
+      contentClassName="md:max-w-md"
       bodyClassName="space-y-4"
     >
       <div>

@@ -9,6 +9,7 @@ import { AccountMore } from "./pages/account/more";
 import { SignIn } from "./pages/auth/sign-in";
 import { SignUp } from "./pages/auth/sign-up";
 import { Bills } from "./pages/bills";
+import { BillDetails } from "./pages/bills/details";
 import { Dashboard } from "./pages/dashboard";
 import { Error } from "./pages/error";
 import { Expenses } from "./pages/expenses";
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
       {
         path: "bills",
         element: <Bills />,
+      },
+      {
+        path: "bills/:billId",
+        element: <BillDetails />,
       },
       {
         path: "expenses",
