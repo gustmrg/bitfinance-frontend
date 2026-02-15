@@ -1,8 +1,9 @@
-import { NavLink } from "react-router-dom";
 import { format } from "date-fns";
-import { useTranslation } from "react-i18next";
-
 import { CalendarClock, DollarSign, Receipt } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router-dom";
+
+import { Bill } from "@/pages/bills/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,7 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { Bill } from "@/pages/bills/types";
 
 interface UpcomingBillsProps {
   bills: Bill[];
@@ -22,24 +22,22 @@ export function UpcomingBills({ bills }: UpcomingBillsProps) {
   const { t } = useTranslation();
 
   return (
-    <Card className="w-full col-span-4">
+    <Card className="w-full xl:col-span-4">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle>{t("dashboard.upcomingBills.title")}</CardTitle>
-            <CardDescription>
-              {t("dashboard.upcomingBills.description")}
-            </CardDescription>
+            <CardDescription>{t("dashboard.upcomingBills.description")}</CardDescription>
           </div>
           <NavLink to="/dashboard/bills">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               {t("labels.viewAll")}
             </Button>
           </NavLink>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4 max-h-[500px] overflow-auto">
+        <div className="max-h-[500px] space-y-3 overflow-auto">
           {bills.length > 0 ? (
             bills.map((bill) => {
               const isOverdue = bill.status === "overdue";
@@ -48,16 +46,16 @@ export function UpcomingBills({ bills }: UpcomingBillsProps) {
               return (
                 <div
                   key={bill.id}
-                  className="flex items-center justify-between p-3 rounded-lg border"
+                  className="flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
                     <div
-                      className={`p-2 rounded-full ${
+                      className={`rounded-full p-2 ${
                         isOverdue
                           ? "bg-destructive/10"
                           : isDueSoon
-                          ? "bg-warning/10"
-                          : "bg-muted"
+                            ? "bg-warning/10"
+                            : "bg-muted"
                       }`}
                     >
                       <Receipt
@@ -65,43 +63,36 @@ export function UpcomingBills({ bills }: UpcomingBillsProps) {
                           isOverdue
                             ? "text-destructive"
                             : isDueSoon
-                            ? "text-warning"
-                            : "text-muted-foreground"
+                              ? "text-warning"
+                              : "text-muted-foreground"
                         }`}
                       />
                     </div>
-                    <div>
-                      <p className="font-medium">{bill.description}</p>
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{bill.description}</p>
                       <div className="flex items-center text-xs text-muted-foreground">
                         <CalendarClock className="mr-1 h-3 w-3" />
                         <span>
-                          {t("labels.dueIn")}{" "}
-                          {format(new Date(bill.dueDate), "MMM d")}
+                          {t("labels.dueIn")} {format(new Date(bill.dueDate), "MMM d")}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <div className="text-right">
-                      <p className="font-semibold">
-                        ${bill.amountDue.toFixed(2)}
-                      </p>
-                      <StatusBadge variant="yellow">{bill.status}</StatusBadge>
-                    </div>
+                  <div className="flex items-center justify-between gap-2 sm:block sm:text-right">
+                    <p className="font-semibold">${bill.amountDue.toFixed(2)}</p>
+                    <StatusBadge variant="yellow">{bill.status}</StatusBadge>
                   </div>
                 </div>
               );
             })
           ) : (
-            <div className="text-center py-6">
+            <div className="py-6 text-center">
               <DollarSign className="mx-auto h-12 w-12 text-muted-foreground/50" />
               <h3 className="mt-2 text-lg font-semibold">
                 {t("dashboard.upcomingBills.emptyHeader")}
               </h3>
-              <p className="text-sm text-muted-foreground">
-                {t("dashboard.upcomingBills.empty")}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("dashboard.upcomingBills.empty")}</p>
             </div>
           )}
         </div>

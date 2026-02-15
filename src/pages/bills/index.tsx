@@ -1,31 +1,43 @@
 import { useState } from "react";
+
+import { ReceiptText } from "lucide-react";
+import { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
 
-import type { BillDocumentType } from "@/api/bills";
+import type {
+  BillCategory,
+  BillDocumentType,
+  BillStatus,
+  UpdateBillRequest,
+} from "@/api/bills";
 import { useSelectedOrganization } from "@/auth/auth-provider";
-import { dateFormatter } from "@/utils/formatter";
-
-import { DetailsBillDialog } from "./components/details-bill-dialog";
-import { DeleteBillDialog } from "./components/delete-bill-dialog";
-import { EditBillDialog } from "./components/edit-bill-dialog";
-import { UploadDocumentsDialog } from "./components/upload-documents-dialog";
-import { ReceiptText } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
-import { DateRange } from "react-day-picker";
+import { PageContainer, PageHeader } from "@/components/page-shell";
 import { StatusBadge } from "@/components/ui/status-badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { AddBillDialog } from "./components/add-bill-dialog";
 import { useBillMutations } from "@/hooks/mutations/use-bill-mutations";
 import { useBillsQuery } from "@/hooks/queries/use-bills-query";
+
+import { AddBillDialog } from "./components/add-bill-dialog";
+import { BillsMobileList } from "./components/bills-mobile-list";
+import { BillsTable } from "./components/bills-table";
+
+interface AddBillFormValues {
+  description: string;
+  category: string;
+  dueDate: Date;
+  amount: number;
+}
+
+interface EditBillFormValues {
+  id: string;
+  description: string;
+  category: string;
+  status: string;
+  amountDue: number;
+  amountPaid?: number;
+  dueDate: Date;
+  paymentDate?: Date;
+}
 
 export function Bills() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -35,6 +47,7 @@ export function Bills() {
 
   const selectedOrganization = useSelectedOrganization();
   const { t } = useTranslation();
+
   const billsQuery = useBillsQuery(selectedOrganization?.id ?? null, {
     from: dateRange?.from,
     to: dateRange?.to,
@@ -43,32 +56,27 @@ export function Bills() {
     useBillMutations({
       organizationId: selectedOrganization?.id ?? null,
     });
+
   const bills = billsQuery.data ?? [];
 
   const handleDateFilterChange = (newDate: DateRange) => {
     setDateRange(newDate);
   };
 
-  const getStatusBadge = (status: string) => {
+  const renderStatusBadge = (status: string) => {
     switch (status) {
       case "paid":
         return <StatusBadge variant="green">{t("labels.paid")}</StatusBadge>;
       case "upcoming":
-        return (
-          <StatusBadge variant="yellow">{t("labels.upcoming")}</StatusBadge>
-        );
+        return <StatusBadge variant="yellow">{t("labels.upcoming")}</StatusBadge>;
       case "due":
         return <StatusBadge variant="red">{t("labels.due")}</StatusBadge>;
       case "overdue":
         return <StatusBadge variant="red">{t("labels.overdue")}</StatusBadge>;
       case "cancelled":
-        return (
-          <StatusBadge variant="gray">{t("labels.cancelled")}</StatusBadge>
-        );
+        return <StatusBadge variant="gray">{t("labels.cancelled")}</StatusBadge>;
       default:
-        return (
-          <StatusBadge variant="indigo">{t("labels.created")}</StatusBadge>
-        );
+        return <StatusBadge variant="indigo">{t("labels.created")}</StatusBadge>;
     }
   };
 
@@ -76,11 +84,11 @@ export function Bills() {
     return bills.reduce((total, bill) => total + bill.amountDue, 0).toFixed(2);
   };
 
-  const handleAddBill = async (data: any) => {
+  const handleAddBill = async (data: AddBillFormValues) => {
     try {
       await addBillAsync({
         description: data.description,
-        category: data.category,
+        category: data.category as BillCategory,
         status: "upcoming",
         dueDate: data.dueDate.toISOString(),
         amountDue: data.amount,
@@ -100,18 +108,20 @@ export function Bills() {
     }
   };
 
-  const handleEditBill = async (data: any) => {
+  const handleEditBill = async (data: EditBillFormValues) => {
     try {
-      await updateBillAsync({
+      const payload: Omit<UpdateBillRequest, "organizationId"> = {
         id: data.id,
         description: data.description,
-        category: data.category,
-        status: data.status,
+        category: data.category as BillCategory,
+        status: data.status as BillStatus,
         dueDate: data.dueDate.toISOString(),
+        paymentDate: data.paymentDate ? data.paymentDate.toISOString() : null,
         amountDue: data.amountDue,
-        paymentDate: data.paymentDate,
-        amountPaid: data.amountPaid,
-      });
+        amountPaid: data.amountPaid ?? null,
+      };
+
+      await updateBillAsync(payload);
     } catch (error) {
       console.error("Failed to update the bill:", error);
     }
@@ -135,94 +145,51 @@ export function Bills() {
   };
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex flex-col md:flex-row justify-between space-y-2 md:space-y-0">
-        <h2 className="text-3xl font-bold tracking-tight">Bills</h2>
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <AddBillDialog onAddBill={handleAddBill} />
-          <CalendarDateRangePicker
-            startDate={dateRange?.from}
-            endDate={dateRange?.to}
-            onDateChange={handleDateFilterChange}
-          />
+    <PageContainer>
+      <PageHeader
+        title={t("bills.title")}
+        description={t("bills.subtitle")}
+        actions={
+          <>
+            <AddBillDialog onAddBill={handleAddBill} />
+            <CalendarDateRangePicker
+              startDate={dateRange?.from}
+              endDate={dateRange?.to}
+              onDateChange={handleDateFilterChange}
+            />
+          </>
+        }
+      />
+
+      {billsQuery.isPending ? (
+        <div className="rounded-lg border p-10 text-center">
+          <h3 className="text-lg font-semibold">Loading bills...</h3>
         </div>
-      </div>
-      <Card className="w-full col-span-8">
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Description</TableHead>
-                <TableHead className="hidden md:table-cell">Category</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead className="hidden md:table-cell">Status</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {bills.map((bill) => (
-                <TableRow key={bill.id}>
-                  <TableCell>{bill.description}</TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {bill.category}
-                  </TableCell>
-                  <TableCell>
-                    {dateFormatter.format(new Date(bill.dueDate))}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {getStatusBadge(bill.status)}
-                  </TableCell>
-                  <TableCell>${bill.amountDue.toFixed(2)}</TableCell>
-                  <TableCell className="flex flex-row space-x-2 items-center">
-                    <DetailsBillDialog bill={bill} />
-                    <EditBillDialog bill={bill} onEdit={handleEditBill} />
-                    <UploadDocumentsDialog
-                      billId={bill.id}
-                      onUpload={handleUploadDocuments}
-                    />
-                    <DeleteBillDialog id={bill.id} onDelete={handleDeleteBill} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            {bills.length > 0 && (
-              <>
-                {/* Desktop Footer */}
-                <TableFooter className="hidden md:table-footer-group">
-                  <TableRow className="font-semibold">
-                    <TableCell colSpan={4}>Total</TableCell>
-                    <TableCell>${getTotalAmount()}</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableFooter>
-                {/* Mobile Footer */}
-                <TableFooter className="table-footer-group md:hidden">
-                  <TableRow className="font-semibold">
-                    <TableCell colSpan={2}>Total</TableCell>
-                    <TableCell>${getTotalAmount()}</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableFooter>
-              </>
-            )}
-          </Table>
-          {billsQuery.isPending ? (
-            <div className="text-center py-6">
-              <h3 className="mt-2 text-lg font-semibold">Loading bills...</h3>
-            </div>
-          ) : bills.length === 0 ? (
-            <div className="text-center py-6">
-              <ReceiptText className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <h3 className="mt-2 text-lg font-semibold">No Bills</h3>
-              <p className="text-sm text-muted-foreground">
-                You haven&apos;t added any bills. Start tracking your expenses
-                by adding one now!
-              </p>
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
-    </div>
+      ) : bills.length === 0 ? (
+        <div className="rounded-lg border p-10 text-center">
+          <ReceiptText className="mx-auto h-12 w-12 text-muted-foreground/50" />
+          <h3 className="mt-2 text-lg font-semibold">No Bills</h3>
+          <p className="text-sm text-muted-foreground">
+            You haven&apos;t added any bills. Start tracking your expenses by adding one now!
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="md:hidden">
+            <BillsMobileList bills={bills} renderStatusBadge={renderStatusBadge} />
+          </div>
+          <div className="hidden md:block">
+            <BillsTable
+              bills={bills}
+              totalAmount={getTotalAmount()}
+              renderStatusBadge={renderStatusBadge}
+              onDeleteBill={handleDeleteBill}
+              onEditBill={handleEditBill}
+              onUploadDocuments={handleUploadDocuments}
+            />
+          </div>
+        </>
+      )}
+    </PageContainer>
   );
 }

@@ -5,9 +5,11 @@ import { DashboardLayout } from "./layouts/dashboard-layout";
 import { NotFound } from "./pages/404";
 import { AuthLayout } from "./pages/_layouts/auth-layout";
 import { Account } from "./pages/account";
+import { AccountMore } from "./pages/account/more";
 import { SignIn } from "./pages/auth/sign-in";
 import { SignUp } from "./pages/auth/sign-up";
 import { Bills } from "./pages/bills";
+import { BillDetails } from "./pages/bills/details";
 import { Dashboard } from "./pages/dashboard";
 import { Error } from "./pages/error";
 import { Expenses } from "./pages/expenses";
@@ -37,6 +39,10 @@ export const router = createBrowserRouter([
         element: <Bills />,
       },
       {
+        path: "bills/:billId",
+        element: <BillDetails />,
+      },
+      {
         path: "expenses",
         element: <Expenses />,
       },
@@ -53,6 +59,10 @@ export const router = createBrowserRouter([
       {
         path: "settings",
         element: <Account />,
+      },
+      {
+        path: "more",
+        element: <AccountMore />,
       },
     ],
   },

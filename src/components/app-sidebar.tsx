@@ -1,5 +1,14 @@
 import * as React from "react";
+import { Link, useLocation } from "react-router-dom";
 
+import { useCurrentUser } from "@/auth/auth-provider";
+import {
+  desktopSidebarNavigation,
+  isAppNavItemActive,
+} from "@/layouts/app-navigation";
+
+import { NavUser } from "@/components/nav-user";
+import { OrganizationSwitcher } from "@/components/organization-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -13,94 +22,57 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { OrganizationSwitcher } from "./organization-switcher";
-import {
-  Building,
-  CreditCard,
-  LayoutGrid,
-  ReceiptText,
-  Users,
-} from "lucide-react";
-import { NavUser } from "@/components/nav-user";
-import { useCurrentUser } from "@/auth/auth-provider";
-import { Link, useLocation } from "react-router-dom";
 
-const data = {
-  user: {
-    name: "John Doe",
-    email: "johndoe@email.com",
-    avatar: "",
-  },
-  navMain: [
-    {
-      title: "Management",
-      url: "#",
-      items: [
-        {
-          title: "Dashboard",
-          url: "",
-          icon: LayoutGrid,
-          isActive: true,
-        },
-        {
-          title: "Bills",
-          url: "bills",
-          icon: ReceiptText,
-        },
-        {
-          title: "Expenses",
-          url: "expenses",
-          icon: CreditCard,
-        },
-      ],
-    },
-    {
-      title: "Administration",
-      url: "#",
-      items: [
-        {
-          title: "Members",
-          url: "#",
-          icon: Users,
-        },
-        {
-          title: "Organizations",
-          url: "#",
-          icon: Building,
-        },
-      ],
-    },
-  ],
-};
+import logoImg from "/assets/app-icon.png";
+
+const sectionLabelMap = {
+  management: "Management",
+  account: "Account",
+} as const;
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const currentUserQuery = useCurrentUser();
   const user = currentUserQuery.data ?? null;
+  const location = useLocation();
 
-  let location = useLocation();
+  const groupedItems = desktopSidebarNavigation.reduce<
+    Record<string, typeof desktopSidebarNavigation>
+  >((acc, item) => {
+    if (!acc[item.section]) {
+      acc[item.section] = [];
+    }
+    acc[item.section].push(item);
+    return acc;
+  }, {});
 
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <OrganizationSwitcher organizations={user?.organizations ?? []} />
+        <div className="flex items-center gap-2">
+          <Link to="/dashboard" className="shrink-0">
+            <img alt="BitFinance logo" src={logoImg} className="h-9 w-auto" />
+          </Link>
+          <div className="min-w-0 flex-1">
+            <OrganizationSwitcher organizations={user?.organizations ?? []} />
+          </div>
+        </div>
       </SidebarHeader>
       <SidebarContent>
-        {data.navMain.map((item) => (
-          <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+        {Object.entries(groupedItems).map(([section, items]) => (
+          <SidebarGroup key={section}>
+            <SidebarGroupLabel>
+              {sectionLabelMap[section as keyof typeof sectionLabelMap]}
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {item.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
+                {items.map((item) => (
+                  <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
                       asChild
-                      isActive={
-                        location.pathname.substring("/dashboard/".length) ===
-                        item.url
-                      }
+                      isActive={isAppNavItemActive(item, location.pathname)}
                     >
-                      <Link to={item.url}>
-                        {item.icon && <item.icon />} {item.title}
+                      <Link to={item.to}>
+                        <item.icon /> {item.label}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -111,10 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser 
-          name={user?.fullName ?? "User"} 
-          email={user?.email ?? ""} 
-        />
+        <NavUser name={user?.fullName ?? "User"} email={user?.email ?? ""} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

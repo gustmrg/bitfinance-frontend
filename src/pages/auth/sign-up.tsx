@@ -1,3 +1,9 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { NavLink, useNavigate } from "react-router-dom";
+import { z } from "zod";
+
 import { useRegisterAction } from "@/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,13 +15,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { NavLink, useNavigate } from "react-router-dom";
-import { z } from "zod";
 
-import logoImg from "/assets/logo.png";
+import logoImg from "/assets/app-icon.png";
 
 const passwordValidation = new RegExp(
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/
@@ -57,24 +58,17 @@ export function SignUp() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          alt="BitFinance logo"
-          src={logoImg}
-          className="mx-auto h-16 w-auto"
-        />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+    <div className="w-full max-w-sm py-2">
+      <div className="w-full">
+        <img alt="BitFinance logo" src={logoImg} className="mx-auto h-14 w-auto" />
+        <h2 className="mt-8 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           {t("auth.signUp.title")}
         </h2>
       </div>
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="mt-8 w-full">
         <Form {...form}>
-          <form
-            className="space-y-6"
-            onSubmit={form.handleSubmit(handleSignUp)}
-          >
-            <div className="flex gap-4">
+          <form className="space-y-6" onSubmit={form.handleSubmit(handleSignUp)}>
+            <div className="flex flex-col gap-4 sm:flex-row">
               <FormField
                 control={form.control}
                 name="firstName"
@@ -115,11 +109,7 @@ export function SignUp() {
                     Email
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="johndoe@email.com"
-                      {...field}
-                      type="text"
-                    />
+                    <Input placeholder="johndoe@email.com" {...field} type="text" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -140,19 +130,17 @@ export function SignUp() {
                 </FormItem>
               )}
             />
-            <div className="mt-2">
-              <Button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                disabled={form.formState.isSubmitting}
-              >
-                {t("labels.signUp")}
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              className="mt-2 flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              disabled={form.formState.isSubmitting}
+            >
+              {t("labels.signUp")}
+            </Button>
           </form>
         </Form>
         <div className="mt-6">
-          <p className="text-sm text-center leading-5 text-gray-600">
+          <p className="text-center text-sm leading-5 text-gray-600">
             {t("auth.signUp.redirect")}{" "}
             <NavLink
               to={form.formState.isSubmitting ? "#" : "/auth/sign-in"}

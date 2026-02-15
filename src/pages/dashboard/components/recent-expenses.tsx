@@ -1,24 +1,26 @@
 import type React from "react";
 
 import {
-  CreditCard,
-  Home,
-  ShoppingBag,
-  Utensils,
-  Car,
-  Smartphone,
   Briefcase,
-  PieChart,
+  Car,
+  CreditCard,
   GraduationCap,
-  PiggyBank,
-  Ticket,
   HandCoins,
   HeartPulse,
+  Home,
+  PieChart,
+  PiggyBank,
   ShieldPlus,
+  ShoppingBag,
+  Smartphone,
+  Ticket,
+  Utensils,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router-dom";
 
+import { ExpenseResponseModel } from "@/api/dashboard/get-recent-expenses";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,11 +29,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { NavLink } from "react-router-dom";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { ExpenseResponseModel } from "@/api/dashboard/get-recent-expenses";
 
-// Category icons mapping
 const categoryIcons: Record<string, React.ReactNode> = {
   food: <Utensils className="h-4 w-4" />,
   clothing: <ShoppingBag className="h-4 w-4" />,
@@ -49,7 +48,6 @@ const categoryIcons: Record<string, React.ReactNode> = {
   miscellaneous: <CreditCard className="h-4 w-4" />,
 };
 
-// Category colors mapping
 const categoryColors: Record<string, string> = {
   food: "bg-orange-100 text-orange-600",
   education: "bg-orange-100 text-orange-600",
@@ -99,29 +97,25 @@ interface RecentExpensesProps {
 export function RecentExpenses({ expenses }: RecentExpensesProps) {
   const { t } = useTranslation();
 
-  // Group expenses by category for summary
   const expensesByCategory = expenses.reduce((acc, expense) => {
     acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
     return acc;
   }, {} as Record<string, number>);
 
-  // Get top spending categories
   const topCategories = Object.entries(expensesByCategory)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3);
 
   return (
-    <Card className="w-full col-span-3">
+    <Card className="w-full xl:col-span-3">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle>{t("dashboard.recentExpenses.title")}</CardTitle>
-            <CardDescription>
-              {t("dashboard.recentExpenses.description")}
-            </CardDescription>
+            <CardDescription>{t("dashboard.recentExpenses.description")}</CardDescription>
           </div>
           <NavLink to="/dashboard/expenses">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               {t("labels.viewAll")}
             </Button>
           </NavLink>
@@ -129,81 +123,65 @@ export function RecentExpenses({ expenses }: RecentExpensesProps) {
       </CardHeader>
       <CardContent>
         <div className="mb-6">
-          <h3 className="text-sm font-medium mb-2">
-            {t("dashboard.recentExpenses.subtitle")}
-          </h3>
-          <div className="grid grid-cols-3 gap-2">
+          <h3 className="mb-2 text-sm font-medium">{t("dashboard.recentExpenses.subtitle")}</h3>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {topCategories.map(([category, amount]) => (
               <div
                 key={category}
-                className="flex flex-col items-center p-2 rounded-lg border"
+                className="flex flex-col items-center rounded-lg border p-2"
               >
                 <div
-                  className={`p-2 rounded-full ${
-                    categoryColors[category].split(" ")[0]
+                  className={`rounded-full p-2 ${
+                    categoryColors[category]?.split(" ")[0] || "bg-gray-100"
                   }`}
                 >
-                  {categoryIcons[category]}
+                  {categoryIcons[category] || <CreditCard className="h-4 w-4" />}
                 </div>
-                <p className="text-xs font-medium mt-1">{category}</p>
+                <p className="mt-1 text-xs font-medium capitalize">{category}</p>
                 <p className="text-sm font-bold">${amount.toFixed(0)}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="space-y-4 max-h-[350px] overflow-auto pr-1">
+        <div className="max-h-[350px] space-y-3 overflow-auto pr-1">
           {expenses.length > 0 ? (
             expenses.map((expense) => (
               <div
                 key={expense.id}
-                className="flex items-center justify-between p-3 rounded-lg border"
+                className="flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 items-center gap-3">
                   <div
-                    className={`p-2 rounded-full ${
-                      categoryColors[expense.category]?.split(" ")[0] ||
-                      "bg-gray-100"
+                    className={`rounded-full p-2 ${
+                      categoryColors[expense.category]?.split(" ")[0] || "bg-gray-100"
                     }`}
                   >
-                    {categoryIcons[expense.category] || (
-                      <CreditCard className="h-4 w-4" />
-                    )}
+                    {categoryIcons[expense.category] || <CreditCard className="h-4 w-4" />}
                   </div>
-                  <div>
-                    <p className="font-medium">{expense.description}</p>
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{expense.description}</p>
                     <div className="flex items-center text-xs text-muted-foreground">
-                      <span>
-                        {format(new Date(expense.date), "MMM d, yyyy")}
-                      </span>
+                      <span>{format(new Date(expense.date), "MMM d, yyyy")}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="text-right">
-                    <p className="font-medium">
-                      -$
-                      {expense.amount.toFixed(2)}
-                    </p>
-                    <StatusBadge
-                      variant={categoryBadgeVariant[expense.category]}
-                    >
-                      {expense.category}
-                    </StatusBadge>
-                  </div>
+                <div className="flex items-center justify-between gap-2 sm:block sm:text-right">
+                  <p className="font-medium">-${expense.amount.toFixed(2)}</p>
+                  <StatusBadge variant={categoryBadgeVariant[expense.category] || "gray"}>
+                    {expense.category}
+                  </StatusBadge>
                 </div>
               </div>
             ))
           ) : (
-            <div className="text-center py-6">
+            <div className="py-6 text-center">
               <PieChart className="mx-auto h-12 w-12 text-muted-foreground/50" />
               <h3 className="mt-2 text-lg font-semibold">
                 {t("dashboard.recentExpenses.emptyHeader")}
               </h3>
-              <p className="text-sm text-muted-foreground">
-                {t("dashboard.recentExpenses.empty")}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("dashboard.recentExpenses.empty")}</p>
             </div>
           )}
         </div>

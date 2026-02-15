@@ -1,8 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { toast } from "sonner";
 
 import { UpdateProfile } from "@/api/account/update-profile";
+import { PageContainer } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,7 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
 
 const UpdateProfileSchema = z.object({
   firstName: z.string(),
@@ -39,8 +40,7 @@ export function Account() {
 
       if (response) {
         toast.success("Profile updated", {
-          description:
-            "You have successfully updated your account information.",
+          description: "You have successfully updated your account information.",
         });
       }
     } catch {
@@ -49,7 +49,7 @@ export function Account() {
   }
 
   return (
-    <div className="space-y-6 lg:w-1/2 p-4">
+    <PageContainer className="max-w-3xl">
       <div>
         <h3 className="text-lg font-bold">Account</h3>
         <p className="text-sm text-zinc-500">
@@ -59,7 +59,7 @@ export function Account() {
       <Separator />
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="firstName"
@@ -88,12 +88,10 @@ export function Account() {
                 </FormItem>
               )}
             />
-            <div className="space-x-4">
-              <Button type="submit">Update account</Button>
-            </div>
+            <Button type="submit">Update account</Button>
           </form>
         </Form>
       </div>
-    </div>
+    </PageContainer>
   );
 }
