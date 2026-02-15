@@ -10,7 +10,7 @@ import {
 } from "@/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 
-import logoImg from "/assets/logo.png";
+import logoImg from "/assets/app-icon.png";
 
 export function CreateOrganization() {
   const [organizationName, setOrganizationName] = useState("");

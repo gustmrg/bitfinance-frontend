@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/gustmrg/bitfinance-frontend">
-    <img src="public/assets/logo.png" alt="" height="100" >
+    <img src="public/assets/app-icon.png" alt="" height="100" >
   </a>
   <h3 align="center">BitFinance</h3>
 </div>

@@ -23,7 +23,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-import logoImg from "/assets/logo.png";
+import logoImg from "/assets/app-icon.png";
 
 const sectionLabelMap = {
   management: "Management",

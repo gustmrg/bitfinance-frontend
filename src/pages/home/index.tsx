@@ -21,7 +21,7 @@ import Footer from "./components/footer";
 import { LoginButton } from "./components/login-button";
 import { LogoutButton } from "./components/logout-button";
 
-import logoImg from "/assets/logo.png";
+import logoImg from "/assets/app-icon.png";
 
 export function Home() {
   const { t } = useTranslation();
