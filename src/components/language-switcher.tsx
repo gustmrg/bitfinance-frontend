@@ -30,8 +30,10 @@ const languages: Language[] = [
 ];
 
 export function LanguageSwitcher() {
-  const [currentLanguage, setCurrentLanguage] = useState(languages[0]);
   const { i18n } = useTranslation();
+  const [currentLanguage, setCurrentLanguage] = useState(
+    () => languages.find((l) => l.locale === i18n.language) ?? languages[0]
+  );
 
   const switchLanguage = (language: Language) => {
     setCurrentLanguage(language);
