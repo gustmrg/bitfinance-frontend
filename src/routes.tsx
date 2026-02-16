@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import { ProtectedRoute } from "./components/protected-route";
 import { DashboardLayout } from "./layouts/dashboard-layout";
@@ -56,6 +56,10 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
+      {
+        index: true,
+        element: <Navigate to="/account/settings" replace />,
+      },
       {
         path: "settings",
         element: <Account />,

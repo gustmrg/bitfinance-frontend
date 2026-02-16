@@ -11,6 +11,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useLogoutAction } from "@/auth/auth-provider";
 import { PageContainer, PageHeader } from "@/components/page-shell";
@@ -28,7 +29,13 @@ interface MoreCardItem {
   onClick?: () => Promise<void> | void;
 }
 
-function MoreCard({ item }: { item: MoreCardItem }) {
+function MoreCard({
+  item,
+  comingSoonLabel,
+}: {
+  item: MoreCardItem;
+  comingSoonLabel: string;
+}) {
   const Icon = item.icon;
 
   const content = (
@@ -50,7 +57,7 @@ function MoreCard({ item }: { item: MoreCardItem }) {
           </span>
           {item.type === "coming-soon" ? (
             <Badge variant="secondary" className="text-[10px]">
-              Coming soon
+              {comingSoonLabel}
             </Badge>
           ) : null}
         </div>
@@ -104,6 +111,7 @@ function MoreCard({ item }: { item: MoreCardItem }) {
 }
 
 export function AccountMore() {
+  const { t } = useTranslation();
   const logout = useLogoutAction();
   const navigate = useNavigate();
 
@@ -115,68 +123,68 @@ export function AccountMore() {
   const items: MoreCardItem[] = [
     {
       id: "account-settings",
-      title: "Account Settings",
-      description: "Profile and account preferences.",
+      title: t("more.items.accountSettings.title"),
+      description: t("more.items.accountSettings.description"),
       icon: Settings,
       type: "route",
       to: "/account/settings",
     },
     {
       id: "bills",
-      title: "Bills",
-      description: "Manage recurring bills and due dates.",
+      title: t("more.items.bills.title"),
+      description: t("more.items.bills.description"),
       icon: ReceiptText,
       type: "route",
       to: "/dashboard/bills",
     },
     {
       id: "expenses",
-      title: "Expenses",
-      description: "Track day-to-day expense records.",
+      title: t("more.items.expenses.title"),
+      description: t("more.items.expenses.description"),
       icon: CreditCard,
       type: "route",
       to: "/dashboard/expenses",
     },
     {
       id: "create-organization",
-      title: "Create Organization",
-      description: "Set up a new organization workspace.",
+      title: t("more.items.createOrganization.title"),
+      description: t("more.items.createOrganization.description"),
       icon: Building2,
       type: "route",
       to: "/account/create-organization",
     },
     {
       id: "reports",
-      title: "Reports",
-      description: "View financial insights and summaries.",
+      title: t("more.items.reports.title"),
+      description: t("more.items.reports.description"),
       icon: BarChart3,
       type: "coming-soon",
     },
     {
       id: "budgets",
-      title: "Budgets",
-      description: "Plan monthly budgets and spending limits.",
+      title: t("more.items.budgets.title"),
+      description: t("more.items.budgets.description"),
       icon: Wallet,
       type: "coming-soon",
     },
     {
       id: "notifications",
-      title: "Notifications",
-      description: "Configure reminders and alert rules.",
+      title: t("more.items.notifications.title"),
+      description: t("more.items.notifications.description"),
       icon: Bell,
       type: "coming-soon",
     },
     {
       id: "integrations",
-      title: "Integrations",
-      description: "Connect external tools and services.",
+      title: t("more.items.integrations.title"),
+      description: t("more.items.integrations.description"),
       icon: Link2,
       type: "coming-soon",
     },
     {
       id: "logout",
-      title: "Log out",
-      description: "Sign out from this device.",
+      title: t("more.items.logout.title"),
+      description: t("more.items.logout.description"),
       icon: LogOut,
       type: "action",
       onClick: onLogout,
@@ -186,13 +194,17 @@ export function AccountMore() {
   return (
     <PageContainer className="max-w-3xl">
       <PageHeader
-        title="More"
-        description="Access settings, account tools, and upcoming features."
+        title={t("more.title")}
+        description={t("more.subtitle")}
       />
 
       <div className="grid grid-cols-2 gap-3">
         {items.map((item) => (
-          <MoreCard key={item.id} item={item} />
+          <MoreCard
+            key={item.id}
+            item={item}
+            comingSoonLabel={t("more.comingSoon")}
+          />
         ))}
       </div>
     </PageContainer>

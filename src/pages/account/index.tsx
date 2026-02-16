@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { toast } from "sonner";
 
@@ -16,7 +17,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+
+const languages = [
+  { locale: "en-US", name: "English", flag: "\u{1F1FA}\u{1F1F8}" },
+  { locale: "pt-BR", name: "Portugu\u00eas", flag: "\u{1F1E7}\u{1F1F7}" },
+];
 
 const UpdateProfileSchema = z.object({
   firstName: z.string(),
@@ -26,6 +40,8 @@ const UpdateProfileSchema = z.object({
 type UpdateProfileFormValues = z.infer<typeof UpdateProfileSchema>;
 
 export function Account() {
+  const { t, i18n } = useTranslation();
+
   const form = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(UpdateProfileSchema),
     defaultValues: {
@@ -39,8 +55,8 @@ export function Account() {
       const response = await UpdateProfile(data);
 
       if (response) {
-        toast.success("Profile updated", {
-          description: "You have successfully updated your account information.",
+        toast.success(t("account.updateSuccess"), {
+          description: t("account.updateSuccessDescription"),
         });
       }
     } catch {
@@ -51,10 +67,8 @@ export function Account() {
   return (
     <PageContainer className="max-w-3xl">
       <div>
-        <h3 className="text-lg font-bold">Account</h3>
-        <p className="text-sm text-zinc-500">
-          This is how others will see you on the site.
-        </p>
+        <h3 className="text-lg font-bold">{t("account.title")}</h3>
+        <p className="text-sm text-zinc-500">{t("account.subtitle")}</p>
       </div>
       <Separator />
       <div>
@@ -65,11 +79,16 @@ export function Account() {
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel>{t("account.firstName")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="John" {...field} />
+                    <Input
+                      placeholder={t("account.firstNamePlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
-                  <FormDescription>Enter your first name.</FormDescription>
+                  <FormDescription>
+                    {t("account.firstNameDescription")}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -79,18 +98,54 @@ export function Account() {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel>{t("account.lastName")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Doe" {...field} />
+                    <Input
+                      placeholder={t("account.lastNamePlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
-                  <FormDescription>Enter your last name.</FormDescription>
+                  <FormDescription>
+                    {t("account.lastNameDescription")}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Update account</Button>
+            <Button type="submit">{t("account.updateAccount")}</Button>
           </form>
         </Form>
+      </div>
+      <Separator />
+      <div>
+        <h3 className="text-lg font-bold">
+          {t("account.preferences.title")}
+        </h3>
+        <p className="text-sm text-zinc-500">
+          {t("account.preferences.subtitle")}
+        </p>
+      </div>
+      <div className="space-y-2">
+        <Label>{t("account.preferences.language")}</Label>
+        <Select
+          value={i18n.language}
+          onValueChange={(locale) => i18n.changeLanguage(locale)}
+        >
+          <SelectTrigger className="w-full max-w-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {languages.map((lang) => (
+              <SelectItem key={lang.locale} value={lang.locale}>
+                <span className="mr-2">{lang.flag}</span>
+                {lang.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-[0.8rem] text-muted-foreground">
+          {t("account.preferences.languageDescription")}
+        </p>
       </div>
     </PageContainer>
   );

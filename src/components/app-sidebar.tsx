@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useCurrentUser } from "@/auth/auth-provider";
 import {
@@ -25,12 +26,8 @@ import {
 
 import logoImg from "/assets/app-icon.png";
 
-const sectionLabelMap = {
-  management: "Management",
-  account: "Account",
-} as const;
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { t } = useTranslation();
   const currentUserQuery = useCurrentUser();
   const user = currentUserQuery.data ?? null;
   const location = useLocation();
@@ -61,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {Object.entries(groupedItems).map(([section, items]) => (
           <SidebarGroup key={section}>
             <SidebarGroupLabel>
-              {sectionLabelMap[section as keyof typeof sectionLabelMap]}
+              {t(`sidebar.sections.${section}`)}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -72,7 +69,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       isActive={isAppNavItemActive(item, location.pathname)}
                     >
                       <Link to={item.to}>
-                        <item.icon /> {item.label}
+                        <item.icon /> {t(`sidebar.${item.id}`)}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

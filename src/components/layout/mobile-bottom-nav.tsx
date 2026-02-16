@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import {
   isAppNavItemActive,
@@ -8,6 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export function MobileBottomNav() {
+  const { t } = useTranslation();
   const location = useLocation();
 
   return (
@@ -42,7 +44,7 @@ export function MobileBottomNav() {
                     <Icon className="h-5 w-5" />
                   )}
                 </span>
-                <span>{item.label}</span>
+                <span>{t(`sidebar.${item.id}`)}</span>
               </NavLink>
             </li>
           );

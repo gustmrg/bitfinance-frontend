@@ -118,14 +118,14 @@ export function Expenses() {
 
       {expensesQuery.isPending ? (
         <div className="rounded-lg border p-10 text-center">
-          <h3 className="text-lg font-semibold">Loading expenses...</h3>
+          <h3 className="text-lg font-semibold">{t("expenses.loading")}</h3>
         </div>
       ) : expenses.length === 0 ? (
         <div className="rounded-lg border p-10 text-center">
           <ReceiptText className="mx-auto h-12 w-12 text-muted-foreground/50" />
-          <h3 className="mt-2 text-lg font-semibold">No Expenses</h3>
+          <h3 className="mt-2 text-lg font-semibold">{t("expenses.emptyTitle")}</h3>
           <p className="text-sm text-muted-foreground">
-            You haven&apos;t added any expenses. Start tracking your expenses by adding one now!
+            {t("expenses.emptyDescription")}
           </p>
         </div>
       ) : (
