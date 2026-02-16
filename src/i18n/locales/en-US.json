@@ -40,8 +40,14 @@
     "dashboard": "Dashboard",
     "bills": "Bills",
     "expenses": "Expenses",
+    "account": "Account",
+    "more": "More",
     "settings": "Settings",
-    "select": "Select organization"
+    "select": "Select organization",
+    "sections": {
+      "management": "Management",
+      "account": "Account"
+    }
   },
   "labels": {
     "description": "Description",
@@ -151,6 +157,9 @@
     "title": "Bills",
     "subtitle": "Manage your bills and never miss a payment again. Stay on top of your bills and avoid late fees with our easy-to-use bill management system.",
     "cta": "Add Bill",
+    "loading": "Loading bills...",
+    "emptyTitle": "No Bills",
+    "emptyDescription": "You haven't added any bills. Start tracking your expenses by adding one now!",
     "dialog": {
       "add": {
         "title": "Add New Bill",
@@ -174,6 +183,9 @@
     "title": "Expenses",
     "subtitle": "Track your expenses and stay within your budget. Keep an eye on your spending habits and make informed decisions about your money.",
     "cta": "Add Expense",
+    "loading": "Loading expenses...",
+    "emptyTitle": "No Expenses",
+    "emptyDescription": "You haven't added any expenses. Start tracking your expenses by adding one now!",
     "dialog": {
       "add": {
         "title": "Add New Expense",
@@ -187,6 +199,68 @@
         "title": "Delete Expense",
         "description": "Are you sure you want to delete this expense? All of its data will be permanently removed and this action cannot be undone."
       }
+    }
+  },
+  "more": {
+    "title": "More",
+    "subtitle": "Access settings, account tools, and upcoming features.",
+    "comingSoon": "Coming soon",
+    "items": {
+      "accountSettings": {
+        "title": "Account Settings",
+        "description": "Profile and account preferences."
+      },
+      "bills": {
+        "title": "Bills",
+        "description": "Manage recurring bills and due dates."
+      },
+      "expenses": {
+        "title": "Expenses",
+        "description": "Track day-to-day expense records."
+      },
+      "createOrganization": {
+        "title": "Create Organization",
+        "description": "Set up a new organization workspace."
+      },
+      "reports": {
+        "title": "Reports",
+        "description": "View financial insights and summaries."
+      },
+      "budgets": {
+        "title": "Budgets",
+        "description": "Plan monthly budgets and spending limits."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Configure reminders and alert rules."
+      },
+      "integrations": {
+        "title": "Integrations",
+        "description": "Connect external tools and services."
+      },
+      "logout": {
+        "title": "Log out",
+        "description": "Sign out from this device."
+      }
+    }
+  },
+  "account": {
+    "title": "Account",
+    "subtitle": "This is how others will see you on the site.",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "John",
+    "firstNameDescription": "Enter your first name.",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Doe",
+    "lastNameDescription": "Enter your last name.",
+    "updateAccount": "Update account",
+    "updateSuccess": "Profile updated",
+    "updateSuccessDescription": "You have successfully updated your account information.",
+    "preferences": {
+      "title": "Preferences",
+      "subtitle": "Customize your experience.",
+      "language": "Language",
+      "languageDescription": "Select your preferred language."
     }
   },
   "footer": {

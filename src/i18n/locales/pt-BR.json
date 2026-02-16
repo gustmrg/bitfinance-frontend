@@ -40,8 +40,14 @@
     "dashboard": "Dashboard",
     "bills": "Contas",
     "expenses": "Despesas",
+    "account": "Conta",
+    "more": "Mais",
     "settings": "Configurações",
-    "select": "Selecione organização"
+    "select": "Selecione organização",
+    "sections": {
+      "management": "Gerenciamento",
+      "account": "Conta"
+    }
   },
   "labels": {
     "description": "Descrição",
@@ -151,6 +157,9 @@
     "title": "Contas",
     "subtitle": "Gerencie suas contas e nunca mais perca um pagamento. Fique por dentro de suas contas e evite taxas por atraso com nosso sistema de gerenciamento de contas fácil de usar.",
     "cta": "Adicionar Conta",
+    "loading": "Carregando contas...",
+    "emptyTitle": "Nenhuma conta",
+    "emptyDescription": "Você ainda não adicionou nenhuma conta. Comece a acompanhar suas contas adicionando uma agora!",
     "dialog": {
       "add": {
         "title": "Adicionar Nova Conta",
@@ -174,6 +183,9 @@
     "title": "Despesas",
     "subtitle": "Acompanhe suas despesas e fique dentro do seu orçamento. Fique de olho em seus hábitos de gastos e tome decisões informadas sobre seu dinheiro.",
     "cta": "Adicionar Despesa",
+    "loading": "Carregando despesas...",
+    "emptyTitle": "Nenhuma despesa",
+    "emptyDescription": "Você ainda não adicionou nenhuma despesa. Comece a acompanhar suas despesas adicionando uma agora!",
     "dialog": {
       "add": {
         "title": "Adicionar Nova Despesa",
@@ -183,6 +195,68 @@
         "title": "Excluir Despesa",
         "description": "Tem certeza de que deseja excluir esta despesa? Todos os seus dados serão removidos permanentemente e esta ação não pode ser desfeita."
       }
+    }
+  },
+  "more": {
+    "title": "Mais",
+    "subtitle": "Acesse configurações, ferramentas da conta e recursos futuros.",
+    "comingSoon": "Em breve",
+    "items": {
+      "accountSettings": {
+        "title": "Configurações da Conta",
+        "description": "Perfil e preferências da conta."
+      },
+      "bills": {
+        "title": "Contas",
+        "description": "Gerencie contas recorrentes e datas de vencimento."
+      },
+      "expenses": {
+        "title": "Despesas",
+        "description": "Acompanhe os registros de despesas do dia a dia."
+      },
+      "createOrganization": {
+        "title": "Criar Organização",
+        "description": "Configure um novo espaço de trabalho."
+      },
+      "reports": {
+        "title": "Relatórios",
+        "description": "Visualize insights e resumos financeiros."
+      },
+      "budgets": {
+        "title": "Orçamentos",
+        "description": "Planeje orçamentos mensais e limites de gastos."
+      },
+      "notifications": {
+        "title": "Notificações",
+        "description": "Configure lembretes e regras de alerta."
+      },
+      "integrations": {
+        "title": "Integrações",
+        "description": "Conecte ferramentas e serviços externos."
+      },
+      "logout": {
+        "title": "Sair",
+        "description": "Encerrar sessão neste dispositivo."
+      }
+    }
+  },
+  "account": {
+    "title": "Conta",
+    "subtitle": "É assim como os outros verão você no site.",
+    "firstName": "Nome",
+    "firstNamePlaceholder": "João",
+    "firstNameDescription": "Digite seu nome.",
+    "lastName": "Sobrenome",
+    "lastNamePlaceholder": "Silva",
+    "lastNameDescription": "Digite seu sobrenome.",
+    "updateAccount": "Atualizar conta",
+    "updateSuccess": "Perfil atualizado",
+    "updateSuccessDescription": "Você atualizou as informações da sua conta com sucesso.",
+    "preferences": {
+      "title": "Preferências",
+      "subtitle": "Personalize sua experiência.",
+      "language": "Idioma",
+      "languageDescription": "Selecione seu idioma preferido."
     }
   },
   "footer": {
