@@ -10,6 +10,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: [
         "favicon.ico",
+        "favicon.svg",
         "assets/pwa/app-icon-180.png",
         "assets/pwa/app-icon-16.png",
         "assets/pwa/app-icon-32.png",
@@ -21,8 +22,8 @@ export default defineConfig({
         start_url: "/",
         scope: "/",
         display: "standalone",
-        background_color: "#ffffff",
-        theme_color: "#ffffff",
+        background_color: "#1E93FF",
+        theme_color: "#1E93FF",
         icons: [
           {
             src: "assets/pwa/app-icon-192.png",
