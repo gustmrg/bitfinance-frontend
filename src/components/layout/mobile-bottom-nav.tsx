@@ -1,4 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -27,22 +26,17 @@ export function MobileBottomNav() {
               <NavLink
                 to={item.to}
                 className={cn(
-                  "flex h-full w-full min-h-14 flex-col items-center justify-center gap-1 rounded-lg px-1 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                  "relative flex h-full w-full min-h-14 flex-col items-center justify-center gap-1 rounded-lg px-1 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                   isActive
-                    ? "bg-primary/10 text-primary"
+                    ? "text-primary"
                     : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                 )}
               >
+                {isActive && (
+                  <span className="absolute inset-x-3 top-0 h-0.5 rounded-full bg-primary" />
+                )}
                 <span className="flex h-5 w-5 items-center justify-center">
-                  {isActive && item.activeIcon ? (
-                    <FontAwesomeIcon
-                      icon={item.activeIcon}
-                      fixedWidth
-                      className="h-5 w-5"
-                    />
-                  ) : (
-                    <Icon className="h-5 w-5" />
-                  )}
+                  <Icon className="h-5 w-5" />
                 </span>
                 <span>{t(`sidebar.${item.id}`)}</span>
               </NavLink>
