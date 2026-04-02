@@ -18,6 +18,8 @@ export const queryKeys = {
         getDateKey(from),
         getDateKey(to),
       ] as const,
+    detail: (organizationId: string, billId: string) =>
+      [...queryKeys.bills.all, "detail", organizationId, billId] as const,
   },
   expenses: {
     all: ["expenses"] as const,

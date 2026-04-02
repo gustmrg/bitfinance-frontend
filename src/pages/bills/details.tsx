@@ -9,12 +9,13 @@ import type {
   UpdateBillRequest,
 } from "@/api/bills";
 import { billsService } from "@/api/bills";
+
 import { useSelectedOrganization } from "@/auth/auth-provider";
 import { PageContainer, PageHeader } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useBillMutations } from "@/hooks/mutations/use-bill-mutations";
-import { useBillsQuery } from "@/hooks/queries/use-bills-query";
+import { useBillQuery } from "@/hooks/queries/use-bill-query";
 
 import { BillDetailsContent } from "./components/bill-details-content";
 import { DeleteBillDialog } from "./components/delete-bill-dialog";
@@ -38,16 +39,13 @@ export function BillDetails() {
   const navigate = useNavigate();
   const selectedOrganization = useSelectedOrganization();
 
-  const billsQuery = useBillsQuery(selectedOrganization?.id ?? null, {
-    from: undefined,
-    to: undefined,
-  });
+  const billQuery = useBillQuery(selectedOrganization?.id ?? null, billId);
 
   const { deleteBillAsync, updateBillAsync, uploadBillDocumentsAsync } = useBillMutations({
     organizationId: selectedOrganization?.id ?? null,
   });
 
-  const bill = (billsQuery.data ?? []).find((item) => item.id === billId);
+  const bill = billQuery.data;
 
   const handleEditBill = async (data: EditBillFormValues) => {
     const payload: Omit<UpdateBillRequest, "organizationId"> = {
@@ -113,7 +111,7 @@ export function BillDetails() {
         }
       />
 
-      {billsQuery.isPending ? (
+      {billQuery.isPending ? (
         <Card>
           <CardContent className="p-8 text-center text-sm text-muted-foreground">
             Loading bill details...
