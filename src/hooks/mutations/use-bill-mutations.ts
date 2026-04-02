@@ -29,15 +29,25 @@ function requireOrganizationId(organizationId: string | null): string {
 export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
   const queryClient = useQueryClient();
 
-  const invalidateBillQueries = async (orgId: string) => {
-    await Promise.all([
+  const invalidateBillQueries = async (orgId: string, billId?: string) => {
+    const promises: Promise<void>[] = [
       queryClient.invalidateQueries({
         queryKey: queryKeys.bills.listByOrganization(orgId),
       }),
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.upcomingBills(orgId),
       }),
-    ]);
+    ];
+
+    if (billId) {
+      promises.push(
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.bills.detail(orgId, billId),
+        })
+      );
+    }
+
+    await Promise.all(promises);
   };
 
   const addBillMutation = useMutation({
@@ -65,9 +75,9 @@ export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
         organizationId: orgId,
       });
     },
-    onSuccess: async () => {
+    onSuccess: async (_data, variables) => {
       if (organizationId) {
-        await invalidateBillQueries(organizationId);
+        await invalidateBillQueries(organizationId, variables.id);
       }
     },
   });
@@ -77,9 +87,9 @@ export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
       const orgId = requireOrganizationId(organizationId);
       return billsService.deleteAsync(billId, orgId);
     },
-    onSuccess: async () => {
+    onSuccess: async (_data, billId) => {
       if (organizationId) {
-        await invalidateBillQueries(organizationId);
+        await invalidateBillQueries(organizationId, billId);
       }
     },
   });
@@ -95,9 +105,9 @@ export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
         documentType: payload.documentType,
       });
     },
-    onSuccess: async () => {
+    onSuccess: async (_data, variables) => {
       if (organizationId) {
-        await invalidateBillQueries(organizationId);
+        await invalidateBillQueries(organizationId, variables.billId);
       }
     },
   });

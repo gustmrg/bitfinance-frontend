@@ -3,6 +3,7 @@ import { privateAPI } from "@/lib/axios";
 import { normalizeError } from "@/api/shared/normalize-error";
 
 import type {
+  Bill,
   BillsListQuery,
   BillsListResponse,
   CreateBillRequest,
@@ -40,6 +41,18 @@ async function uploadDocumentAsync(
 }
 
 export const billsService = {
+  async getAsync(organizationId: string, billId: string): Promise<Bill> {
+    try {
+      const response = await authApi.get<Bill>(
+        `/organizations/${organizationId}/bills/${billId}`
+      );
+
+      return response.data;
+    } catch (error) {
+      throw normalizeError(error, "Failed to fetch bill.");
+    }
+  },
+
   async listAsync(query: BillsListQuery): Promise<BillsListResponse> {
     try {
       const response = await authApi.get<BillsListResponse>(
