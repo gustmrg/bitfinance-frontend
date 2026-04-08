@@ -16,6 +16,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Connect runner to Tailscale
+        if: ${{ secrets.TS_OAUTH_CLIENT_ID != '' && secrets.TS_OAUTH_SECRET != '' }}
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          version: latest
+          hostname: bitfinance-deploy-runner
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -42,14 +52,17 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
           SSH_HOST_IP: ${{ secrets.SSH_HOST }}
+          TAILSCALE_HOST: ${{ secrets.TAILSCALE_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
         run: |
           set -euo pipefail
 
+          TARGET_HOST="${TAILSCALE_HOST:-$SSH_HOST_IP}"
+
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST_IP" > ~/.ssh/known_hosts
+          ssh-keyscan -p "$SSH_PORT" -H "$TARGET_HOST" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
           KEY_FILE="$(mktemp)"
@@ -62,11 +75,11 @@ jobs:
             -o BatchMode=yes \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
-            "$SSH_USERNAME@$SSH_HOST_IP" 'echo "SSH auth OK"'
+            "$SSH_USERNAME@$TARGET_HOST" 'echo "SSH auth OK"'
 
           scp -i "$KEY_FILE" \
             -P "$SSH_PORT" \
             -o BatchMode=yes \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
-            -r dist/* "$SSH_USERNAME@$SSH_HOST_IP:/var/www/bitfinance/"
+            -r dist/* "$SSH_USERNAME@$TARGET_HOST:/var/www/bitfinance/"
