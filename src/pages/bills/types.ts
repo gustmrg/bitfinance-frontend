@@ -1,1 +1,1 @@
-export type { Bill, BillDocument } from "@/api/bills";
+export type { Bill, BillAttachment } from "@/api/bills";

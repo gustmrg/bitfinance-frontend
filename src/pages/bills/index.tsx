@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import type {
   BillCategory,
-  BillDocumentType,
+  BillFileCategory,
   BillStatus,
   UpdateBillRequest,
 } from "@/api/bills";
@@ -130,13 +130,13 @@ export function Bills() {
   const handleUploadDocuments = async (
     billId: string,
     files: File[],
-    documentType: string
+    fileCategory: string
   ) => {
     try {
       await uploadBillDocumentsAsync({
         billId,
         files,
-        documentType: documentType as BillDocumentType,
+        fileCategory: fileCategory as BillFileCategory,
       });
     } catch (error) {
       console.error("Failed to upload documents:", error);

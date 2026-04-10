@@ -10,11 +10,13 @@ import type { Bill } from "../types";
 interface BillDetailsContentProps {
   bill: Bill;
   onDownloadDocument: (documentId: string, fileName: string) => Promise<void> | void;
+  onDeleteAttachment?: (attachmentId: string) => Promise<void> | void;
 }
 
 export function BillDetailsContent({
   bill,
   onDownloadDocument,
+  onDeleteAttachment,
 }: BillDetailsContentProps) {
   const { t } = useTranslation();
 
@@ -116,7 +118,7 @@ export function BillDetailsContent({
           </div>
         ) : null}
 
-        {bill.documents && bill.documents.length > 0 ? (
+        {bill.attachments && bill.attachments.length > 0 ? (
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt className="text-sm font-medium leading-6 text-gray-900">
               {t("labels.attachments")}
@@ -126,9 +128,9 @@ export function BillDetailsContent({
                 role="list"
                 className="divide-y divide-gray-100 rounded-md border border-gray-200"
               >
-                {bill.documents.map((document) => (
+                {bill.attachments.map((attachment) => (
                   <li
-                    key={document.id}
+                    key={attachment.id}
                     className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6"
                   >
                     <div className="flex w-0 flex-1 items-center">
@@ -137,16 +139,24 @@ export function BillDetailsContent({
                         className="h-5 w-5 flex-shrink-0 text-gray-400"
                       />
                       <div className="ml-4 flex min-w-0 flex-1 gap-2">
-                        <span className="truncate font-medium">{document.fileName}</span>
+                        <span className="truncate font-medium">{attachment.fileName}</span>
                       </div>
                     </div>
-                    <div className="ml-4 flex-shrink-0">
+                    <div className="ml-4 flex flex-shrink-0 items-center gap-3">
                       <button
-                        onClick={() => onDownloadDocument(document.id, document.fileName)}
+                        onClick={() => onDownloadDocument(attachment.id, attachment.fileName)}
                         className="font-medium text-blue-700 hover:text-blue-500"
                       >
                         {t("labels.download")}
                       </button>
+                      {onDeleteAttachment ? (
+                        <button
+                          onClick={() => onDeleteAttachment(attachment.id)}
+                          className="font-medium text-red-700 hover:text-red-500"
+                        >
+                          {t("labels.delete")}
+                        </button>
+                      ) : null}
                     </div>
                   </li>
                 ))}

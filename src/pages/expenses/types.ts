@@ -10,5 +10,4 @@ export type Expense = {
   createdBy: string;
   createdAt: string;
   updatedAt?: string | null;
-  deletedAt?: string | null;
 };
