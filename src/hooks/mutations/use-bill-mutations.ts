@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
   billsService,
-  type BillDocumentType,
+  type BillFileCategory,
   type CreateBillRequest,
   type UpdateBillRequest,
 } from "@/api/bills";
@@ -11,7 +11,12 @@ import { queryKeys } from "@/lib/query-keys";
 interface UploadBillDocumentsPayload {
   billId: string;
   files: File[];
-  documentType: BillDocumentType;
+  fileCategory: BillFileCategory;
+}
+
+interface DeleteBillAttachmentPayload {
+  billId: string;
+  attachmentId: string;
 }
 
 interface UseBillMutationsOptions {
@@ -102,7 +107,24 @@ export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
         organizationId: orgId,
         billId: payload.billId,
         files: payload.files,
-        documentType: payload.documentType,
+        fileCategory: payload.fileCategory,
+      });
+    },
+    onSuccess: async (_data, variables) => {
+      if (organizationId) {
+        await invalidateBillQueries(organizationId, variables.billId);
+      }
+    },
+  });
+
+  const deleteBillAttachmentMutation = useMutation({
+    mutationFn: async (payload: DeleteBillAttachmentPayload) => {
+      const orgId = requireOrganizationId(organizationId);
+
+      return billsService.deleteAttachmentAsync({
+        organizationId: orgId,
+        billId: payload.billId,
+        attachmentId: payload.attachmentId,
       });
     },
     onSuccess: async (_data, variables) => {
@@ -114,10 +136,12 @@ export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
 
   return {
     addBillAsync: addBillMutation.mutateAsync,
+    deleteBillAttachmentAsync: deleteBillAttachmentMutation.mutateAsync,
     deleteBillAsync: deleteBillMutation.mutateAsync,
     updateBillAsync: updateBillMutation.mutateAsync,
     uploadBillDocumentsAsync: uploadBillDocumentsMutation.mutateAsync,
     isAddingBill: addBillMutation.isPending,
+    isDeletingBillAttachment: deleteBillAttachmentMutation.isPending,
     isDeletingBill: deleteBillMutation.isPending,
     isUpdatingBill: updateBillMutation.isPending,
     isUploadingBillDocuments: uploadBillDocumentsMutation.isPending,

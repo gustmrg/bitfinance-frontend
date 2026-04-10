@@ -1,3 +1,9 @@
+import type {
+  Attachment,
+  AttachmentType,
+  FileCategory,
+} from "@/api/shared/attachment.types";
+
 export type BillCategory =
   | "housing"
   | "transportation"
@@ -24,15 +30,11 @@ export type BillStatus =
   | "cancelled"
   | "upcoming";
 
-export type BillDocumentType = "Invoice" | "Receipt" | "Contract" | "Other";
+export type BillFileCategory = FileCategory;
 
-export interface BillDocument {
-  id: string;
-  billId: string;
-  fileName: string;
-  contentType: string;
-  documentType: number;
-}
+export type BillAttachmentType = AttachmentType;
+
+export type BillAttachment = Attachment;
 
 export interface Bill {
   id: string;
@@ -46,9 +48,8 @@ export interface Bill {
   dueDate: string;
   paymentDate?: string | null;
   paidDate?: string | null;
-  deletedDate?: string | null;
   notes?: string;
-  documents?: BillDocument[];
+  attachments?: BillAttachment[];
 }
 
 export interface BillsListQuery {
@@ -115,15 +116,15 @@ export interface UploadBillDocumentsRequest {
   organizationId: string;
   billId: string;
   files: File[];
-  documentType: BillDocumentType;
+  fileCategory: BillFileCategory;
 }
 
 export interface UploadBillDocumentResponse {
   id: string;
   fileName: string;
-  fileSize: number;
-  documentType: BillDocumentType;
-  uploadedDate: string;
+  contentType: string;
+  fileCategory: BillFileCategory;
+  attachmentType: BillAttachmentType;
 }
 
 export interface DownloadBillDocumentRequest {
@@ -131,4 +132,10 @@ export interface DownloadBillDocumentRequest {
   billId: string;
   documentId: string;
   fileName: string;
+}
+
+export interface DeleteBillAttachmentRequest {
+  organizationId: string;
+  billId: string;
+  attachmentId: string;
 }

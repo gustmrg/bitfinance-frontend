@@ -8,6 +8,7 @@ import type {
   BillsListResponse,
   CreateBillRequest,
   CreateBillResponse,
+  DeleteBillAttachmentRequest,
   DownloadBillDocumentRequest,
   UpdateBillRequest,
   UpdateBillResponse,
@@ -21,11 +22,11 @@ async function uploadDocumentAsync(
   organizationId: string,
   billId: string,
   file: File,
-  documentType: UploadBillDocumentsRequest["documentType"]
+  fileCategory: UploadBillDocumentsRequest["fileCategory"]
 ): Promise<UploadBillDocumentResponse> {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("documentType", documentType);
+  formData.append("fileCategory", fileCategory);
 
   const response = await authApi.post<UploadBillDocumentResponse>(
     `/organizations/${organizationId}/bills/${billId}/documents`,
@@ -131,7 +132,7 @@ export const billsService = {
             payload.organizationId,
             payload.billId,
             file,
-            payload.documentType
+            payload.fileCategory
           )
         )
       );
@@ -163,6 +164,18 @@ export const billsService = {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       throw normalizeError(error, "Failed to download bill document.");
+    }
+  },
+
+  async deleteAttachmentAsync(
+    payload: DeleteBillAttachmentRequest
+  ): Promise<void> {
+    try {
+      await authApi.delete(
+        `/organizations/${payload.organizationId}/bills/${payload.billId}/documents/${payload.attachmentId}`
+      );
+    } catch (error) {
+      throw normalizeError(error, "Failed to delete bill attachment.");
     }
   },
 };

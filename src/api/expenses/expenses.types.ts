@@ -30,7 +30,6 @@ export interface Expense {
   createdBy: string;
   createdAt: string;
   updatedAt?: string | null;
-  deletedAt?: string | null;
 }
 
 export interface ExpensesListQuery {

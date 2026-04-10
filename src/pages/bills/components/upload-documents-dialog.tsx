@@ -11,12 +11,12 @@ interface UploadDocumentsDialogProps {
   onUpload: (
     billId: string,
     files: File[],
-    documentType: string
+    fileCategory: string
   ) => Promise<void>;
   trigger?: ReactNode;
 }
 
-const documentTypes = [
+const fileCategories = [
   { value: "Boleto", label: "Boleto" },
   { value: "Receipt", label: "Receipt" },
   { value: "Other", label: "Other" },
@@ -29,7 +29,7 @@ export function UploadDocumentsDialog({
 }: UploadDocumentsDialogProps) {
   const [open, setOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [documentType, setDocumentType] = useState("Other");
+  const [fileCategory, setFileCategory] = useState("Other");
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +48,7 @@ export function UploadDocumentsDialog({
 
     setIsUploading(true);
     try {
-      await onUpload(billId, selectedFiles, documentType);
+      await onUpload(billId, selectedFiles, fileCategory);
       setSelectedFiles([]);
       setOpen(false);
     } catch (error) {
@@ -87,16 +87,16 @@ export function UploadDocumentsDialog({
       bodyClassName="space-y-4"
     >
       <div>
-        <label htmlFor="document-type" className="text-sm font-medium">
-          Document Type
-        </label>
-        <select
-          id="document-type"
-          value={documentType}
-          onChange={(event) => setDocumentType(event.target.value)}
+          <label htmlFor="file-category" className="text-sm font-medium">
+          File Category
+          </label>
+          <select
+          id="file-category"
+          value={fileCategory}
+          onChange={(event) => setFileCategory(event.target.value)}
           className="mt-1 w-full rounded-md border p-2 text-sm"
         >
-          {documentTypes.map((type) => (
+          {fileCategories.map((type) => (
             <option key={type.value} value={type.value}>
               {type.label}
             </option>

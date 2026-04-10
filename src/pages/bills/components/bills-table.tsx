@@ -29,7 +29,7 @@ export interface BillsTableProps {
   onUploadDocuments: (
     billId: string,
     files: File[],
-    documentType: string
+    fileCategory: string
   ) => Promise<void>;
 }
 

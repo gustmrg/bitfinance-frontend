@@ -55,6 +55,11 @@ function extractResponseMessage(responseData: unknown): string | null {
     return null;
   }
 
+  const error = toNonEmptyString(responseData.error);
+  if (error) {
+    return error;
+  }
+
   const validationMessage = extractValidationErrorMessage(responseData.errors);
   if (validationMessage) {
     return validationMessage;
