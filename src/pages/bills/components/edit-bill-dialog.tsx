@@ -52,11 +52,17 @@ type EditBillForm = z.infer<typeof EditBillSchema>;
 interface EditBillDialogProps {
   bill: Bill;
   onEdit: (data: EditBillForm) => Promise<void> | void;
+  defaultOpen?: boolean;
   trigger?: ReactNode;
 }
 
-export function EditBillDialog({ bill, onEdit, trigger }: EditBillDialogProps) {
-  const [open, setOpen] = useState(false);
+export function EditBillDialog({
+  bill,
+  onEdit,
+  defaultOpen = false,
+  trigger,
+}: EditBillDialogProps) {
+  const [open, setOpen] = useState(defaultOpen);
   const form = useForm<EditBillForm>({
     resolver: zodResolver(EditBillSchema),
     defaultValues: {

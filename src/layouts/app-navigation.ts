@@ -1,4 +1,5 @@
 import {
+  Building2,
   CreditCard,
   LayoutGrid,
   MoreHorizontal,
@@ -9,7 +10,13 @@ import {
 type AppNavSurface = "desktop-sidebar" | "mobile-bottom";
 
 export interface AppNavItem {
-  id: "dashboard" | "bills" | "expenses" | "account" | "more";
+  id:
+    | "dashboard"
+    | "bills"
+    | "expenses"
+    | "organization"
+    | "account"
+    | "more";
   label: string;
   to: string;
   icon: typeof LayoutGrid;
@@ -48,13 +55,22 @@ export const appNavigation: AppNavItem[] = [
     isMatch: (pathname) => pathname.startsWith("/dashboard/expenses"),
   },
   {
+    id: "organization",
+    label: "Organization",
+    to: "/account/organization",
+    icon: Building2,
+    section: "account",
+    surfaces: ["desktop-sidebar"],
+    isMatch: (pathname) => pathname.startsWith("/account/organization"),
+  },
+  {
     id: "account",
     label: "Account",
     to: "/account/settings",
     icon: Settings,
     section: "account",
     surfaces: ["desktop-sidebar"],
-    isMatch: (pathname) => pathname.startsWith("/account"),
+    isMatch: (pathname) => pathname === "/account" || pathname.startsWith("/account/settings"),
   },
   {
     id: "more",

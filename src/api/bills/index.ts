@@ -1,14 +1,17 @@
 export { billsService } from "./bills.service";
 export type {
+  BillAttachmentType,
   Bill,
   BillCategory,
   BillDocument,
   BillDocumentType,
+  BillFileCategory,
   BillStatus,
   BillsListQuery,
   BillsListResponse,
   CreateBillRequest,
   CreateBillResponse,
+  DeleteBillDocumentRequest,
   DownloadBillDocumentRequest,
   UpdateBillRequest,
   UpdateBillResponse,

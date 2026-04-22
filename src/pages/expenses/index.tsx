@@ -1,24 +1,32 @@
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 
-import { ReceiptText } from "lucide-react";
+import { Plus, ReceiptText } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
 
-import type { ExpenseCategory, ExpenseStatus } from "@/api/expenses";
+import type {
+  ExpenseCategory,
+  ExpenseStatus,
+  UpdateExpenseRequest,
+} from "@/api/expenses";
 import {
   useCurrentUser,
   useSelectedOrganization,
 } from "@/auth/auth-provider";
 import { PageContainer, PageHeader } from "@/components/page-shell";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useExpenseMutations } from "@/hooks/mutations/use-expense-mutations";
 import { useExpensesQuery } from "@/hooks/queries/use-expenses-query";
 
-import { AddExpenseDialog } from "./components/add-expense-dialog";
 import { ExpensesMobileList } from "./components/expenses-mobile-list";
 import { ExpensesTable } from "./components/expenses-table";
+
+const AddExpenseDialog = lazy(async () => ({
+  default: (await import("./components/add-expense-dialog")).AddExpenseDialog,
+}));
 
 interface AddExpenseFormValues {
   description: string;
@@ -26,6 +34,52 @@ interface AddExpenseFormValues {
   amount: number;
   status: string;
   occurredAt: Date;
+}
+
+interface EditExpenseFormValues {
+  id: string;
+  description: string;
+  category: string;
+  amount: number;
+  status: string;
+  occurredAt: Date;
+}
+
+function LazyAddExpenseAction({
+  onAddExpense,
+}: {
+  onAddExpense: (data: AddExpenseFormValues) => Promise<void>;
+}) {
+  const { t } = useTranslation();
+  const [enabled, setEnabled] = useState(false);
+
+  if (!enabled) {
+    return (
+      <Button
+        className="cursor-pointer gap-2 bg-blue-600 p-4 font-semibold text-white shadow-sm hover:bg-blue-500"
+        onClick={() => setEnabled(true)}
+      >
+        <Plus className="h-4 w-4" />
+        {t("expenses.cta")}
+      </Button>
+    );
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <Button
+          disabled
+          className="cursor-pointer gap-2 bg-blue-600 p-4 font-semibold text-white shadow-sm hover:bg-blue-500"
+        >
+          <Plus className="h-4 w-4" />
+          {t("expenses.cta")}
+        </Button>
+      }
+    >
+      <AddExpenseDialog defaultOpen onAddExpense={onAddExpense} />
+    </Suspense>
+  );
 }
 
 export function Expenses() {
@@ -43,7 +97,7 @@ export function Expenses() {
     from: dateRange?.from,
     to: dateRange?.to,
   });
-  const { addExpenseAsync, deleteExpenseAsync } = useExpenseMutations({
+  const { addExpenseAsync, deleteExpenseAsync, updateExpenseAsync } = useExpenseMutations({
     organizationId: selectedOrganization?.id ?? null,
   });
 
@@ -99,6 +153,28 @@ export function Expenses() {
     }
   };
 
+  const handleEditExpense = async (data: EditExpenseFormValues) => {
+    if (!user) {
+      return;
+    }
+
+    try {
+      const payload: Omit<UpdateExpenseRequest, "organizationId"> = {
+        id: data.id,
+        description: data.description,
+        category: data.category as ExpenseCategory,
+        amount: data.amount,
+        status: data.status as ExpenseStatus,
+        occurredAt: data.occurredAt.toISOString(),
+        createdBy: user.id,
+      };
+
+      await updateExpenseAsync(payload);
+    } catch (error) {
+      console.error("Failed to update the expense:", error);
+    }
+  };
+
   return (
     <PageContainer>
       <PageHeader
@@ -106,7 +182,7 @@ export function Expenses() {
         description={t("expenses.subtitle")}
         actions={
           <>
-            <AddExpenseDialog onAddExpense={handleAddExpense} />
+            <LazyAddExpenseAction onAddExpense={handleAddExpense} />
             <CalendarDateRangePicker
               startDate={dateRange?.from}
               endDate={dateRange?.to}
@@ -131,11 +207,12 @@ export function Expenses() {
       ) : (
         <>
           <div className="md:hidden">
-            <ExpensesMobileList
-              expenses={expenses}
-              renderStatusBadge={renderStatusBadge}
-              onDeleteExpense={handleDeleteExpense}
-            />
+             <ExpensesMobileList
+               expenses={expenses}
+               renderStatusBadge={renderStatusBadge}
+               onDeleteExpense={handleDeleteExpense}
+               onEditExpense={handleEditExpense}
+             />
           </div>
           <div className="hidden md:block">
             <Card>
@@ -145,6 +222,7 @@ export function Expenses() {
                   totalAmount={getTotalAmount()}
                   renderStatusBadge={renderStatusBadge}
                   onDeleteExpense={handleDeleteExpense}
+                  onEditExpense={handleEditExpense}
                 />
               </CardContent>
             </Card>

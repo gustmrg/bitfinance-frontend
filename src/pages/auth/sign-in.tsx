@@ -4,9 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 
+import { getSafeReturnUrl } from "@/auth/get-safe-return-url";
 import { useIsAuthenticated, useLoginAction } from "@/auth/auth-provider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -44,13 +45,16 @@ export function SignIn() {
   const login = useLoginAction();
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
+  const returnUrl = getSafeReturnUrl(searchParams.get("returnUrl"));
+  const signUpHref = `/auth/sign-up?returnUrl=${encodeURIComponent(returnUrl)}`;
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard");
+      navigate(returnUrl, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, returnUrl]);
 
   async function handleSignIn(data: SignInForm) {
     const isSuccess = await login({
@@ -59,7 +63,7 @@ export function SignIn() {
     });
 
     if (isSuccess) {
-      navigate("/dashboard");
+      navigate(returnUrl, { replace: true });
     }
   }
 
@@ -133,10 +137,10 @@ export function SignIn() {
         <div className="mt-6">
           <p className="text-center text-sm leading-5 text-gray-600">
             {t("auth.signIn.redirect")}{" "}
-            <NavLink
-              to={form.formState.isSubmitting ? "#" : "/auth/sign-up"}
-              className="font-medium text-blue-600 hover:text-blue-500"
-            >
+              <NavLink
+               to={form.formState.isSubmitting ? "#" : signUpHref}
+               className="font-medium text-blue-600 hover:text-blue-500"
+             >
               {t("labels.signUp")}
             </NavLink>
           </p>

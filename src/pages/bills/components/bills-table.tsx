@@ -1,7 +1,10 @@
-import { type ReactNode } from "react";
+import { Suspense, lazy, type ReactNode, useState } from "react";
 
+import { Pencil, Upload } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import type { BillFileCategory } from "@/api/bills";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -16,9 +19,15 @@ import { dateFormatter } from "@/utils/formatter";
 
 import { DeleteBillDialog } from "./delete-bill-dialog";
 import { DetailsBillDialog } from "./details-bill-dialog";
-import { EditBillDialog } from "./edit-bill-dialog";
-import { UploadDocumentsDialog } from "./upload-documents-dialog";
 import type { Bill } from "../types";
+
+const EditBillDialog = lazy(async () => ({
+  default: (await import("./edit-bill-dialog")).EditBillDialog,
+}));
+
+const UploadDocumentsDialog = lazy(async () => ({
+  default: (await import("./upload-documents-dialog")).UploadDocumentsDialog,
+}));
 
 export interface BillsTableProps {
   bills: Bill[];
@@ -29,7 +38,7 @@ export interface BillsTableProps {
   onUploadDocuments: (
     billId: string,
     files: File[],
-    documentType: string
+    documentType: BillFileCategory
   ) => Promise<void>;
 }
 
@@ -42,6 +51,86 @@ interface EditBillFormValue {
   amountPaid?: number;
   dueDate: Date;
   paymentDate?: Date;
+}
+
+function LazyEditBillAction({
+  bill,
+  onEditBill,
+}: {
+  bill: Bill;
+  onEditBill: (data: EditBillFormValue) => Promise<void>;
+}) {
+  const { t } = useTranslation();
+  const [enabled, setEnabled] = useState(false);
+
+  if (!enabled) {
+    return (
+      <Button variant="outline" onClick={() => setEnabled(true)}>
+        <Pencil className="h-4 w-4" />
+        {t("labels.edit")}
+      </Button>
+    );
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <Button disabled variant="outline">
+          <Pencil className="h-4 w-4" />
+          {t("labels.edit")}
+        </Button>
+      }
+    >
+      <EditBillDialog
+        bill={bill}
+        defaultOpen
+        onEdit={onEditBill}
+        trigger={<Button variant="outline">{t("labels.edit")}</Button>}
+      />
+    </Suspense>
+  );
+}
+
+function LazyUploadBillAction({
+  bill,
+  onUploadDocuments,
+}: {
+  bill: Bill;
+  onUploadDocuments: (
+    billId: string,
+    files: File[],
+    documentType: BillFileCategory
+  ) => Promise<void>;
+}) {
+  const { t } = useTranslation();
+  const [enabled, setEnabled] = useState(false);
+
+  if (!enabled) {
+    return (
+      <Button variant="outline" onClick={() => setEnabled(true)}>
+        <Upload className="h-4 w-4" />
+        {t("labels.attachments")}
+      </Button>
+    );
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <Button disabled variant="outline">
+          <Upload className="h-4 w-4" />
+          {t("labels.attachments")}
+        </Button>
+      }
+    >
+      <UploadDocumentsDialog
+        billId={bill.id}
+        defaultOpen
+        onUpload={onUploadDocuments}
+        trigger={<Button variant="outline">{t("labels.attachments")}</Button>}
+      />
+    </Suspense>
+  );
 }
 
 export function BillsTable({
@@ -79,10 +168,10 @@ export function BillsTable({
                 <TableCell>
                   <div className="flex flex-wrap items-center gap-2">
                     <DetailsBillDialog bill={bill} />
-                    <EditBillDialog bill={bill} onEdit={onEditBill} />
-                    <UploadDocumentsDialog
-                      billId={bill.id}
-                      onUpload={onUploadDocuments}
+                    <LazyEditBillAction bill={bill} onEditBill={onEditBill} />
+                    <LazyUploadBillAction
+                      bill={bill}
+                      onUploadDocuments={onUploadDocuments}
                     />
                     <DeleteBillDialog id={bill.id} onDelete={onDeleteBill} />
                   </div>

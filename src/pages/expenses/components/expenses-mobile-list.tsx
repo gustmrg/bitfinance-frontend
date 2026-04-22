@@ -1,23 +1,77 @@
-import { type ReactNode } from "react";
+import { Suspense, lazy, type ReactNode, useState } from "react";
 
+import { Eye, PencilLine } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { dateFormatter } from "@/utils/formatter";
 
 import { DeleteExpenseDialog } from "./delete-expense-dialog";
 import type { Expense } from "../types";
 
+const EditExpenseDialog = lazy(() => import("./edit-expense-dialog"));
+
+interface EditExpenseFormValue {
+  id: string;
+  description: string;
+  category: string;
+  amount: number;
+  occurredAt: Date;
+  status: string;
+}
+
+function LazyEditExpenseAction({
+  expense,
+  onEditExpense,
+}: {
+  expense: Expense;
+  onEditExpense: (data: EditExpenseFormValue) => Promise<void>;
+}) {
+  const { t } = useTranslation();
+  const [enabled, setEnabled] = useState(false);
+
+  if (!enabled) {
+    return (
+      <Button variant="outline" onClick={() => setEnabled(true)}>
+        <PencilLine className="h-4 w-4" />
+        {t("labels.edit")}
+      </Button>
+    );
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <Button disabled variant="outline">
+          <PencilLine className="h-4 w-4" />
+          {t("labels.edit")}
+        </Button>
+      }
+    >
+      <EditExpenseDialog
+        defaultOpen
+        expense={expense}
+        onEdit={onEditExpense}
+        trigger={<Button variant="outline">{t("labels.edit")}</Button>}
+      />
+    </Suspense>
+  );
+}
+
 export interface ExpensesMobileListProps {
   expenses: Expense[];
   renderStatusBadge: (status: string) => ReactNode;
   onDeleteExpense: (id: string) => Promise<void>;
+  onEditExpense: (data: EditExpenseFormValue) => Promise<void>;
 }
 
 export function ExpensesMobileList({
   expenses,
   renderStatusBadge,
   onDeleteExpense,
+  onEditExpense,
 }: ExpensesMobileListProps) {
   const { t } = useTranslation();
 
@@ -51,18 +105,27 @@ export function ExpensesMobileList({
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                  {t("labels.createdBy")}
-                </p>
-                <p className="truncate text-sm font-medium">{expense.createdBy}</p>
-              </div>
-              <DeleteExpenseDialog
-                id={expense.id}
-                onDelete={onDeleteExpense}
-              />
-            </div>
+             <div className="flex items-center justify-between gap-3">
+               <div className="min-w-0">
+                 <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                   {t("labels.createdBy")}
+                 </p>
+                 <p className="truncate text-sm font-medium">{expense.createdBy}</p>
+               </div>
+               <div className="flex items-center gap-2">
+               <Button asChild size="icon" variant="outline">
+                  <Link to={`/dashboard/expenses/${expense.id}`}>
+                    <Eye className="h-4 w-4" />
+                    <span className="sr-only">{t("labels.details")}</span>
+                  </Link>
+                </Button>
+                <LazyEditExpenseAction expense={expense} onEditExpense={onEditExpense} />
+                <DeleteExpenseDialog
+                  id={expense.id}
+                  onDelete={onDeleteExpense}
+                 />
+               </div>
+             </div>
           </CardContent>
         </Card>
       ))}

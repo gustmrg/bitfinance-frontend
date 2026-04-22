@@ -15,8 +15,9 @@ function normalizeBillStatus(status: string): Bill["status"] {
 function mapBillResponse(bill: Bill): Bill {
   return {
     ...bill,
-    status: normalizeBillStatus(bill.status),
     createdDate: bill.createdAt ?? bill.createdDate ?? "",
+    documents: bill.documents ?? [],
+    status: normalizeBillStatus(bill.status),
   };
 }
 

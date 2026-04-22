@@ -6,16 +6,114 @@ import type {
   Bill,
   BillsListQuery,
   BillsListResponse,
+  BillDocument,
   CreateBillRequest,
   CreateBillResponse,
+  DeleteBillDocumentRequest,
   DownloadBillDocumentRequest,
   UpdateBillRequest,
   UpdateBillResponse,
-  UploadBillDocumentsRequest,
   UploadBillDocumentResponse,
+  UploadBillDocumentsRequest,
 } from "./bills.types";
 
 const authApi = privateAPI();
+
+interface BillAttachmentApiResponse {
+  id: string;
+  fileName: string;
+  contentType: string;
+  fileCategory: UploadBillDocumentResponse["fileCategory"];
+  attachmentType: UploadBillDocumentResponse["attachmentType"];
+}
+
+interface BillApiResponse extends Omit<Bill, "category" | "status" | "documents"> {
+  category: string;
+  status: string;
+  attachments?: BillAttachmentApiResponse[];
+}
+
+interface BillsListApiResponse extends Omit<BillsListResponse, "data"> {
+  data: BillApiResponse[];
+}
+
+interface CreateBillApiResponse {
+  id: string;
+  description: string;
+  category: string;
+  status: string;
+  amountDue: number;
+  amountPaid?: number | null;
+  createdDate: string;
+  dueDate: string;
+  paidDate?: string | null;
+}
+
+interface UpdateBillApiResponse {
+  id: string;
+  description: string;
+  category: string;
+  status: string;
+  amountDue: number;
+  amountPaid?: number | null;
+  dueDate: string;
+  paidDate?: string | null;
+}
+
+function mapStatus(status: string): Bill["status"] {
+  return status.toLowerCase() as Bill["status"];
+}
+
+function mapCategory(category: string): Bill["category"] {
+  return category.toLowerCase() as Bill["category"];
+}
+
+function mapAttachment(attachment: BillAttachmentApiResponse): BillDocument {
+  return {
+    id: attachment.id,
+    fileName: attachment.fileName,
+    contentType: attachment.contentType,
+    fileCategory: attachment.fileCategory,
+    attachmentType: attachment.attachmentType,
+  };
+}
+
+function mapBill(bill: BillApiResponse): Bill {
+  return {
+    ...bill,
+    category: mapCategory(bill.category),
+    status: mapStatus(bill.status),
+    paymentDate: bill.paymentDate ?? bill.paidDate ?? null,
+    documents: bill.attachments?.map(mapAttachment) ?? [],
+  };
+}
+
+function mapCreateBillResponse(bill: CreateBillApiResponse): CreateBillResponse {
+  return {
+    id: bill.id,
+    description: bill.description,
+    category: mapCategory(bill.category),
+    status: mapStatus(bill.status),
+    amountDue: bill.amountDue,
+    amountPaid: bill.amountPaid ?? null,
+    createdDate: bill.createdDate,
+    dueDate: bill.dueDate,
+    paymentDate: bill.paidDate ?? null,
+  };
+}
+
+function mapUpdateBillResponse(bill: UpdateBillApiResponse): UpdateBillResponse {
+  return {
+    id: bill.id,
+    description: bill.description,
+    category: mapCategory(bill.category),
+    status: mapStatus(bill.status),
+    dueDate: bill.dueDate,
+    paymentDate: bill.paidDate ?? null,
+    amountDue: bill.amountDue,
+    amountPaid: bill.amountPaid ?? null,
+  };
+}
 
 async function uploadDocumentAsync(
   organizationId: string,
@@ -25,7 +123,7 @@ async function uploadDocumentAsync(
 ): Promise<UploadBillDocumentResponse> {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("documentType", documentType);
+  formData.append("fileCategory", documentType);
 
   const response = await authApi.post<UploadBillDocumentResponse>(
     `/organizations/${organizationId}/bills/${billId}/documents`,
@@ -43,11 +141,11 @@ async function uploadDocumentAsync(
 export const billsService = {
   async getAsync(organizationId: string, billId: string): Promise<Bill> {
     try {
-      const response = await authApi.get<Bill>(
+      const response = await authApi.get<BillApiResponse>(
         `/organizations/${organizationId}/bills/${billId}`
       );
 
-      return response.data;
+      return mapBill(response.data);
     } catch (error) {
       throw normalizeError(error, "Failed to fetch bill.");
     }
@@ -55,7 +153,7 @@ export const billsService = {
 
   async listAsync(query: BillsListQuery): Promise<BillsListResponse> {
     try {
-      const response = await authApi.get<BillsListResponse>(
+      const response = await authApi.get<BillsListApiResponse>(
         `/organizations/${query.organizationId}/bills`,
         {
           params: {
@@ -65,7 +163,10 @@ export const billsService = {
         }
       );
 
-      return response.data;
+      return {
+        ...response.data,
+        data: response.data.data.map(mapBill),
+      };
     } catch (error) {
       throw normalizeError(error, "Failed to fetch bills.");
     }
@@ -73,7 +174,7 @@ export const billsService = {
 
   async createAsync(request: CreateBillRequest): Promise<CreateBillResponse> {
     try {
-      const response = await authApi.post<CreateBillResponse>(
+      const response = await authApi.post<CreateBillApiResponse>(
         `/organizations/${request.organizationId}/bills`,
         {
           description: request.description,
@@ -86,7 +187,7 @@ export const billsService = {
         }
       );
 
-      return response.data;
+      return mapCreateBillResponse(response.data);
     } catch (error) {
       throw normalizeError(error, "Failed to create bill.");
     }
@@ -94,7 +195,7 @@ export const billsService = {
 
   async updateAsync(request: UpdateBillRequest): Promise<UpdateBillResponse> {
     try {
-      const response = await authApi.patch<UpdateBillResponse>(
+      const response = await authApi.patch<UpdateBillApiResponse>(
         `/organizations/${request.organizationId}/bills/${request.id}`,
         {
           description: request.description,
@@ -107,7 +208,7 @@ export const billsService = {
         }
       );
 
-      return response.data;
+      return mapUpdateBillResponse(response.data);
     } catch (error) {
       throw normalizeError(error, "Failed to update bill.");
     }
@@ -163,6 +264,16 @@ export const billsService = {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       throw normalizeError(error, "Failed to download bill document.");
+    }
+  },
+
+  async deleteDocumentAsync(payload: DeleteBillDocumentRequest): Promise<void> {
+    try {
+      await authApi.delete(
+        `/organizations/${payload.organizationId}/bills/${payload.billId}/documents/${payload.documentId}`
+      );
+    } catch (error) {
+      throw normalizeError(error, "Failed to delete bill document.");
     }
   },
 };

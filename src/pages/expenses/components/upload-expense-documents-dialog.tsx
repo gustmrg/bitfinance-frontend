@@ -1,38 +1,40 @@
 import { type ChangeEvent, type ReactNode, useState } from "react";
 
 import { FileText, Upload, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-import type { BillFileCategory } from "@/api/bills";
+import type { ExpenseFileCategory } from "@/api/expenses";
 import { AdaptiveModal } from "@/components/ui/adaptive-modal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-interface UploadDocumentsDialogProps {
-  billId: string;
+interface UploadExpenseDocumentsDialogProps {
+  expenseId: string;
   onUpload: (
-    billId: string,
+    expenseId: string,
     files: File[],
-    documentType: BillFileCategory
+    fileCategory: ExpenseFileCategory
   ) => Promise<void>;
   defaultOpen?: boolean;
   trigger?: ReactNode;
 }
 
-const documentTypes: Array<{ value: BillFileCategory; label: string }> = [
+const fileCategories: Array<{ value: ExpenseFileCategory; label: string }> = [
   { value: "Boleto", label: "Boleto" },
   { value: "Receipt", label: "Receipt" },
   { value: "Other", label: "Other" },
 ];
 
-export function UploadDocumentsDialog({
-  billId,
+export function UploadExpenseDocumentsDialog({
+  expenseId,
   onUpload,
   defaultOpen = false,
   trigger,
-}: UploadDocumentsDialogProps) {
+}: UploadExpenseDocumentsDialogProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(defaultOpen);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [documentType, setDocumentType] = useState<BillFileCategory>("Other");
+  const [fileCategory, setFileCategory] = useState<ExpenseFileCategory>("Other");
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +53,7 @@ export function UploadDocumentsDialog({
 
     setIsUploading(true);
     try {
-      await onUpload(billId, selectedFiles, documentType);
+      await onUpload(expenseId, selectedFiles, fileCategory);
       setSelectedFiles([]);
       setOpen(false);
     } catch (error) {
@@ -85,21 +87,23 @@ export function UploadDocumentsDialog({
         )
       }
       title="Upload Documents"
-      description="Upload multiple files to attach to this bill."
+      description={t("expenses.details.uploadDescription")}
       contentClassName="md:max-w-md"
       bodyClassName="space-y-4"
     >
       <div>
-        <label htmlFor="document-type" className="text-sm font-medium">
-          Document Type
+        <label htmlFor="expense-file-category" className="text-sm font-medium">
+          {t("expenses.details.fileCategory")}
         </label>
         <select
-          id="document-type"
-          value={documentType}
-          onChange={(event) => setDocumentType(event.target.value as BillFileCategory)}
+          id="expense-file-category"
+          value={fileCategory}
+          onChange={(event) =>
+            setFileCategory(event.target.value as ExpenseFileCategory)
+          }
           className="mt-1 w-full rounded-md border p-2 text-sm"
         >
-          {documentTypes.map((type) => (
+          {fileCategories.map((type) => (
             <option key={type.value} value={type.value}>
               {type.label}
             </option>
@@ -108,12 +112,12 @@ export function UploadDocumentsDialog({
       </div>
 
       <div>
-        <label htmlFor="file-upload" className="text-sm font-medium">
-          Select Files
+        <label htmlFor="expense-file-upload" className="text-sm font-medium">
+          {t("expenses.details.selectFiles")}
         </label>
         <div className="mt-1">
           <input
-            id="file-upload"
+            id="expense-file-upload"
             type="file"
             multiple
             onChange={handleFileSelect}
@@ -125,7 +129,7 @@ export function UploadDocumentsDialog({
 
       {selectedFiles.length > 0 ? (
         <div className="space-y-2">
-          <label className="text-sm font-medium">Selected Files</label>
+          <label className="text-sm font-medium">{t("expenses.details.selectedFiles")}</label>
           <div className="max-h-32 space-y-2 overflow-y-auto">
             {selectedFiles.map((file, index) => (
               <Card key={index} className="p-3">
@@ -154,10 +158,12 @@ export function UploadDocumentsDialog({
 
       <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <Button variant="outline" onClick={() => setOpen(false)} disabled={isUploading}>
-          Cancel
+          {t("labels.cancel")}
         </Button>
         <Button onClick={handleUpload} disabled={selectedFiles.length === 0 || isUploading}>
-          {isUploading ? "Uploading..." : `Upload ${selectedFiles.length} file(s)`}
+          {isUploading
+            ? t("expenses.details.uploading")
+            : t("expenses.details.uploadCount", { count: selectedFiles.length })}
         </Button>
       </div>
     </AdaptiveModal>

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
   billsService,
-  type BillDocumentType,
+  type BillFileCategory,
   type CreateBillRequest,
   type UpdateBillRequest,
 } from "@/api/bills";
@@ -11,7 +11,12 @@ import { queryKeys } from "@/lib/query-keys";
 interface UploadBillDocumentsPayload {
   billId: string;
   files: File[];
-  documentType: BillDocumentType;
+  documentType: BillFileCategory;
+}
+
+interface DeleteBillDocumentPayload {
+  billId: string;
+  documentId: string;
 }
 
 interface UseBillMutationsOptions {
@@ -112,13 +117,32 @@ export function useBillMutations({ organizationId }: UseBillMutationsOptions) {
     },
   });
 
+  const deleteBillDocumentMutation = useMutation({
+    mutationFn: async (payload: DeleteBillDocumentPayload) => {
+      const orgId = requireOrganizationId(organizationId);
+
+      return billsService.deleteDocumentAsync({
+        organizationId: orgId,
+        billId: payload.billId,
+        documentId: payload.documentId,
+      });
+    },
+    onSuccess: async (_data, variables) => {
+      if (organizationId) {
+        await invalidateBillQueries(organizationId, variables.billId);
+      }
+    },
+  });
+
   return {
     addBillAsync: addBillMutation.mutateAsync,
     deleteBillAsync: deleteBillMutation.mutateAsync,
+    deleteBillDocumentAsync: deleteBillDocumentMutation.mutateAsync,
     updateBillAsync: updateBillMutation.mutateAsync,
     uploadBillDocumentsAsync: uploadBillDocumentsMutation.mutateAsync,
     isAddingBill: addBillMutation.isPending,
     isDeletingBill: deleteBillMutation.isPending,
+    isDeletingBillDocument: deleteBillDocumentMutation.isPending,
     isUpdatingBill: updateBillMutation.isPending,
     isUploadingBillDocuments: uploadBillDocumentsMutation.isPending,
   };
