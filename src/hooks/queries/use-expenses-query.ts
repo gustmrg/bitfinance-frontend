@@ -15,6 +15,7 @@ function normalizeExpenseStatus(status: string): Expense["status"] {
 function mapExpenseResponse(expense: Expense): Expense {
   return {
     ...expense,
+    documents: expense.documents ?? [],
     status: normalizeExpenseStatus(expense.status),
   };
 }

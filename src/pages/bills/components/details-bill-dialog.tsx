@@ -35,6 +35,10 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
     }
   };
 
+  const handleDeleteDocument = async () => {
+    // Document deletion is available from the dedicated bill details page.
+  };
+
   return (
     <AdaptiveModal
       trigger={
@@ -48,7 +52,11 @@ export function DetailsBillDialog({ bill }: DetailsBillDialogProps) {
       headerClassName="px-4 sm:px-0"
       bodyClassName="px-0 pb-0"
     >
-      <BillDetailsContent bill={bill} onDownloadDocument={handleDownloadDocument} />
+      <BillDetailsContent
+        bill={bill}
+        onDeleteDocument={handleDeleteDocument}
+        onDownloadDocument={handleDownloadDocument}
+      />
     </AdaptiveModal>
   );
 }

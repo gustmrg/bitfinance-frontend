@@ -14,6 +14,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const isAuthenticated = useIsAuthenticated();
   const currentUserQuery = useCurrentUser();
   const location = useLocation();
+  const returnUrl = `${location.pathname}${location.search}${location.hash}`;
+  const user = currentUserQuery.data ?? null;
+  const hasOrganizations = (user?.organizations.length ?? 0) > 0;
+  const isCreateOrganizationRoute = location.pathname === "/account/create-organization";
   const isLoading =
     !isInitialized || (isAuthenticated && currentUserQuery.isPending);
 
@@ -28,10 +32,14 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   if (!isAuthenticated) {
     return (
       <Navigate 
-        to={`/auth/sign-in?returnUrl=${encodeURIComponent(location.pathname)}`}
+        to={`/auth/sign-in?returnUrl=${encodeURIComponent(returnUrl)}`}
         replace 
       />
     );
+  }
+
+  if (!isCreateOrganizationRoute && !hasOrganizations) {
+    return <Navigate to="/account/create-organization" replace />;
   }
 
   return <>{children}</>;

@@ -7,6 +7,13 @@ export const queryKeys = {
     all: ["auth"] as const,
     me: () => [...queryKeys.auth.all, "me"] as const,
   },
+  organizations: {
+    all: ["organizations"] as const,
+    lists: () => [...queryKeys.organizations.all, "list"] as const,
+    list: () => [...queryKeys.organizations.lists()] as const,
+    detail: (organizationId: string) =>
+      [...queryKeys.organizations.all, "detail", organizationId] as const,
+  },
   bills: {
     all: ["bills"] as const,
     lists: () => [...queryKeys.bills.all, "list"] as const,
@@ -32,6 +39,8 @@ export const queryKeys = {
         getDateKey(from),
         getDateKey(to),
       ] as const,
+    detail: (organizationId: string, expenseId: string) =>
+      [...queryKeys.expenses.all, "detail", organizationId, expenseId] as const,
   },
   dashboard: {
     all: ["dashboard"] as const,

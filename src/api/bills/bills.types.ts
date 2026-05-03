@@ -26,12 +26,16 @@ export type BillStatus =
 
 export type BillDocumentType = "Invoice" | "Receipt" | "Contract" | "Other";
 
+export type BillFileCategory = "Boleto" | "Receipt" | "Other";
+
+export type BillAttachmentType = "BillDocument" | "ExpenseDocument" | "UserAvatar";
+
 export interface BillDocument {
   id: string;
-  billId: string;
   fileName: string;
   contentType: string;
-  documentType: number;
+  fileCategory: BillFileCategory;
+  attachmentType: BillAttachmentType;
 }
 
 export interface Bill {
@@ -82,10 +86,10 @@ export interface CreateBillResponse {
   category: BillCategory;
   status: BillStatus;
   amountDue: number;
-  amountPaid: number;
+  amountPaid?: number | null;
   createdDate: string;
   dueDate: string;
-  paidDate?: string | null;
+  paymentDate?: string | null;
 }
 
 export interface UpdateBillRequest {
@@ -115,15 +119,15 @@ export interface UploadBillDocumentsRequest {
   organizationId: string;
   billId: string;
   files: File[];
-  documentType: BillDocumentType;
+  documentType: BillFileCategory;
 }
 
 export interface UploadBillDocumentResponse {
   id: string;
   fileName: string;
-  fileSize: number;
-  documentType: BillDocumentType;
-  uploadedDate: string;
+  contentType: string;
+  fileCategory: BillFileCategory;
+  attachmentType: BillAttachmentType;
 }
 
 export interface DownloadBillDocumentRequest {
@@ -131,4 +135,10 @@ export interface DownloadBillDocumentRequest {
   billId: string;
   documentId: string;
   fileName: string;
+}
+
+export interface DeleteBillDocumentRequest {
+  organizationId: string;
+  billId: string;
+  documentId: string;
 }

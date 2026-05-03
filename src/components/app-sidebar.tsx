@@ -80,7 +80,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser name={user?.fullName ?? "User"} email={user?.email ?? ""} />
+        <NavUser
+          avatarUrl={user?.avatarUrl ?? null}
+          name={user?.fullName ?? "User"}
+          email={user?.email ?? ""}
+        />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

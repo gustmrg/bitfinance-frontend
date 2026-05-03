@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import type {
   BillCategory,
-  BillDocumentType,
+  BillFileCategory,
   BillStatus,
   UpdateBillRequest,
 } from "@/api/bills";
@@ -41,7 +41,12 @@ export function BillDetails() {
 
   const billQuery = useBillQuery(selectedOrganization?.id ?? null, billId);
 
-  const { deleteBillAsync, updateBillAsync, uploadBillDocumentsAsync } = useBillMutations({
+  const {
+    deleteBillAsync,
+    deleteBillDocumentAsync,
+    updateBillAsync,
+    uploadBillDocumentsAsync,
+  } = useBillMutations({
     organizationId: selectedOrganization?.id ?? null,
   });
 
@@ -65,12 +70,12 @@ export function BillDetails() {
   const handleUploadDocuments = async (
     currentBillId: string,
     files: File[],
-    documentType: string
+    documentType: BillFileCategory
   ) => {
     await uploadBillDocumentsAsync({
       billId: currentBillId,
       files,
-      documentType: documentType as BillDocumentType,
+      documentType,
     });
   };
 
@@ -93,6 +98,21 @@ export function BillDetails() {
       });
     } catch (error) {
       console.error("Failed to download document:", error);
+    }
+  };
+
+  const handleDeleteDocument = async (documentId: string) => {
+    if (!selectedOrganization || !bill) {
+      return;
+    }
+
+    try {
+      await deleteBillDocumentAsync({
+        billId: bill.id,
+        documentId,
+      });
+    } catch (error) {
+      console.error("Failed to delete document:", error);
     }
   };
 
@@ -135,6 +155,7 @@ export function BillDetails() {
             <CardContent className="p-0">
               <BillDetailsContent
                 bill={bill}
+                onDeleteDocument={handleDeleteDocument}
                 onDownloadDocument={handleDownloadDocument}
               />
             </CardContent>

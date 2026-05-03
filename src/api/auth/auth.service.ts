@@ -16,6 +16,7 @@ function mapMeApiResponse(response: MeApiResponse): User {
     username: response.username,
     fullName: response.fullName,
     email: response.email,
+    avatarUrl: response.avatarUrl ?? null,
     organizations: response.organizations ?? [],
   };
 }

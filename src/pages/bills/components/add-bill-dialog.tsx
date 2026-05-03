@@ -48,10 +48,14 @@ type AddBillForm = z.infer<typeof AddBillSchema>;
 
 interface AddBillDialogProps {
   onAddBill: (data: AddBillForm) => void;
+  defaultOpen?: boolean;
 }
 
-export function AddBillDialog({ onAddBill }: AddBillDialogProps) {
-  const [open, setOpen] = useState(false);
+export function AddBillDialog({
+  onAddBill,
+  defaultOpen = false,
+}: AddBillDialogProps) {
+  const [open, setOpen] = useState(defaultOpen);
   const form = useForm<AddBillForm>({
     resolver: zodResolver(AddBillSchema),
   });

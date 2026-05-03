@@ -1,9 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 
+import { getSafeReturnUrl } from "@/auth/get-safe-return-url";
 import { useRegisterAction } from "@/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,7 +42,10 @@ export function SignUp() {
 
   const register = useRegisterAction();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
+  const returnUrl = getSafeReturnUrl(searchParams.get("returnUrl"));
+  const signInHref = `/auth/sign-in?returnUrl=${encodeURIComponent(returnUrl)}`;
 
   async function handleSignUp(data: SignUpForm) {
     const isSuccess = await register({
@@ -53,7 +57,7 @@ export function SignUp() {
     });
 
     if (isSuccess) {
-      navigate("/dashboard");
+      navigate(returnUrl, { replace: true });
     }
   }
 
@@ -142,10 +146,10 @@ export function SignUp() {
         <div className="mt-6">
           <p className="text-center text-sm leading-5 text-gray-600">
             {t("auth.signUp.redirect")}{" "}
-            <NavLink
-              to={form.formState.isSubmitting ? "#" : "/auth/sign-in"}
-              className="font-medium text-blue-600 hover:text-blue-500"
-            >
+              <NavLink
+               to={form.formState.isSubmitting ? "#" : signInHref}
+               className="font-medium text-blue-600 hover:text-blue-500"
+             >
               {t("labels.signIn")}
             </NavLink>
           </p>

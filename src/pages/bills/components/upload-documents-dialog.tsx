@@ -2,6 +2,7 @@ import { type ChangeEvent, type ReactNode, useState } from "react";
 
 import { FileText, Upload, X } from "lucide-react";
 
+import type { BillFileCategory } from "@/api/bills";
 import { AdaptiveModal } from "@/components/ui/adaptive-modal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,12 +12,13 @@ interface UploadDocumentsDialogProps {
   onUpload: (
     billId: string,
     files: File[],
-    documentType: string
+    documentType: BillFileCategory
   ) => Promise<void>;
+  defaultOpen?: boolean;
   trigger?: ReactNode;
 }
 
-const documentTypes = [
+const documentTypes: Array<{ value: BillFileCategory; label: string }> = [
   { value: "Boleto", label: "Boleto" },
   { value: "Receipt", label: "Receipt" },
   { value: "Other", label: "Other" },
@@ -25,11 +27,12 @@ const documentTypes = [
 export function UploadDocumentsDialog({
   billId,
   onUpload,
+  defaultOpen = false,
   trigger,
 }: UploadDocumentsDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [documentType, setDocumentType] = useState("Other");
+  const [documentType, setDocumentType] = useState<BillFileCategory>("Other");
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +96,7 @@ export function UploadDocumentsDialog({
         <select
           id="document-type"
           value={documentType}
-          onChange={(event) => setDocumentType(event.target.value)}
+          onChange={(event) => setDocumentType(event.target.value as BillFileCategory)}
           className="mt-1 w-full rounded-md border p-2 text-sm"
         >
           {documentTypes.map((type) => (

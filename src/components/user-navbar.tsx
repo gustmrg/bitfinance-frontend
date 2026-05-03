@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   useCurrentUser,
   useIsAuthenticated,
@@ -17,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getInitials, getUserAvatarSrc } from "@/lib/avatar";
 
 export default function UserNavBar() {
   const logout = useLogoutAction();
@@ -24,20 +26,18 @@ export default function UserNavBar() {
   const currentUserQuery = useCurrentUser();
   const user = currentUserQuery.data ?? null;
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return isAuthenticated ? (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-            <Avatar className="h-8 w-8">
-              <AvatarImage
-                src="/bitfinance/assets/avatars/04.png"
-                alt="Avatar Image"
-              />
-              <AvatarFallback>GM</AvatarFallback>
-            </Avatar>
-          </Button>
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={getUserAvatarSrc(user?.avatarUrl)} alt={user?.fullName} />
+                <AvatarFallback>{getInitials(user?.fullName ?? "User")}</AvatarFallback>
+              </Avatar>
+            </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
@@ -51,9 +51,11 @@ export default function UserNavBar() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
-              <Link to="account">{t("labels.profile")}</Link>
+              <Link to="/account/settings">{t("labels.profile")}</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>{t("labels.settings")}</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/account/settings")}>
+              {t("labels.settings")}
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={async () => await logout()}>

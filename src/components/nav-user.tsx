@@ -26,14 +26,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { getInitials, getUserAvatarSrc } from "@/lib/avatar";
 
 export interface NavUserProps {
+  avatarUrl?: string | null;
   name: string;
   email: string;
   variant?: "sidebar" | "topbar";
 }
 
-export function NavUser({ name, email, variant = "sidebar" }: NavUserProps) {
+export function NavUser({
+  avatarUrl,
+  name,
+  email,
+  variant = "sidebar",
+}: NavUserProps) {
   const logout = useLogoutAction();
   const navigate = useNavigate();
 
@@ -44,29 +51,23 @@ export function NavUser({ name, email, variant = "sidebar" }: NavUserProps) {
 
   const trigger =
     variant === "topbar" ? (
-      <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-        <Avatar className="h-8 w-8 rounded-full">
-          <AvatarImage src="" alt={name} />
-          <AvatarFallback className="rounded-full">
-            {name
-              .split(" ")
-              .map((part) => part[0])
-              .join("")}
-          </AvatarFallback>
-        </Avatar>
-      </Button>
+        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+          <Avatar className="h-8 w-8 rounded-full">
+            <AvatarImage src={getUserAvatarSrc(avatarUrl)} alt={name} />
+            <AvatarFallback className="rounded-full">
+              {getInitials(name)}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
     ) : (
       <SidebarMenuButton
         size="lg"
         className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
       >
         <Avatar className="h-8 w-8 rounded-lg">
-          <AvatarImage src="" alt={name} />
+          <AvatarImage src={getUserAvatarSrc(avatarUrl)} alt={name} />
           <AvatarFallback className="rounded-lg">
-            {name
-              .split(" ")
-              .map((part) => part[0])
-              .join("")}
+            {getInitials(name)}
           </AvatarFallback>
         </Avatar>
         <div className="grid flex-1 text-left text-sm leading-tight">
@@ -87,12 +88,9 @@ export function NavUser({ name, email, variant = "sidebar" }: NavUserProps) {
       <DropdownMenuLabel className="p-0 font-normal">
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
           <Avatar className="h-8 w-8 rounded-lg">
-            <AvatarImage src="" alt={name} />
+            <AvatarImage src={getUserAvatarSrc(avatarUrl)} alt={name} />
             <AvatarFallback className="rounded-lg">
-              {name
-                .split(" ")
-                .map((part) => part[0])
-                .join("")}
+              {getInitials(name)}
             </AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight">

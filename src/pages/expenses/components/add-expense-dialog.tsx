@@ -49,10 +49,14 @@ type AddExpenseForm = z.infer<typeof AddExpenseSchema>;
 
 interface AddExpenseDialogProps {
   onAddExpense: (data: AddExpenseForm) => void;
+  defaultOpen?: boolean;
 }
 
-export function AddExpenseDialog({ onAddExpense }: AddExpenseDialogProps) {
-  const [open, setOpen] = useState(false);
+export function AddExpenseDialog({
+  onAddExpense,
+  defaultOpen = false,
+}: AddExpenseDialogProps) {
+  const [open, setOpen] = useState(defaultOpen);
   const form = useForm<AddExpenseForm>({
     resolver: zodResolver(AddExpenseSchema),
   });

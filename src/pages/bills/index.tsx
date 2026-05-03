@@ -1,25 +1,29 @@
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 
-import { ReceiptText } from "lucide-react";
+import { Plus, ReceiptText } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
 
 import type {
   BillCategory,
-  BillDocumentType,
+  BillFileCategory,
   BillStatus,
   UpdateBillRequest,
 } from "@/api/bills";
 import { useSelectedOrganization } from "@/auth/auth-provider";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { PageContainer, PageHeader } from "@/components/page-shell";
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useBillMutations } from "@/hooks/mutations/use-bill-mutations";
 import { useBillsQuery } from "@/hooks/queries/use-bills-query";
 
-import { AddBillDialog } from "./components/add-bill-dialog";
 import { BillsMobileList } from "./components/bills-mobile-list";
 import { BillsTable } from "./components/bills-table";
+
+const AddBillDialog = lazy(async () => ({
+  default: (await import("./components/add-bill-dialog")).AddBillDialog,
+}));
 
 interface AddBillFormValues {
   description: string;
@@ -37,6 +41,43 @@ interface EditBillFormValues {
   amountPaid?: number;
   dueDate: Date;
   paymentDate?: Date;
+}
+
+function LazyAddBillAction({
+  onAddBill,
+}: {
+  onAddBill: (data: AddBillFormValues) => Promise<void>;
+}) {
+  const { t } = useTranslation();
+  const [enabled, setEnabled] = useState(false);
+
+  if (!enabled) {
+    return (
+      <Button
+        className="cursor-pointer gap-2 bg-blue-600 font-semibold text-white shadow-sm hover:bg-blue-500"
+        onClick={() => setEnabled(true)}
+      >
+        <Plus className="h-4 w-4" />
+        {t("bills.cta")}
+      </Button>
+    );
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <Button
+          disabled
+          className="cursor-pointer gap-2 bg-blue-600 font-semibold text-white shadow-sm hover:bg-blue-500"
+        >
+          <Plus className="h-4 w-4" />
+          {t("bills.cta")}
+        </Button>
+      }
+    >
+      <AddBillDialog defaultOpen onAddBill={onAddBill} />
+    </Suspense>
+  );
 }
 
 export function Bills() {
@@ -130,13 +171,13 @@ export function Bills() {
   const handleUploadDocuments = async (
     billId: string,
     files: File[],
-    documentType: string
+    documentType: BillFileCategory
   ) => {
     try {
       await uploadBillDocumentsAsync({
         billId,
         files,
-        documentType: documentType as BillDocumentType,
+        documentType,
       });
     } catch (error) {
       console.error("Failed to upload documents:", error);
@@ -151,7 +192,7 @@ export function Bills() {
         description={t("bills.subtitle")}
         actions={
           <>
-            <AddBillDialog onAddBill={handleAddBill} />
+            <LazyAddBillAction onAddBill={handleAddBill} />
             <CalendarDateRangePicker
               startDate={dateRange?.from}
               endDate={dateRange?.to}

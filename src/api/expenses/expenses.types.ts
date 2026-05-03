@@ -20,6 +20,21 @@ export type ExpenseCategory =
 
 export type ExpenseStatus = "pending" | "paid" | "cancelled";
 
+export type ExpenseFileCategory = "Boleto" | "Receipt" | "Other";
+
+export type ExpenseAttachmentType =
+  | "BillDocument"
+  | "ExpenseDocument"
+  | "UserAvatar";
+
+export interface ExpenseDocument {
+  id: string;
+  fileName: string;
+  contentType: string;
+  fileCategory: ExpenseFileCategory;
+  attachmentType: ExpenseAttachmentType;
+}
+
 export interface Expense {
   id: string;
   description: string;
@@ -31,6 +46,7 @@ export interface Expense {
   createdAt: string;
   updatedAt?: string | null;
   deletedAt?: string | null;
+  documents?: ExpenseDocument[];
 }
 
 export interface ExpensesListQuery {
@@ -65,7 +81,6 @@ export interface CreateExpenseResponse {
   status: ExpenseStatus;
   occurredAt: string;
   createdBy: string;
-  createdAt: string;
 }
 
 export interface UpdateExpenseRequest {
@@ -87,4 +102,32 @@ export interface UpdateExpenseResponse {
   status: ExpenseStatus;
   occurredAt: string;
   createdBy: string;
+}
+
+export interface UploadExpenseDocumentsRequest {
+  organizationId: string;
+  expenseId: string;
+  files: File[];
+  fileCategory: ExpenseFileCategory;
+}
+
+export interface UploadExpenseDocumentResponse {
+  id: string;
+  fileName: string;
+  contentType: string;
+  fileCategory: ExpenseFileCategory;
+  attachmentType: ExpenseAttachmentType;
+}
+
+export interface DownloadExpenseDocumentRequest {
+  organizationId: string;
+  expenseId: string;
+  documentId: string;
+  fileName: string;
+}
+
+export interface DeleteExpenseDocumentRequest {
+  organizationId: string;
+  expenseId: string;
+  documentId: string;
 }

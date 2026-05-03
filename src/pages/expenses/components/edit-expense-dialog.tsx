@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -51,14 +51,18 @@ type EditExpenseForm = z.infer<typeof EditExpenseSchema>;
 
 interface EditExpenseDialogProps {
   expense: Expense;
-  onEdit: (data: any) => void;
+  onEdit: (data: EditExpenseForm) => void;
+  defaultOpen?: boolean;
+  trigger?: ReactNode;
 }
 
 export default function EditExpenseDialog({
   expense,
   onEdit,
+  defaultOpen = false,
+  trigger,
 }: EditExpenseDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const form = useForm<EditExpenseForm>({
     resolver: zodResolver(EditExpenseSchema),
     defaultValues: {
@@ -85,13 +89,15 @@ export default function EditExpenseDialog({
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
-          <PencilLine className="mr-2 h-4 w-4" />
-          <span>{t("labels.edit")}</span>
-        </DropdownMenuItem>
+        trigger ?? (
+          <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
+            <PencilLine className="mr-2 h-4 w-4" />
+            <span>{t("labels.edit")}</span>
+          </DropdownMenuItem>
+        )
       }
-      title="Edit Expense"
-      description="Edit your expense information. Click to add when you're done."
+      title={t("expenses.dialog.edit.title")}
+      description={t("expenses.dialog.edit.description")}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleEditExpense)} className="space-y-4">
@@ -100,11 +106,11 @@ export default function EditExpenseDialog({
             name="description"
             render={({ field }) => (
               <FormItem className="grid grid-cols-4 items-center gap-4">
-                <FormLabel className="text-right">Description</FormLabel>
+                <FormLabel className="text-right">{t("labels.description")}</FormLabel>
                 <FormControl>
                   <Input
                     className="col-span-3"
-                    placeholder="Description"
+                    placeholder={t("labels.description")}
                     {...field}
                   />
                 </FormControl>
@@ -117,27 +123,32 @@ export default function EditExpenseDialog({
             name="category"
             render={({ field }) => (
               <FormItem className="grid grid-cols-4 items-center gap-4">
-                <FormLabel className="text-right">Category</FormLabel>
+                <FormLabel className="text-right">{t("labels.category")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select a category" />
+                      <SelectValue placeholder={t("labels.selectCategory")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="housing">Housing</SelectItem>
-                    <SelectItem value="transportation">Transportation</SelectItem>
-                    <SelectItem value="food">Food</SelectItem>
-                    <SelectItem value="utilities">Utilities</SelectItem>
-                    <SelectItem value="clothing">Clothing</SelectItem>
-                    <SelectItem value="healthcare">Healthcare</SelectItem>
-                    <SelectItem value="insurance">Insurance</SelectItem>
-                    <SelectItem value="personal">Personal</SelectItem>
-                    <SelectItem value="debt">Debt</SelectItem>
-                    <SelectItem value="savings">Savings</SelectItem>
-                    <SelectItem value="education">Education</SelectItem>
-                    <SelectItem value="entertainment">Entertainment</SelectItem>
-                    <SelectItem value="miscellaneous">Miscellaneous</SelectItem>
+                    <SelectItem value="housing">{t("labels.housing")}</SelectItem>
+                    <SelectItem value="transportation">{t("labels.transportation")}</SelectItem>
+                    <SelectItem value="food">{t("labels.food")}</SelectItem>
+                    <SelectItem value="utilities">{t("labels.utilities")}</SelectItem>
+                    <SelectItem value="clothing">{t("labels.clothing")}</SelectItem>
+                    <SelectItem value="healthcare">{t("labels.healthcare")}</SelectItem>
+                    <SelectItem value="insurance">{t("labels.insurance")}</SelectItem>
+                    <SelectItem value="personal">{t("labels.personal")}</SelectItem>
+                    <SelectItem value="debt">{t("labels.debt")}</SelectItem>
+                    <SelectItem value="savings">{t("labels.savings")}</SelectItem>
+                    <SelectItem value="education">{t("labels.education")}</SelectItem>
+                    <SelectItem value="entertainment">{t("labels.entertainment")}</SelectItem>
+                    <SelectItem value="travel">{t("labels.travel")}</SelectItem>
+                    <SelectItem value="pets">{t("labels.pets")}</SelectItem>
+                    <SelectItem value="gifts">{t("labels.gifts")}</SelectItem>
+                    <SelectItem value="subscriptions">{t("labels.subscriptions")}</SelectItem>
+                    <SelectItem value="taxes">{t("labels.taxes")}</SelectItem>
+                    <SelectItem value="miscellaneous">{t("labels.miscellaneous")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -150,7 +161,7 @@ export default function EditExpenseDialog({
             name="amount"
             render={({ field }) => (
               <FormItem className="grid grid-cols-4 items-center gap-4">
-                <FormLabel className="text-right">Amount</FormLabel>
+                <FormLabel className="text-right">{t("labels.amount")}</FormLabel>
                 <FormControl>
                   <Input
                     className="col-span-3"
@@ -175,7 +186,7 @@ export default function EditExpenseDialog({
             name="occurredAt"
             render={({ field }) => (
               <FormItem className="grid grid-cols-4 items-center gap-4">
-                <FormLabel className="text-right">Date</FormLabel>
+                <FormLabel className="text-right">{t("labels.date")}</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -189,7 +200,7 @@ export default function EditExpenseDialog({
                         {field.value ? (
                           format(field.value, "PPP")
                         ) : (
-                          <span>Pick a date</span>
+                          <span>{t("labels.pickDate")}</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -215,17 +226,17 @@ export default function EditExpenseDialog({
             name="status"
             render={({ field }) => (
               <FormItem className="grid grid-cols-4 items-center gap-4">
-                <FormLabel className="text-right">Status</FormLabel>
+                <FormLabel className="text-right">{t("labels.status")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select a status" />
+                      <SelectValue placeholder={t("labels.selectStatus")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                    <SelectItem value="pending">{t("labels.pending")}</SelectItem>
+                    <SelectItem value="paid">{t("labels.paid")}</SelectItem>
+                    <SelectItem value="cancelled">{t("labels.cancelled")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -234,10 +245,10 @@ export default function EditExpenseDialog({
           />
           <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <Button variant="secondary" type="button" onClick={() => form.reset()}>
-              Cancel
+              {t("labels.cancel")}
             </Button>
             <Button variant="default" type="submit">
-              Confirm
+              {t("labels.confirm")}
             </Button>
           </div>
         </form>

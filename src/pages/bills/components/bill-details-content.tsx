@@ -3,17 +3,20 @@ import { ptBR } from "date-fns/locale";
 import { Paperclip } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 
 import type { Bill } from "../types";
 
 interface BillDetailsContentProps {
   bill: Bill;
+  onDeleteDocument: (documentId: string) => Promise<void> | void;
   onDownloadDocument: (documentId: string, fileName: string) => Promise<void> | void;
 }
 
 export function BillDetailsContent({
   bill,
+  onDeleteDocument,
   onDownloadDocument,
 }: BillDetailsContentProps) {
   const { t } = useTranslation();
@@ -140,16 +143,26 @@ export function BillDetailsContent({
                         <span className="truncate font-medium">{document.fileName}</span>
                       </div>
                     </div>
-                    <div className="ml-4 flex-shrink-0">
-                      <button
-                        onClick={() => onDownloadDocument(document.id, document.fileName)}
-                        className="font-medium text-blue-700 hover:text-blue-500"
-                      >
-                        {t("labels.download")}
-                      </button>
-                    </div>
-                  </li>
-                ))}
+                     <div className="ml-4 flex items-center gap-2 flex-shrink-0">
+                       <Button
+                         variant="ghost"
+                         size="sm"
+                         onClick={() => onDownloadDocument(document.id, document.fileName)}
+                         className="font-medium text-blue-700 hover:text-blue-500"
+                       >
+                         {t("labels.download")}
+                       </Button>
+                       <Button
+                         variant="ghost"
+                         size="sm"
+                         onClick={() => onDeleteDocument(document.id)}
+                         className="font-medium text-red-700 hover:text-red-500"
+                       >
+                         {t("labels.delete")}
+                       </Button>
+                     </div>
+                   </li>
+                 ))}
               </ul>
             </dd>
           </div>

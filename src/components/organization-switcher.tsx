@@ -1,4 +1,6 @@
-import { Check, ChevronsUpDown, X } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, Settings2, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 import type { Organization } from "@/auth/types";
 import {
@@ -18,6 +20,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -50,10 +53,36 @@ function getOrganizationInitials(name?: string): string {
   return initials || "OR";
 }
 
+function OrganizationSwitcherActions({
+  manageLabel,
+  createLabel,
+}: {
+  manageLabel: string;
+  createLabel: string;
+}) {
+  return (
+    <>
+      <DropdownMenuItem asChild>
+        <Link to="/account/organization">
+          <Settings2 className="h-4 w-4" />
+          {manageLabel}
+        </Link>
+      </DropdownMenuItem>
+      <DropdownMenuItem asChild>
+        <Link to="/account/create-organization">
+          <Plus className="h-4 w-4" />
+          {createLabel}
+        </Link>
+      </DropdownMenuItem>
+    </>
+  );
+}
+
 export function OrganizationSwitcher({
   organizations,
   variant = "sidebar",
 }: OrganizationSwitcherProps) {
+  const { t } = useTranslation();
   const selectedOrganization = useSelectedOrganization();
   const setSelectedOrganizationId = useSetSelectedOrganizationId();
   const isMobile = useIsMobile();
@@ -74,7 +103,7 @@ export function OrganizationSwitcher({
                   </AvatarFallback>
                 </Avatar>
                 <span className="truncate text-sm font-medium">
-                  {selectedOrganization?.name ?? "Select Organization"}
+                  {selectedOrganization?.name ?? t("sidebar.select")}
                 </span>
               </div>
               <ChevronsUpDown className="size-4 text-muted-foreground" />
@@ -84,7 +113,7 @@ export function OrganizationSwitcher({
             <div className="flex max-h-[calc(90vh-1rem)] flex-col">
               <div className="flex items-center justify-between border-b px-4 py-3">
                 <DrawerTitle className="text-base font-semibold">
-                  Select an organization
+                  {t("sidebar.select")}
                 </DrawerTitle>
                 <DrawerClose asChild>
                   <Button
@@ -120,11 +149,41 @@ export function OrganizationSwitcher({
                         </Button>
                       </DrawerClose>
                     ))}
+
+                    <div className="pt-3">
+                      <div className="mb-2 border-t" />
+                      <DrawerClose asChild>
+                        <Button asChild variant="outline" className="w-full justify-start gap-2">
+                          <Link to="/account/organization">
+                            <Settings2 className="h-4 w-4" />
+                            {t("organization.switcher.manage")}
+                          </Link>
+                        </Button>
+                      </DrawerClose>
+                      <DrawerClose asChild>
+                        <Button asChild variant="ghost" className="mt-2 w-full justify-start gap-2">
+                          <Link to="/account/create-organization">
+                            <Plus className="h-4 w-4" />
+                            {t("organization.switcher.create")}
+                          </Link>
+                        </Button>
+                      </DrawerClose>
+                    </div>
                   </div>
                 ) : (
-                  <p className="px-3 py-4 text-sm text-muted-foreground">
-                    No organizations available.
-                  </p>
+                  <div className="space-y-3 px-3 py-4">
+                    <p className="text-sm text-muted-foreground">
+                      {t("organization.switcher.empty")}
+                    </p>
+                    <DrawerClose asChild>
+                      <Button asChild className="w-full justify-start gap-2">
+                        <Link to="/account/create-organization">
+                          <Plus className="h-4 w-4" />
+                          {t("organization.switcher.create")}
+                        </Link>
+                      </Button>
+                    </DrawerClose>
+                  </div>
                 )}
               </div>
             </div>
@@ -141,23 +200,41 @@ export function OrganizationSwitcher({
             className="h-9 w-full justify-between gap-2 px-2 sm:px-3"
           >
             <span className="truncate text-sm font-medium">
-              {selectedOrganization?.name ?? "Select Organization"}
+              {selectedOrganization?.name ?? t("sidebar.select")}
             </span>
             <ChevronsUpDown className="size-4 text-muted-foreground" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64 max-w-[calc(100vw-1rem)]">
-          {organizations.map((organization) => (
-            <DropdownMenuItem
-              key={organization.id}
-              onSelect={() => setSelectedOrganizationId(organization.id)}
-            >
-              <span className="truncate">{organization.name}</span>
-              {organization.id === selectedOrganization?.id ? (
-                <Check className="ml-auto" />
-              ) : null}
-            </DropdownMenuItem>
-          ))}
+          {organizations.length > 0 ? (
+            <>
+              {organizations.map((organization) => (
+                <DropdownMenuItem
+                  key={organization.id}
+                  onSelect={() => setSelectedOrganizationId(organization.id)}
+                >
+                  <span className="truncate">{organization.name}</span>
+                  {organization.id === selectedOrganization?.id ? (
+                    <Check className="ml-auto" />
+                  ) : null}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <OrganizationSwitcherActions
+                manageLabel={t("organization.switcher.manage")}
+                createLabel={t("organization.switcher.create")}
+              />
+            </>
+          ) : (
+            <>
+              <DropdownMenuItem asChild>
+                <Link to="/account/create-organization">
+                  <Plus className="h-4 w-4" />
+                  {t("organization.switcher.create")}
+                </Link>
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     );
@@ -173,7 +250,7 @@ export function OrganizationSwitcher({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <span className="truncate font-semibold">
-                {selectedOrganization?.name ?? "Select Organization"}
+                {selectedOrganization?.name ?? t("sidebar.select")}
               </span>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -182,17 +259,33 @@ export function OrganizationSwitcher({
             className={cn("w-[--radix-dropdown-menu-trigger-width]", "max-w-xs")}
             align="start"
           >
-            {organizations.map((organization) => (
-              <DropdownMenuItem
-                key={organization.id}
-                onSelect={() => setSelectedOrganizationId(organization.id)}
-              >
-                <span className="truncate">{organization.name}</span>
-                {organization.id === selectedOrganization?.id ? (
-                  <Check className="ml-auto" />
-                ) : null}
+            {organizations.length > 0 ? (
+              <>
+                {organizations.map((organization) => (
+                  <DropdownMenuItem
+                    key={organization.id}
+                    onSelect={() => setSelectedOrganizationId(organization.id)}
+                  >
+                    <span className="truncate">{organization.name}</span>
+                    {organization.id === selectedOrganization?.id ? (
+                      <Check className="ml-auto" />
+                    ) : null}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <OrganizationSwitcherActions
+                  manageLabel={t("organization.switcher.manage")}
+                  createLabel={t("organization.switcher.create")}
+                />
+              </>
+            ) : (
+              <DropdownMenuItem asChild>
+                <Link to="/account/create-organization">
+                  <Plus className="h-4 w-4" />
+                  {t("organization.switcher.create")}
+                </Link>
               </DropdownMenuItem>
-            ))}
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
