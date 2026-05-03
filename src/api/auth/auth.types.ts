@@ -32,5 +32,6 @@ export interface MeApiResponse {
   username: string;
   fullName: string;
   email: string;
+  avatarUrl?: string | null;
   organizations?: User["organizations"];
 }

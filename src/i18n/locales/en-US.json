@@ -278,13 +278,39 @@
     "lastNamePlaceholder": "Doe",
     "lastNameDescription": "Enter your last name.",
     "updateAccount": "Update account",
+    "updatingAccount": "Updating account...",
     "updateSuccess": "Profile updated",
     "updateSuccessDescription": "You have successfully updated your account information.",
+    "avatar": {
+      "title": "Avatar",
+      "subtitle": "Manage the profile image shown in navigation and account surfaces.",
+      "requirements": "Accepted formats: JPG and PNG up to 2 MB. A placeholder is shown until the backend returns avatarUrl in /identity/me.",
+      "upload": "Upload avatar",
+      "uploading": "Uploading avatar...",
+      "remove": "Remove avatar",
+      "removing": "Removing avatar...",
+      "uploadSuccess": "Avatar uploaded",
+      "uploadSuccessDescription": "Your avatar upload was accepted. The real image will appear once the backend returns avatarUrl in /identity/me.",
+      "removeSuccess": "Avatar removed",
+      "removeSuccessDescription": "Your avatar was removed successfully."
+    },
     "preferences": {
       "title": "Preferences",
       "subtitle": "Customize your experience.",
       "language": "Language",
       "languageDescription": "Select your preferred language."
+    },
+    "security": {
+      "title": "Security",
+      "subtitle": "Manage session security across your devices.",
+      "logoutAllTitle": "Log out all devices",
+      "logoutAllDescription": "Revoke all active sessions and require sign-in again everywhere, including this device.",
+      "logoutAllAction": "Log out all devices",
+      "loggingOutAll": "Logging out all devices...",
+      "confirmTitle": "Log out all devices",
+      "confirmDescription": "This will revoke all active sessions and sign you out everywhere. You will need to sign in again on every device.",
+      "logoutAllSuccess": "All devices logged out",
+      "logoutAllSuccessDescription": "All active sessions were revoked successfully."
     }
   },
   "organization": {

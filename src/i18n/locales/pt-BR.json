@@ -274,13 +274,39 @@
     "lastNamePlaceholder": "Silva",
     "lastNameDescription": "Digite seu sobrenome.",
     "updateAccount": "Atualizar conta",
+    "updatingAccount": "Atualizando conta...",
     "updateSuccess": "Perfil atualizado",
     "updateSuccessDescription": "Você atualizou as informações da sua conta com sucesso.",
+    "avatar": {
+      "title": "Avatar",
+      "subtitle": "Gerencie a imagem de perfil exibida na navegação e nas telas da conta.",
+      "requirements": "Formatos aceitos: JPG e PNG com até 2 MB. Um avatar placeholder será exibido até o backend retornar avatarUrl em /identity/me.",
+      "upload": "Enviar avatar",
+      "uploading": "Enviando avatar...",
+      "remove": "Remover avatar",
+      "removing": "Removendo avatar...",
+      "uploadSuccess": "Avatar enviado",
+      "uploadSuccessDescription": "O upload do avatar foi aceito. A imagem real aparecerá quando o backend retornar avatarUrl em /identity/me.",
+      "removeSuccess": "Avatar removido",
+      "removeSuccessDescription": "Seu avatar foi removido com sucesso."
+    },
     "preferences": {
       "title": "Preferências",
       "subtitle": "Personalize sua experiência.",
       "language": "Idioma",
       "languageDescription": "Selecione seu idioma preferido."
+    },
+    "security": {
+      "title": "Segurança",
+      "subtitle": "Gerencie a segurança da sessão em todos os seus dispositivos.",
+      "logoutAllTitle": "Sair de todos os dispositivos",
+      "logoutAllDescription": "Revogue todas as sessões ativas e exija novo login em todos os lugares, incluindo este dispositivo.",
+      "logoutAllAction": "Sair de todos os dispositivos",
+      "loggingOutAll": "Saindo de todos os dispositivos...",
+      "confirmTitle": "Sair de todos os dispositivos",
+      "confirmDescription": "Isso vai revogar todas as sessões ativas e encerrar sua sessão em todos os lugares. Você precisará entrar novamente em cada dispositivo.",
+      "logoutAllSuccess": "Sessões encerradas",
+      "logoutAllSuccessDescription": "Todas as sessões ativas foram revogadas com sucesso."
     }
   },
   "organization": {

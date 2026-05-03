@@ -36,6 +36,11 @@ Prioritize frontend integration for organization management and invitation flows
 - Organization selection from `me.organizations`
 - Create organization page
 - Protected routing and selected organization persistence
+- Organization management page and invite flow
+- Invitation join flow with auth resume and auto-switch
+- Bills contract cleanup, details, and attachment flows
+- Expenses contract cleanup, details, and attachment flows
+- Account security and avatar frontend flows with placeholder avatar support
 
 ### Missing frontend integration
 
@@ -73,6 +78,8 @@ Frontend work should therefore be split into two parts.
 
 ## Phase 1: Service Layer
 
+Status: Done
+
 Create a dedicated `src/api/organizations/` feature module to match current API organization conventions.
 
 ### Add
@@ -109,6 +116,8 @@ Create a dedicated `src/api/organizations/` feature module to match current API 
 
 ## Phase 2: Query And Mutation Hooks
 
+Status: Done
+
 Add TanStack Query hooks for organization management.
 
 ### Queries
@@ -130,6 +139,8 @@ Invalidate the following when organization state changes.
 - any views dependent on current organization selection
 
 ## Phase 3: Organization Management UI
+
+Status: Done
 
 Create a management page for the selected organization.
 
@@ -154,6 +165,8 @@ Create a management page for the selected organization.
 
 ## Phase 4: Invite Flow
 
+Status: Done
+
 Use backend `POST /organizations/{organizationId}/invite`.
 
 ### UI
@@ -168,6 +181,8 @@ Use backend `POST /organizations/{organizationId}/invite`.
 - Keep the first pass simple and token-driven
 
 ## Phase 5: Join Flow
+
+Status: Done
 
 Create an invitation join route.
 
@@ -191,6 +206,8 @@ Create an invitation join route.
 
 ## Phase 6: Auth Redirect Improvements
 
+Status: Done
+
 Current sign-in redirects directly to `/dashboard`.
 
 ### Update behavior
@@ -201,6 +218,8 @@ Current sign-in redirects directly to `/dashboard`.
 
 ## Phase 7: Navigation Updates
 
+Status: Done
+
 Expose organization management in the app.
 
 ### Options
@@ -210,6 +229,8 @@ Expose organization management in the app.
 - Optionally add a quick path from the organization switcher when there are no organizations
 
 ## Phase 8: Existing Member Role Management
+
+Status: Blocked by backend
 
 Complete role management for existing members once the backend exposes the missing capabilities.
 
@@ -227,6 +248,8 @@ Complete role management for existing members once the backend exposes the missi
 
 ## Phase 9: Account Security And Avatar Management
 
+Status: Frontend implemented, backend follow-up pending
+
 Integrate the remaining implemented identity endpoints that are still not surfaced in the frontend.
 
 ### Endpoints
@@ -241,7 +264,16 @@ Integrate the remaining implemented identity endpoints that are still not surfac
 - Replace placeholder avatar handling in nav and account surfaces
 - Add a `log out all devices` action in account settings or More
 
+### Current result
+
+- Frontend account security and avatar UI is implemented
+- Avatar upload, remove, and `logout-all` actions are wired
+- Navigation surfaces use `avatarUrl` when available and fall back to a placeholder image for now
+- Full avatar rendering still depends on the backend returning `avatarUrl` from `GET /identity/me`
+
 ## Phase 10: Dashboard Summary Integration
+
+Status: Blocked by backend summary endpoint
 
 Replace the remaining mocked dashboard summary cards with backend-backed data.
 
@@ -256,6 +288,8 @@ Replace the remaining mocked dashboard summary cards with backend-backed data.
 - Keep upcoming bills and recent expenses as separate queries unless the backend consolidates them
 
 ## Phase 11: Final Backend Parity Review
+
+Status: Pending
 
 Do one final parity pass after the phases above are complete.
 

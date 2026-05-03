@@ -1,11 +1,16 @@
+import { useEffect, useMemo, useRef } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Camera, ShieldCheck, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { toast } from "sonner";
 
-import { UpdateProfile } from "@/api/account/update-profile";
+import { useCurrentUser } from "@/auth/auth-provider";
 import { PageContainer } from "@/components/page-shell";
+import { AdaptiveConfirm } from "@/components/ui/adaptive-modal";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -26,6 +32,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useAccountMutations } from "@/hooks/mutations/use-account-mutations";
+import { getInitials, getUserAvatarSrc } from "@/lib/avatar";
 
 const languages = [
   { locale: "en-US", name: "English", flag: "\u{1F1FA}\u{1F1F8}" },
@@ -39,20 +47,57 @@ const UpdateProfileSchema = z.object({
 
 type UpdateProfileFormValues = z.infer<typeof UpdateProfileSchema>;
 
+function splitFullName(fullName: string) {
+  const trimmedFullName = fullName.trim();
+
+  if (!trimmedFullName) {
+    return { firstName: "", lastName: "" };
+  }
+
+  const [firstName, ...lastNameParts] = trimmedFullName.split(/\s+/);
+
+  return {
+    firstName: firstName ?? "",
+    lastName: lastNameParts.join(" "),
+  };
+}
+
 export function Account() {
   const { t, i18n } = useTranslation();
+  const currentUserQuery = useCurrentUser();
+  const user = currentUserQuery.data ?? null;
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const {
+    deleteAvatarAsync,
+    isDeletingAvatar,
+    isLoggingOutAllDevices,
+    isUpdatingProfile,
+    isUploadingAvatar,
+    logoutAllDevicesAsync,
+    updateProfileAsync,
+    uploadAvatarAsync,
+  } = useAccountMutations();
+
+  const profileDefaults = useMemo(() => splitFullName(user?.fullName ?? ""), [user?.fullName]);
 
   const form = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(UpdateProfileSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      firstName: profileDefaults.firstName,
+      lastName: profileDefaults.lastName,
     },
   });
 
+  useEffect(() => {
+    form.reset({
+      firstName: profileDefaults.firstName,
+      lastName: profileDefaults.lastName,
+    });
+  }, [form, profileDefaults.firstName, profileDefaults.lastName]);
+
   async function onSubmit(data: UpdateProfileFormValues) {
     try {
-      const response = await UpdateProfile(data);
+      const response = await updateProfileAsync(data);
 
       if (response) {
         toast.success(t("account.updateSuccess"), {
@@ -64,12 +109,108 @@ export function Account() {
     }
   }
 
+  async function handleAvatarFileChange(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      await uploadAvatarAsync(file);
+      toast.success(t("account.avatar.uploadSuccess"), {
+        description: t("account.avatar.uploadSuccessDescription"),
+      });
+    } catch {
+      // Error toast is handled globally by Axios interceptors.
+    } finally {
+      event.target.value = "";
+    }
+  }
+
+  async function handleDeleteAvatar() {
+    try {
+      await deleteAvatarAsync();
+      toast.success(t("account.avatar.removeSuccess"), {
+        description: t("account.avatar.removeSuccessDescription"),
+      });
+    } catch {
+      // Error toast is handled globally by Axios interceptors.
+    }
+  }
+
+  async function handleLogoutAllDevices() {
+    try {
+      await logoutAllDevicesAsync();
+      toast.success(t("account.security.logoutAllSuccess"), {
+        description: t("account.security.logoutAllSuccessDescription"),
+      });
+      window.location.href = "/auth/sign-in";
+    } catch {
+      // Error toast is handled globally by Axios interceptors.
+    }
+  }
+
   return (
     <PageContainer className="max-w-3xl">
       <div>
         <h3 className="text-lg font-bold">{t("account.title")}</h3>
         <p className="text-sm text-zinc-500">{t("account.subtitle")}</p>
       </div>
+      <Separator />
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("account.avatar.title")}</CardTitle>
+          <CardDescription>{t("account.avatar.subtitle")}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-20 w-20">
+              <AvatarImage src={getUserAvatarSrc(user?.avatarUrl)} alt={user?.fullName} />
+              <AvatarFallback>{getInitials(user?.fullName ?? "User")}</AvatarFallback>
+            </Avatar>
+            <div className="space-y-1">
+              <p className="font-medium">{user?.fullName ?? t("account.title")}</p>
+              <p className="text-sm text-muted-foreground">{user?.email ?? ""}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("account.avatar.requirements")}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".jpg,.jpeg,.png"
+              className="hidden"
+              onChange={handleAvatarFileChange}
+            />
+            <Button
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploadingAvatar}
+            >
+              <Camera className="h-4 w-4" />
+              {isUploadingAvatar
+                ? t("account.avatar.uploading")
+                : t("account.avatar.upload")}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={handleDeleteAvatar}
+              disabled={isDeletingAvatar}
+            >
+              <Trash2 className="h-4 w-4" />
+              {isDeletingAvatar
+                ? t("account.avatar.removing")
+                : t("account.avatar.remove")}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
       <Separator />
       <div>
         <Form {...form}>
@@ -112,7 +253,9 @@ export function Account() {
                 </FormItem>
               )}
             />
-            <Button type="submit">{t("account.updateAccount")}</Button>
+            <Button type="submit" disabled={isUpdatingProfile || !form.formState.isDirty}>
+              {isUpdatingProfile ? t("account.updatingAccount") : t("account.updateAccount")}
+            </Button>
           </form>
         </Form>
       </div>
@@ -147,6 +290,41 @@ export function Account() {
           {t("account.preferences.languageDescription")}
         </p>
       </div>
+      <Separator />
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("account.security.title")}</CardTitle>
+          <CardDescription>{t("account.security.subtitle")}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="rounded-full bg-muted p-2">
+              <ShieldCheck className="h-4 w-4" />
+            </div>
+            <div className="space-y-1">
+              <p className="font-medium">{t("account.security.logoutAllTitle")}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("account.security.logoutAllDescription")}
+              </p>
+            </div>
+          </div>
+
+          <AdaptiveConfirm
+            trigger={
+              <Button variant="destructive" disabled={isLoggingOutAllDevices}>
+                {isLoggingOutAllDevices
+                  ? t("account.security.loggingOutAll")
+                  : t("account.security.logoutAllAction")}
+              </Button>
+            }
+            title={t("account.security.confirmTitle")}
+            description={t("account.security.confirmDescription")}
+            cancelLabel={t("labels.cancel")}
+            confirmLabel={t("account.security.logoutAllAction")}
+            onConfirm={handleLogoutAllDevices}
+          />
+        </CardContent>
+      </Card>
     </PageContainer>
   );
 }
