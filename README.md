@@ -1,135 +1,172 @@
-<div align="center">
-  <a href="https://github.com/gustmrg/bitfinance-frontend">
-    <img src="public/assets/app-icon.png" alt="" height="100" >
-  </a>
-  <h3 align="center">BitFinance</h3>
-</div>
+<img src="public/assets/app-icon.png" alt="BitFinance app icon" height="100">
 
-A modern, full-stack finance application designed to simplify expense tracking and financial management for individuals and organizations.
+# BitFinance
 
-<p align="center">
-  <a href="LICENSE"><img  src="https://img.shields.io/static/v1?label=License&message=MIT&color=blue" alt="License"></a>
-  <img src="https://img.shields.io/github/actions/workflow/status/gustmrg/bitfinance-frontend/deploy.yml" alt="Build status" />
-</p>
+![React Version](https://img.shields.io/badge/React-18-61DAFB?logo=react)
+![Latest Release](https://img.shields.io/github/v/release/gustmrg/bitfinance-frontend)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## ✨ Features
+BitFinance is a finance application, and this repository contains the frontend for the BitFinance project.
 
-- **📊 Expense Tracking**: Monitor and categorize your daily expenses with ease
-- **💳 Bill Management**: Keep track of recurring bills and payment schedules  
-- **🏢 Multi-Organization Support**: Join and manage finances across multiple organizations
-- **🔐 Secure**: Built with security best practices and Azure integration for production environments
+## Features
 
-## 🧩 API Organization
+- Track bills and expenses by organization
+- View dashboard summaries for upcoming bills and recent expenses
+- Create, join, and manage organizations
+- Invite organization members
+- Upload and manage bill or expense documents
+- Manage account profile and avatar settings
+- Support authenticated sessions with refresh-token based API integration
+- Provide installable PWA assets through Vite PWA
 
-API calls are organized by feature, not in a single global file.
+## Tech Stack
 
-```text
-src/api/
-  auth/
-    auth.service.ts
-    auth.types.ts
-    index.ts
-  bills/
-    bills.service.ts
-    bills.types.ts
-    index.ts
-  expenses/
-    expenses.service.ts
-    expenses.types.ts
-    index.ts
-  shared/
-    http-error.ts
-    normalize-error.ts
-```
+- **React 18** for the user interface
+- **TypeScript** for static typing
+- **Vite** for local development and production builds
+- **React Router** for client-side routing
+- **TanStack Query** for server state
+- **Zustand** for shared auth and organization state
+- **Axios** for API requests
+- **Tailwind CSS** and **Radix UI** for styling and primitives
+- **react-i18next** for internationalization
+- **vite-plugin-pwa** for PWA manifest and assets
 
-### Conventions
+## Getting Started
 
-- Import API modules from feature barrels only:
-  - `@/api/auth`
-  - `@/api/bills`
-  - `@/api/expenses`
-- Service methods use `camelCase + Async` naming (example: `billsService.listAsync`).
-- HTTP concerns stay in service files; API error toasts are handled globally via Axios interceptors.
-- Shared API error normalization lives in `src/api/shared/`.
+### Prerequisites
 
-## 🔧 Configuration
+- Node.js 22 or newer is recommended
+- npm
+- A running BitFinance backend API
 
-### Environment Setup
+### Installation
 
-The application uses Vite's environment mode system with template files for security.
+1. Clone the repository.
 
-**First-time setup:**
-```bash
-# Copy the development template to create your local environment file
-cp .env.development.example .env.development
+   ```bash
+   git clone https://github.com/gustmrg/bitfinance-frontend.git
+   cd bitfinance-frontend
+   ```
 
-# Or use .env.local for personal overrides (recommended)
-cp .env.development.example .env.local
-```
+2. Install dependencies.
 
-### Environment Variables
+   ```bash
+   npm install
+   ```
 
-- **Development** (`.env.development` or `.env.local`):
-  - `VITE_API_URL=http://localhost:8080/api/v1` (local backend)
-  - Used when running `npm run dev`
+3. Create a local environment file.
 
-- **Production** (`.env.production`):
-  - `VITE_API_URL=/api/v1` (same-origin routing via reverse proxy)
-  - Created automatically by GitHub Actions during deployment
-  - Used when running `npm run build`
-
-### Running Locally
-
-1. Clone the repository
-2. Set up environment:
    ```bash
    cp .env.development.example .env.local
    ```
-3. Install dependencies: `npm install`
-4. Start development server: `npm run dev`
-5. Frontend runs on http://localhost:5173, connects to backend at http://localhost:8080/api/v1
-6. (Optional) Edit `.env.local` if your backend runs on a different port
 
-### Building for Production
+4. Start the development server.
+
+   ```bash
+   npm run dev
+   ```
+
+The app runs at `http://localhost:3000` and expects the backend API at `http://localhost:8080/api/v1` by default.
+
+## Environment Variables
+
+Vite only exposes variables prefixed with `VITE_` to the browser.
+
+| Variable | Description | Local default |
+| --- | --- | --- |
+| `VITE_API_URL` | Base URL for the BitFinance API | `http://localhost:8080/api/v1` |
+
+Environment templates are included for common modes:
+
+- `.env.example` for a generic template
+- `.env.development.example` for local development
+- `.env.production.example` for production builds
+
+Use `.env.local` for personal overrides. Do not commit real `.env` files.
+
+## Available Scripts
+
+```bash
+npm run dev       # Start the Vite development server
+npm run build     # Type-check and create a production build
+npm run lint      # Run ESLint
+npm run preview   # Preview the production build locally
+```
+
+## Project Structure
+
+```text
+src/
+  api/           Feature-based API clients and shared API error handling
+  auth/          Auth provider, Zustand store, and auth selector/action hooks
+  components/    Reusable UI and layout components
+  hooks/         Query, mutation, and utility hooks
+  i18n/          i18next runtime configuration
+  layouts/       Dashboard and navigation layouts
+  lib/           Axios, query client, auth token, logger, and utilities
+  pages/         Route-level page components
+  utils/         General helpers
+```
+
+## API Organization
+
+API modules are organized by feature under `src/api`.
+
+```text
+src/api/
+  account/
+  auth/
+  bills/
+  dashboard/
+  expenses/
+  organizations/
+  shared/
+```
+
+Conventions:
+
+- Import API clients from feature barrels such as `@/api/auth`, `@/api/bills`, and `@/api/expenses`.
+- Use `camelCase + Async` for service methods, for example `billsService.listAsync`.
+- Keep HTTP concerns inside service files.
+- Keep shared API error normalization in `src/api/shared`.
+- API error toasts are handled globally through Axios interceptors.
+
+## Routing
+
+Routes are defined in `src/routes.tsx`.
+
+Main routes include:
+
+- `/` for the public home page
+- `/auth/sign-in` and `/auth/sign-up` for authentication
+- `/dashboard` for the authenticated dashboard
+- `/dashboard/bills` and `/dashboard/bills/:billId`
+- `/dashboard/expenses` and `/dashboard/expenses/:expenseId`
+- `/account/settings`, `/account/more`, and `/account/organization`
+- `/account/create-organization`
+- `/join-organization`
+
+Authenticated pages are wrapped with `ProtectedRoute`.
+
+## Build and Deployment
+
+Create a production build with:
 
 ```bash
 npm run build
 ```
 
-Uses `.env.production` (created by CI/CD) to generate a production build with relative API URLs for same-origin deployment.
+Production builds use `VITE_API_URL=/api/v1` by default, which supports same-origin API routing behind a reverse proxy.
 
-### Deployment and Versioning
+The included `Dockerfile` builds the Vite app and serves the generated `dist` directory on port `3000`.
 
-- `.github/workflows/deploy.yml` deploys on pushes to `main`.
-- Application version shown in npm scripts comes from `package.json`, not GitHub release tags.
-- `.github/workflows/release-version-check.yml` validates that a published release tag (for example `v1.6.0`) matches `package.json` version (`1.6.0`).
+Deployment automation lives in `.github/workflows/deploy.yml` and runs on pushes to `main`.
 
-### Security Note
+## Related Repository
 
-- Never commit actual `.env` files - they are gitignored
-- Only `.env.example` templates are committed to the repository
-- Production secrets are managed via GitHub Secrets
+- Backend API: `https://github.com/gustmrg/bitfinance-backend`
 
-## 🚀 Tech Stack
+## License
 
-### Backend
-- **[.NET](https://dotnet.microsoft.com/)** - Cross-platform framework for building modern applications
-- **[Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/)** - Modern object-database mapper for .NET
-- **[PostgreSQL](https://www.postgresql.org/)** - Advanced open-source relational database
-
-### Frontend
-- **[React](https://reactjs.org/)** - A JavaScript library for building user interfaces
-
-### Infrastructure & DevOps
-- **[Docker](https://www.docker.com/)** - Containerization platform
-- **[Docker Compose](https://docs.docker.com/compose/)** - Multi-container Docker application management
-- **[Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/)** - Secure secrets management for production
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built with modern web technologies and best practices
-- Inspired by the need for simple, effective financial management tools
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
