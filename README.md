@@ -1,4 +1,6 @@
-<img src="public/assets/app-icon.png" alt="BitFinance app icon" height="100">
+<p align="center">
+  <img src="public/assets/app-icon.png" alt="BitFinance app icon" height="100">
+</p>
 
 # BitFinance
 
